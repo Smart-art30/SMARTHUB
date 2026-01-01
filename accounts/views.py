@@ -30,3 +30,14 @@ def student_attendance _summary(student):
         student_class=class_obj,
         date__month = 6
     )
+
+def student_fee_statement(student):
+    invoices = Invoices.objects.filter(student=student)
+    total_billed = sum(invoice.total_amount() for invoice in invoices)
+    total_paid = sum(invoice.total_paid() for inv in invoices)
+
+    return {
+        'total_billed': total_billed,
+        'total_paid ': total_paid,
+        'balance' :total_billed - total_paid
+    }
