@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
+
 class User(AbstractUser):
     #roles
     ROLES_CHOOCES = (
@@ -14,7 +15,7 @@ class User(AbstractUser):
     )
     role = models.CharField(max_length = 100, choices = ROLES_CHOOCES)
     school = models.ForeignKey(
-        'School',
+        'schools.School',
         on_delete = models.CASCADE,
         blank = True,
         null = True,
@@ -26,32 +27,10 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.username} ({self.role})"
 
-class School(models.Model):
-    name = models.CharField(max_length=255)
-    code = models.CharField(max_length= 50, unique = True)
-    address = models.TextField(blank =  True, null = True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
-    logo = models.ImageField(upload_to='school_logos/',blank=True, null = True)
-    created_at = models.DateTimeField(auto_now_add = True)
-
-    def __str__(self):
-        return self.name
-
-class SchoolClass(models.Model):
-    school = models.ForeignKey(School, on_delete = models.CASCADE)
-    name = models.CharField(max_length = 50)
-    section = models.CharField(max_length = 10, blank = True, null = True)
-    created_at= models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        if self.section:
-            return f'{self.name}{self.section} ({self.school.name})'
-        else:
-            return f'{self.name} ({self.school.name})'
 
 class Subject(models.Model):
-    school = models.ForeignKey(School, on_delete = models.CASCADE)
+    #school = models.ForeignKey(School, on_delete = models.CASCADE)
+    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     name = models.CharField(max_length = 100)
     code = models.CharField(max_length = 20, blank = True, null =  True)
     assigned_teacher = models.ManyToManyField('User',limit_choices_to={'role': 'teacher'},blank = True)
@@ -66,8 +45,8 @@ class Student(models.Model):
         on_delete=models.CASCADE,
         limit_choices_to={'role': 'student'}
     )
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
-    student_class = models.ForeignKey(SchoolClass, on_delete=models.SET_NULL, null=True)
+    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
+    student_class = models.ForeignKey('schools.SchoolClass', on_delete=models.SET_NULL, null=True)
     admission_number = models.CharField(max_length = 30, unique= True)
     date_of_birth = models.DateTimeField(blank=True, null = True)
     gender = models.CharField(
@@ -86,7 +65,7 @@ class Parent(models.Model):
         on_delete=models.CASCADE,
         limit_choices_to={'role': 'parent'}
     )
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     students = models.ManyToManyField(Student, related_name = 'parents')
     pone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
@@ -101,7 +80,7 @@ class Teacher(models.Model):
         limit_choices_to={'role':'teacher'}
 
     )
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     employee_id=models.CharField(max_length=30, unique=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     date_joined= models.DateTimeField(auto_now_add=True)
@@ -111,8 +90,8 @@ class Teacher(models.Model):
 
 class StudentAttendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
-    student_class= models.ForeignKey(SchoolClass, on_delete=models.SET_NULL, null=True)
+    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
+    student_class= models.ForeignKey('schools.SchoolClass', on_delete=models.SET_NULL, null=True)
     date = models.DateField(default=timezone.now)
     status = models.CharField(
         max_length= 10,
@@ -127,7 +106,7 @@ class StudentAttendance(models.Model):
 
 class TeacherAttendance(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     date= models.DateField(default=timezone.now)
     status= models.CharField(
         max_length=10,
@@ -142,7 +121,7 @@ class TeacherAttendance(models.Model):
         return f"{self.teacher} - {self.date} - {self.status}"
 
 class Exam(models.Model):
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     term = models.CharField(max_length= 20)
     year = models.IntegerField()
@@ -183,8 +162,8 @@ class StudentMark(models.Model):
         
 
 class FeeStructure(models.Model):
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
-    student_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
+    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
+    student_class = models.ForeignKey('schools.SchoolClass', on_delete=models.CASCADE)
     term = models.CharField(max_length=20)
     year = models.IntegerField()
 
@@ -246,7 +225,7 @@ class Notification(models.Model):
         ('email', 'Email'),
         ('in_app', 'In-App'),
     ]
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     message = models.TextField()
     notification_type = models.CharField(
