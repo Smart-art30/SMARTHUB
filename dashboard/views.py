@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from accounts.models import Student , Teacher, Parent
+from accounts.models import  Teacher
 from schools.models import School
+from students.models import Student, Parent
 @login_required
 def dashboard_redirect(request):
     user = request.user

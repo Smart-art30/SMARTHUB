@@ -39,40 +39,6 @@ class Subject(models.Model):
         return f'{self.name} ({self.school.name})'
 
 
-class Student(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        limit_choices_to={'role': 'student'}
-    )
-    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
-    student_class = models.ForeignKey('schools.SchoolClass', on_delete=models.SET_NULL, null=True)
-    admission_number = models.CharField(max_length = 30, unique= True)
-    date_of_birth = models.DateTimeField(blank=True, null = True)
-    gender = models.CharField(
-        max_length = 10,
-        choices = (('male','Male'), ('female','Female')),
-        blank = True,
-        null = True
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    def __str__(self):
-        return f"{self.user.get_full_name()} - {self.admission_number}"
-
-class Parent(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        limit_choices_to={'role': 'parent'}
-    )
-    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
-    students = models.ManyToManyField(Student, related_name = 'parents')
-    pone = models.CharField(max_length=20, blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.user.get_full_name() or self.user.username
-
 class Teacher(models.Model):
     user = models.OneToOneField(
         User,
@@ -89,7 +55,7 @@ class Teacher(models.Model):
         return self.user.get_full_name() or self.user.username
 
 class StudentAttendance(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey('students.Student', on_delete=models.CASCADE)
     school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     student_class= models.ForeignKey('schools.SchoolClass', on_delete=models.SET_NULL, null=True)
     date = models.DateField(default=timezone.now)
@@ -139,7 +105,7 @@ class ExamSubject(models.Model):
         return f'{self.subject.name} - {self.exam.name}'
 
 class StudentMark(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey('students.Student', on_delete=models.CASCADE)
     exam_subject = models.ForeignKey(ExamSubject, on_delete=models.CASCADE)
     marks = models.FloatField()
 
@@ -180,7 +146,7 @@ class FeeItem(models.Model):
         return  f'{self.name} - {self.amount}'
 
 class Invoice(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey('students.Student', on_delete=models.CASCADE)
     fee_structure = models.ForeignKey(FeeStructure, on_delete=models.CASCADE)
     issued_date = models.DateField(auto_now_add=True)
     is_paid = models.BooleanField(default=False) 
