@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Subject, Teacher, StudentAttendance, TeacherAttendance, Exam, ExamSubject, StudentMark, FeeStructure, FeeItem,Invoice, Payment
-from schools.models import School, SchoolClass
-from students.models import Student, Parent
+from .models import User
+
 class CustomUserAdmin(UserAdmin):
     model = User
     list_display = ('username','email','role','school','is_staff','is_active')
@@ -22,20 +21,6 @@ class CustomUserAdmin(UserAdmin):
     filter_horizontal = ('groups','user_permissions',) 
 
 admin.site.register(User, CustomUserAdmin)
-#admin.site.register(School)
-#admin.site.register(SchoolClass)
-admin.site.register(Subject)
-#admin.site.register(Student)
-#admin.site.register(Parent)
-admin.site.register(Teacher)
-admin.site.register(StudentAttendance)
-admin.site.register(TeacherAttendance)
-admin.site.register(Exam)
-admin.site.register(ExamSubject)
-admin.site.register(StudentMark)
-admin.site.register(FeeStructure)
-admin.site.register(FeeItem)
-admin.site.register(Invoice)
-admin.site.register(Payment)
+
 
 
