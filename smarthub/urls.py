@@ -20,5 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dashboard/', include('dashboard.urls')),
-    #path('', accounts.views.dashboard_redirect),
+    path('schools/', include('schools.urls')),
 ]

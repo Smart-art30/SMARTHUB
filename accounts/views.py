@@ -1,6 +1,24 @@
 from django.shortcuts import render
-
+from django.shortcuts import redirect
 from accounts.models import StudentMark, student_attendance
+
+
+@login_required
+def dashboard_redirect(request):
+    user = request.user
+
+    if user.role == 'superadmin':
+        return redirect('superadmin_dashboard')
+    elif user.role == 'schooladmin':
+        return redirect('schooladmin_dashboard')
+    elif user.role == 'teacher':
+        return redirect('teacher_dashboard')
+    elif user.role == 'student':
+        return redirect('student_dashboard')
+    elif user.role == 'parent':
+        return redirect('parent_dashboard')
+    else:
+        return redirect('login')
 
 def student_report(Student, exam):
     marks = StudentMark.objects.filter(

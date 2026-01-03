@@ -9,7 +9,13 @@ class School(models.Model):
     email = models.EmailField(blank=True, null=True)
     logo = models.ImageField(upload_to='school_logos/',blank=True, null = True)
     created_at = models.DateTimeField(auto_now_add = True)
-
+    subscription = models.ForeignKey(
+        SubscriptionPLan,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    subscription_active =models.BooleanField(default=True)
     def __str__(self):
         return self.name
 
@@ -23,3 +29,11 @@ class SchoolClass(models.Model):
     def __str__(self):
         return f'{self.name}{self.section} {self.stream} ({self.school.name})'
         
+class SubscriptionPLan(models.Model):
+    name = models.CharField(max_length= 50)
+    max_students = models.PositiveIntegerField()
+    max_teachers = models.PositiveIntegerField()
+    price_per_month = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.name
