@@ -124,3 +124,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 AUTH_USER_MODEL = 'accounts.User'
+
+EMAIL_BACKEND = 'django.core.mail.backend.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'smarthub@school.com'
