@@ -1,5 +1,14 @@
 from django.db import models
 
+       
+class SubscriptionPLan(models.Model):
+    name = models.CharField(max_length= 50)
+    max_students = models.PositiveIntegerField()
+    max_teachers = models.PositiveIntegerField()
+    price_per_month = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.name
 
 class School(models.Model):
     name = models.CharField(max_length=255)
@@ -28,12 +37,4 @@ class SchoolClass(models.Model):
 
     def __str__(self):
         return f'{self.name}{self.section} {self.stream} ({self.school.name})'
-        
-class SubscriptionPLan(models.Model):
-    name = models.CharField(max_length= 50)
-    max_students = models.PositiveIntegerField()
-    max_teachers = models.PositiveIntegerField()
-    price_per_month = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return self.name
+ 

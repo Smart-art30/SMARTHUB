@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import dashboard_redirect
 
 urlpatterns=(
     path('superadmin/', views.superadmin_dashboard, name = 'superadmin_dashboard'),
@@ -7,4 +8,5 @@ urlpatterns=(
     path('teacher/', views.teacher_dashboard, name = 'teacher_dashboard'),
     path('student/', views.student_dashboard, name = 'student_dashboard'),
     path('parents/', views.parent_dashboard, name = 'parent_dashboard'),
+    path('',dashboard_redirect, name='dashboard'),
 )

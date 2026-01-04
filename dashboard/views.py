@@ -8,6 +8,23 @@ from attendance.models import StudentAttendance, TeacherAttendance
 
 
 @login_required
+def dashboard_redirect(request):
+    user = request.user
+
+    if user.role == 'superadmin':
+        return redirect('superadmin_dashboard')
+    elif user.role == 'schooladmin':
+        return redirect('schooladmin_dashboard')
+    elif user.role == 'teacher':
+        return redirect('teacher_dashboard')
+    elif user.role == 'student':
+        return redirect('student_dashboard')
+    elif user.role == 'parent':
+        return redirect('parent_dashboard')
+    else:
+        return redirect('login')
+
+@login_required
 def superadmin_dashboard(request):
     total_schools = School.objects.count()
     total_users = Student.objects.count() + Teacher.objects.count() + Parent.objects.count()

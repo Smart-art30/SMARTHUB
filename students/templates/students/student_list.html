@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Students</h3>
+<a href="{% url 'student_add' class='btn btn-primary mb-2' %}">Add Student</a>
+<table class="table table-bordered">
+    <tr>
+        <th>Name</th>
+        <th>Admission</th>
+        <th>Class</th>
+        <th></th>
+    </tr>
+    {% for s in students %}
+    <tr>
+        <td>{{ s.user.get_full_name }}</td>
+        <td>{{ s.Admission_number }}</td>
+        <td>{{ s.student_class}}</td>
+        <td><a href="{% url 'student_detail s.id%'}">View</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

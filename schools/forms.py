@@ -6,4 +6,5 @@ class SchoolSignupForm(forms.ModelForm):
     admin_password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
-        model = Schoolfields = ['name','code','address']
+        model = School
+        fields = ['name','code','address']
