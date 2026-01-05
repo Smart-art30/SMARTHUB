@@ -7,6 +7,9 @@ from finance.models import Invoice, Payment
 from attendance.models import StudentAttendance, TeacherAttendance
 
 
+def home(request):
+    return render(request, home.html)
+
 @login_required
 def dashboard_redirect(request):
     user = request.user

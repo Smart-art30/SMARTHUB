@@ -127,3 +127,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 EMAIL_BACKEND = 'django.core.mail.backend.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'smarthub@school.com'
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/login/'
