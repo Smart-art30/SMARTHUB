@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>classes</h3>
+<a href="{% url 'class_add'%}" class="btn btn-primary mb-2`">Add Class</a>
+<ul>
+    {% for c in classes %}
+        <li>{{ c.name }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
