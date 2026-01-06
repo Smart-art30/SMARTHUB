@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Enter Mark</h3>
+
+<form action="" method="post">
+    {% csrf_token %}
+    <select name="student" class="form-control mb-2">
+        {% for s in Students %}
+        <option value="{{ s.id }}">{{ s.user.get_full_name}}"></option>
+        {% endfor %}
+    </select>
+
+    <select name="exam" class="form-control mb-2">
+        {% for e in exams %}
+        <option value="{{ e.id }}">{{ e.name }}</option>></option>
+    </select>
+
+    <select name="Subject" id="" class="form-control mb-2">
+        {% for s in subjects %}
+        <option value="{{ sub.id }}">{{ sub.name }}</option>></option>
+        {% endfor %}
+
+    </select>
+    <input type="text" class="form-control mb-2" name="score" placeholder="score">
+
+    <button class="btn btn-success">Save Mark</button>
+</form>
+{% endblock%}
