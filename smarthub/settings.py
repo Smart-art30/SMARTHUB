@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -128,6 +129,17 @@ AUTH_USER_MODEL = 'accounts.User'
 EMAIL_BACKEND = 'django.core.mail.backend.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'smarthub@school.com'
 
-LOGIN_URL = '/login/'
+LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+
+STATIC_URL ='/static/'
+STATICFILES_DIRS =[BASE_DIR/'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR/ 'media'
+
+SECRET_KEY = config('SECRET_KEY')
+DEBUD = config('DEBUG', cast=bool)

@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
-from .models import FeeStructure, Invoice, Payment
+from .models import FeeStructure, Invoice, Payment, FeeItem
 from students.models import Student
+from .forms import FeeItemForm
 
 @login_required
 @role_required('schooladmin')
@@ -12,7 +13,7 @@ def fee_list(request):
 
 @login_required
 @role_required('schooladmin')
-def fee_itrm_list(request, structure_id):
+def fee_item_list(request, structure_id):
     fee_structure = get_object_or_404(FeeStructure, id=structure_id)
     fee_items = fee_structure.items.all()
 
@@ -81,3 +82,23 @@ def payment_add(request, invoice_id):
 
         return redirect('invoice_list')
     return render(request, 'finance/payment_add.html', {'invoice': invoice})
+
+
+def add_fee_item(request, structure_id):
+    fee_structure= get_object_or_404(FeeStructure, id=sturucture_id)
+
+    if request.method == 'POST':
+        form = FeeItemForm(request.POST)
+        if form.is_valid:
+            fee_item= form.save(commit=false)
+            fee_item.fee_structure=fee_structure
+            fee_item.save()
+            return redirect('fee_items_list',structure_id=structure_id )
+    else:
+        form = FeeItemForm()
+
+    context= {
+        'form': form,
+        'fee_structure': fee_structure
+    }
+    return render(request, 'finance/add_fee_item.html', context)

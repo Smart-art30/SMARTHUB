@@ -1,0 +1,12 @@
+{% extends 'base.html ' %}
+{% content block %}
+<h2>Add Fee Item for {{ fee_structure.name }}</h2>
+
+<form action="" method="POST">
+    {% csrf_token %}
+    {{ form.as_p}}
+    <button type="submit" class="btn btn-primary mb-2">Add Fee Item</button>
+</form>
+<a href="{% url 'fee_items_list' fee_structure.id %}" class="btn btn-secondary mt-2">Back To Fee Items</a>
+
+{% endblock %}

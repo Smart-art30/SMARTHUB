@@ -17,11 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
+from django.conf import settings
+from django.conf.urls.static import static
+from accounts import views as account_views
 
 
 
 
 urlpatterns = [
+    path('', lambda request: redirect('dashboard')),
     path('admin/', admin.site.urls),
     path('dashboard/', include('dashboard.urls')),
     path('schools/', include('schools.urls')),
@@ -29,4 +33,8 @@ urlpatterns = [
     path('teachers/', include('teachers.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('finance/', include('finance.urls')),
+    path('accounts/', include('accounts.urls')), 
+    path('login/', account_views.login_view, name='login'),
+    path('logout/', account_views.logout_view, name='logout'),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

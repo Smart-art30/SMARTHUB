@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from teachers.models import  Teacher
 from schools.models import School
@@ -7,8 +7,8 @@ from finance.models import Invoice, Payment
 from attendance.models import StudentAttendance, TeacherAttendance
 
 
-def home(request):
-    return render(request, home.html)
+# def home(request):
+#     return render(request, 'dashboard/home.html')
 
 @login_required
 def dashboard_redirect(request):
@@ -39,7 +39,7 @@ def superadmin_dashboard(request):
 @login_required
 def schooladmin_dashboard(request):
     school = request.user.school
-    total_students = Students.objects.filter(school=school).count()
+    total_students = Student.objects.filter(school=school).count()
     total_teachers = Teacher.objects.filter(school=school).count()
     total_invoices = Invoice.objects.filter(student__school=school).count()
     total_payments = sum(p.amount for p in Payment.objects.filter(invoice__student__school=school))

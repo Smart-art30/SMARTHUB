@@ -1,6 +1,44 @@
 from django.shortcuts import render, redirect
-from accounts.models import StudentMark, student_attendance
+from academics.models import StudentMark
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from attendance.models import StudentAttendance
+from .forms import UserRegistrationForm
 
+def login_view(request):
+    if request.method=='POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            next_url = request.GET.get('next') or '/dashboard/'
+            return redirect(next_url)
+        else:
+            messages.error(request, 'Invalid username or Password')
+            return redirect('login')
+    return render(request, 'accounts/login.html')
+    
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+
+
+def register_view(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            login(request, user)  # optional: log them in immediately
+            return redirect('dashboard')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'accounts/register.html', {'form': form})
 
 @login_required
 def dashboard_redirect(request):
@@ -17,7 +55,8 @@ def dashboard_redirect(request):
     elif user.role == 'parent':
         return redirect('parent_dashboard')
     else:
-        return redirect('login')
+        # return redirect('login')
+        raise PermissionDenied
 
 def student_report(Student, exam):
     marks = StudentMark.objects.filter(
@@ -32,7 +71,7 @@ def student_report(Student, exam):
         'total': total,
         'average': average,
     }
-def student_attendance _summary(student):
+def student_attendance_summary(student):
     reords = student_attendance.objects.filter(student = student)
     present = records.filter(status='prsent').count()
     absent = records.filter(status='absent').count()
