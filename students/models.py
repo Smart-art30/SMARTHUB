@@ -24,6 +24,14 @@ class Student(models.Model):
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.admission_number}"
 
+    class Meta:
+        ordering = ['admission_number']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['school', 'admission_number'],
+                name='unique_admission_per_school'
+            )
+        ]
 
 class Parent(models.Model):
     user = models.OneToOneField(

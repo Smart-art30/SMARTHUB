@@ -5,22 +5,30 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from attendance.models import StudentAttendance
 from .forms import UserRegistrationForm
+from django.views.decorators.http import require_POST
+from django.contrib import messages
+
+
 
 def login_view(request):
-    if request.method=='POST':
+    if request.user.is_authenticated:
+        return redirect('dashboard')  # already logged in
+
+    if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            next_url = request.GET.get('next') or '/dashboard/'
+            messages.success(request, f'Welcome back, {user.username}!')
+            next_url = request.GET.get('next') or 'dashboard'
             return redirect(next_url)
         else:
-            messages.error(request, 'Invalid username or Password')
-            return redirect('login')
-    return render(request, 'accounts/login.html')
-    
+            messages.error(request, 'Invalid username or password.')
 
+    return render(request, 'accounts/login.html')
+@require_POST
 def logout_view(request):
     logout(request)
     return redirect('login')
@@ -34,7 +42,7 @@ def register_view(request):
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
             user.save()
-            login(request, user)  # optional: log them in immediately
+            login(request, user) 
             return redirect('dashboard')
     else:
         form = UserRegistrationForm()

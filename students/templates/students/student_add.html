@@ -1,17 +1,47 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h3>Add Student</h3>
+<div class="container mt-4">
+    <h3>Add Learner</h3>
 
-<form method="post">
-    {% csrf_token %}
-    <input type="text" class="form-control mb-2" name="user" placeholder="User ID" required>
-    <input type="text" class="form-control mb-2" name="Admission_number" placeholder="Admission_number" required>
+    <form method="post">
+        {% csrf_token %}
 
-    <select name="student_class" class="form-control mb-2" id="">
-        {% for c in classes %}
-        <option value="{{ c.id }}"> {{ c }}</option>
-        {% endfor%}
-    </select>
-    <button class="'btn btn-success">Save</button>
-</form>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" name="first_name" class="form-control" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="last_name" class="form-control" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" required>
+            <small class="text-muted">Must be unique</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Admission Number</label>
+            <input type="text" name="admission_number" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Class</label>
+            <select name="student_class" class="form-control" required>
+                <option value="">-- Select Class --</option>
+                {% for c in classes %}
+                    <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button class="btn btn-primary">Add Learner</button>
+        <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
 {% endblock %}

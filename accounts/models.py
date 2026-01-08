@@ -4,7 +4,7 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
-    #roles
+    
     ROLES_CHOOCES = (
         ('superadmin', 'Super Admin'),
         ('chiefexercutiveofficer', 'C.E.O'),

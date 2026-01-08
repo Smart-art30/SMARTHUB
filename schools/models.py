@@ -1,7 +1,7 @@
 from django.db import models
 
        
-class SubscriptionPLan(models.Model):
+class SubscriptionPlan(models.Model):
     name = models.CharField(max_length= 50)
     max_students = models.PositiveIntegerField()
     max_teachers = models.PositiveIntegerField()
@@ -19,7 +19,7 @@ class School(models.Model):
     logo = models.ImageField(upload_to='school_logos/',blank=True, null = True)
     created_at = models.DateTimeField(auto_now_add = True)
     subscription = models.ForeignKey(
-        SubscriptionPLan,
+        SubscriptionPlan,
         on_delete=models.SET_NULL,
         null=True,
         blank=True

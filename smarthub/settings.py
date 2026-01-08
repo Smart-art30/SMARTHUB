@@ -63,7 +63,7 @@ ROOT_URLCONF = 'smarthub.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,23 +123,32 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+# Static files
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Custom user model
 AUTH_USER_MODEL = 'accounts.User'
 
-EMAIL_BACKEND = 'django.core.mail.backend.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'smarthub@school.com'
+# Secret key
+SECRET_KEY = config('SECRET_KEY')
 
+# Debug mode
+DEBUG = config('DEBUG', cast=bool)
+
+# Login / logout redirects
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
+# Email
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'smarthub@school.com'
 
-STATIC_URL ='/static/'
-STATICFILES_DIRS =[BASE_DIR/'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR/ 'media'
-
-SECRET_KEY = config('SECRET_KEY')
-DEBUD = config('DEBUG', cast=bool)

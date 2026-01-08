@@ -3,6 +3,11 @@ from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
 from .models import Student
 from schools.models import SchoolClass
+from django.contrib.auth import get_user_model
+from .forms import StudentAddForm
+
+
+User = get_user_model()
 
 @login_required
 @role_required('schooladmin')
@@ -14,22 +19,39 @@ def student_list(request):
 @login_required
 @role_required('schooladmin')
 def student_add(request):
-    classes = SchoolClass.objects.filter(school=request.user.school) 
+    school = request.user.school
+    classes = SchoolClass.objects.filter(school=school)
 
     if request.method == 'POST':
-        user_id  = request.POST.get('user')
-        admission = request.Post.get('admission_number')
-        class_id = request.POST.get('student_class')
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        username = request.POST['username']
+        admission = request.POST['admission_number']
+        class_id = request.POST['student_class']
 
-        student.objects.create(
-            user_id=user_id,
-            school = request.user.school,
-            admission_number=admission,
-            student_class_id = class_id
+        # 🔒 Create student user
+        user = User.objects.create_user(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            role='student',
+            school=school,
+            password=User.objects.make_random_password()
         )
-        return redirect('student_list')
-    return render(request, 'students/student_add.html',{'classes':classes})
 
+        # 🔒 Create student profile
+        Student.objects.create(
+            user=user,
+            school=school,
+            admission_number=admission,
+            student_class_id=class_id
+        )
+
+        return redirect('student_list')
+
+    return render(request, 'students/student_add.html', {
+        'classes': classes
+    })
 @login_required
 def student_detail(request, pk):
     student= get_object_or_404(Student, pk=pk)

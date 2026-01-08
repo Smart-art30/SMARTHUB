@@ -1,9 +1,9 @@
 from django.urls import path
 from .views import school_signup
-from . import views
+from .views import add_class, class_list, edit_class, delete_class
 
 urlpatterns=[
     path('signup/', school_signup, name = 'school_signup'),
-    path('classses/', views.class_list, name='class_list'),
-    path('classes/add/', views.class_add, name='class_add'),
+    path('classses/', class_list, name='class_list'),
+    path('classes/add/', add_class, name='add_class'),
 ]

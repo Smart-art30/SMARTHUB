@@ -1,14 +1,16 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from teachers.models import  Teacher
+from django.db.models import Sum
+
+from teachers.models import Teacher
 from schools.models import School
-from students.models import Student, Parent
+from students.models import Student
 from finance.models import Invoice, Payment
-from attendance.models import StudentAttendance, TeacherAttendance
+from attendance.models import StudentAttendance, TeacherAttendance, SchoolClass
+from accounts.decorators import role_required
 
 
-# def home(request):
-#     return render(request, 'dashboard/home.html')
+
 
 @login_required
 def dashboard_redirect(request):
@@ -37,19 +39,38 @@ def superadmin_dashboard(request):
         })
 
 @login_required
+@role_required('schooladmin')
 def schooladmin_dashboard(request):
-    school = request.user.school
+    user = request.user
+    school = getattr(user, 'school', None)
+
+    if not school:
+        return render(request, 'dashboard/error.html', {
+            'error': 'No school assigned to your account. Contact the system administrator.'
+        })
+
+    classes = SchoolClass.objects.filter(school=school).order_by('name', 'stream')
     total_students = Student.objects.filter(school=school).count()
     total_teachers = Teacher.objects.filter(school=school).count()
-    total_invoices = Invoice.objects.filter(student__school=school).count()
-    total_payments = sum(p.amount for p in Payment.objects.filter(invoice__student__school=school))
-    return render(request, 'dashboard/schooladmin.html',{
-        'total_students': total_students, 
+    total_invoices = Invoice.objects.filter(fee_structure__school=school).count()
+    total_payments = Payment.objects.filter(
+        invoice__fee_structure__school=school
+    ).aggregate(total=Sum('amount'))['total'] or 0
+    recent_payments = Payment.objects.filter(
+        invoice__fee_structure__school=school
+    ).order_by('-payment_date')[:5]
+
+    context = {
+        'school': school,
+        'classes': classes,
+        'total_students': total_students,
         'total_teachers': total_teachers,
         'total_invoices': total_invoices,
-        'total_payments': total_payments
-        
-        })
+        'total_payments': total_payments,
+        'recent_payments': recent_payments,
+    }
+
+    return render(request, 'dashboard/schooladmin.html', context)
 
 @login_required
 def teacher_dashboard(request):
