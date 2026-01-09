@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Teacher Detail</h2>
+
+    <div class="card mb-3" style="max-width: 600px;">
+        <div class="row g-0">
+            {% if teacher.profile_picture %}
+            <div class="col-md-4">
+                <img src="{{ teacher.profile_picture.url }}" class="img-fluid rounded-start" alt="Profile Picture">
+            </div>
+            {% endif %}
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ teacher.user.get_full_name }}</h5>
+                    <p class="card-text"><strong>Email:</strong> {{ teacher.user.email }}</p>
+                    <p class="card-text"><strong>Employee ID:</strong> {{ teacher.employee_id }}</p>
+                    <p class="card-text"><strong>Phone:</strong> {{ teacher.phone }}</p>
+                    <p class="card-text"><strong>Designation:</strong> {{ teacher.designation }}</p>
+                    <p class="card-text"><strong>Qualification:</strong> {{ teacher.qualification }}</p>
+                    <p class="card-text"><strong>Specialization:</strong> {{ teacher.specialization }}</p>
+                    <p class="card-text"><strong>Date of Birth:</strong> {{ teacher.date_of_birth }}</p>
+                    <p class="card-text"><strong>Gender:</strong> {{ teacher.gender }}</p>
+                    <a href="{% url 'teacher_list' %}" class="btn btn-secondary mt-2">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

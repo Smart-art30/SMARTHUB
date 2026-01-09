@@ -13,7 +13,8 @@ class Student(models.Model):
     school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     student_class = models.ForeignKey('schools.SchoolClass', on_delete=models.SET_NULL, null=True)
     admission_number = models.CharField(max_length = 30, unique= True)
-    date_of_birth = models.DateTimeField(blank=True, null = True)
+    date_of_birth = models.DateField(blank=True, null = True)
+    photo = models.ImageField(upload_to='students/photos',blank=True, null=True)
     gender = models.CharField(
         max_length = 10,
         choices = (('male','Male'), ('female','Female')),

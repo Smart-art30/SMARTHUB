@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'attendance',
     'academics',
     'finance',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -139,7 +140,9 @@ AUTH_USER_MODEL = 'accounts.User'
 SECRET_KEY = config('SECRET_KEY')
 
 # Debug mode
-DEBUG = config('DEBUG', cast=bool)
+#EBUG = config('DEBUG', cast=bool)
+DEBUG = True
+
 
 # Login / logout redirects
 LOGIN_URL = '/accounts/login/'
@@ -150,5 +153,6 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'smarthub@school.com'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = []
+
 

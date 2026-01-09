@@ -9,12 +9,13 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 
 
-
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')  # already logged in
+        return redirect('dashboard')
 
-    if request.method == 'POST':
+    register_form = UserRegistrationForm()
+
+    if request.method == 'POST' and 'login_submit' in request.POST:
         username = request.POST.get('username')
         password = request.POST.get('password')
 
@@ -27,7 +28,10 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password.')
 
-    return render(request, 'accounts/login.html')
+    return render(request, 'accounts/login.html', {
+        'register_form': register_form
+    })
+
 @require_POST
 def logout_view(request):
     logout(request)

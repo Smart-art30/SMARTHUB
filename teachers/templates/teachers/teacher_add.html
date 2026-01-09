@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Add Teacher</h2>
+    <div class="card p-4 shadow-sm">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- User Info -->
+            <div class="mb-3">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" name="first_name" id="first_name" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" name="last_name" id="last_name" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" name="email" id="email" class="form-control" required>
+            </div>
+
+            <!-- Professional Info -->
+            <div class="mb-3">
+                <label for="employee_id" class="form-label">Employee ID</label>
+                <input type="text" name="employee_id" id="employee_id" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="text" name="phone" id="phone" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label for="designation" class="form-label">Designation</label>
+                <input type="text" name="designation" id="designation" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label for="qualification" class="form-label">Qualification</label>
+                <input type="text" name="qualification" id="qualification" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label for="specialization" class="form-label">Specialization</label>
+                <input type="text" name="specialization" id="specialization" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                <input type="date" name="date_of_birth" id="date_of_birth" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label for="gender" class="form-label">Gender</label>
+                <select name="gender" id="gender" class="form-select">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="profile_picture" class="form-label">Profile Picture</label>
+                <input type="file" name="profile_picture" id="profile_picture" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-success">Add Teacher</button>
+            <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

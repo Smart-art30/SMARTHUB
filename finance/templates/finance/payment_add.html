@@ -1,0 +1,23 @@
+<!-- finance/templates/finance/payment_add.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Add Payment for Invoice: {{ invoice.id }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="amount" class="form-label">Amount</label>
+            <input type="number" class="form-control" id="amount" name="amount" required>
+        </div>
+        <div class="mb-3">
+            <label for="method" class="form-label">Payment Method</label>
+            <select class="form-control" id="method" name="method" required>
+                <option value="cash">Cash</option>
+                <option value="bank">Bank</option>
+                <option value="mpesa">M-Pesa</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Add Payment</button>
+    </form>
+</div>
+{% endblock %}

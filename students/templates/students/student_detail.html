@@ -1,7 +1,19 @@
-{% extends 'base.html %}
+{% extends 'base.html' %}
+
 {% block content %}
-<h3>Student Profile</h3>
-<p>Name: {{ student.user.get_full_name }}</p>
-<p>Admission: {{ student.Admission_number}}</p>
-<p>Class: {{ student.student_class }}</p>
+<div class="card mt-3" style="max-width: 600px;">
+    <div class="card-body text-center">
+        {% if student.photo %}
+            <img src="{{ student.photo.url }}" width="150" height="150" class="rounded-circle mb-3">
+        {% endif %}
+        <h4 class="card-title">{{ student.user.get_full_name }}</h4>
+        <p><strong>Admission Number:</strong> {{ student.admission_number }}</p>
+        <p><strong>Class:</strong> {{ student.student_class.name }}</p>
+        <p><strong>School:</strong> {{ student.school.name }}</p>
+        <p><strong>Date of Birth:</strong> {{ student.date_of_birth|date:"d M Y" }}</p>
+        <p><strong>Gender:</strong> {{ student.gender|title }}</p>
+        <p><strong>Created At:</strong> {{ student.created_at|date:"d M Y H:i" }}</p>
+        <a href="{% url 'student_list' %}" class="btn btn-secondary mt-2">Back to List</a>
+    </div>
+</div>
 {% endblock %}

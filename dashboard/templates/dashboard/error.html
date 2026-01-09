@@ -1,0 +1,33 @@
+<!-- dashboard/templates/dashboard/error.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Error</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .error-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="error-box">
+        <h2>Access Issue</h2>
+        <p>{{ error }}</p>
+        <a href="{% url 'login' %}">Go back</a>
+    </div>
+</body>
+</html>

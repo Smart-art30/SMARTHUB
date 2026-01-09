@@ -35,7 +35,7 @@ def school_signup(request):
 @role_required('schooladmin')
 def class_list(request):
     classes = SchoolClass.objects.filter(school=request.user.school)
-    return render(request, 'schools/class_list', {'classes': classes})
+    return render(request, 'schools/class_list.html', {'classes': classes})
 
 @login_required
 @role_required('schooladmin')

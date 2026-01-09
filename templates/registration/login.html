@@ -1,16 +1,83 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 400px;">
-    <h3 class="mb-4 text-center">Login</h3>
+<div class="container py-5" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
+  <div class="col-md-5 col-sm-8">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="animation: fadeInUp 0.8s ease;">
+      <div class="card-header text-center bg-primary text-white py-4">
+        <h2 class="card-title fw-bold m-0">Login</h2>
+      </div>
+      <div class="card-body p-5 bg-light">
+        <form method="post" novalidate>
+          {% csrf_token %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+          {% for field in form %}
+            <div class="form-floating mb-3">
+              {{ field }}
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
 
-        <button type="submit" class="btn btn-primary w-100">
-            Login
-        </button>
-    </form>
+              {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+              {% endif %}
+
+              {% if field.errors %}
+                <div class="text-danger small mt-1">
+                  {{ field.errors|striptags }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <button type="submit" class="btn btn-gradient w-100 rounded-3 mt-3 py-2 fw-bold shadow-sm">Login</button>
+
+          <div class="text-center mt-3">
+            <a href="{% url 'password_reset' %}" class="text-decoration-none">Forgot password?</a>
+          </div>
+        </form>
+
+        <div class="text-center mt-4">
+          <p class="mb-0">Don't have an account? <a href="{% url 'register' %}" class="fw-bold text-primary text-decoration-none">Register</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Optional: add some animations and gradient button styles -->
+<style>
+  @keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .btn-gradient {
+    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    color: white;
+  }
+
+  input.form-control {
+    border-radius: 0.75rem;
+  }
+
+  .form-floating > label {
+    color: #6c757d;
+  }
+
+  a {
+    transition: color 0.2s;
+  }
+
+  a:hover {
+    color: #2575fc;
+  }
+</style>
 {% endblock %}

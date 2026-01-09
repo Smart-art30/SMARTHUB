@@ -1,0 +1,32 @@
+<!-- finance/templates/finance/fee_list.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Fee Structures</h2>
+    <a href="{% url 'fee_add' %}" class="btn btn-primary mb-3">Add New Fee</a>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fee in fees %}
+            <tr>
+                <td>{{ fee.name }}</td>
+                <td>{{ fee.amount }}</td>
+                <td>
+                    <a href="{% url 'fee_item_list' fee.id %}" class="btn btn-sm btn-info">View Items</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No fee structures found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
