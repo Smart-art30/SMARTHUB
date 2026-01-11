@@ -22,6 +22,7 @@ class Teacher(models.Model):
     specialization = models.CharField(max_length=100, blank=True, null=True)
     is_class_teacher = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to='teachers/', blank=True, null=True)
+    is_approved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username

@@ -1,5 +1,37 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
 {% block content %}
-<h2>Super Admin Dashboard </h2>
-<p>Manage All Schools.</p>
-{% endblock%}
+<div class="container mt-4">
+    <h1>Superadmin Dashboard</h1>
+
+    <div class="row mt-4">
+        <!-- Stats cards -->
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Schools</h5>
+                    <p class="card-text">{{ total_schools }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <p class="card-text">{{ total_users }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Add more cards as needed -->
+    </div>
+
+    <!-- Quick Links -->
+    <div class="mt-4">
+        <h4>Actions</h4>
+        <a href="{% url 'admin:schools_school_changelist' %}" class="btn btn-primary">Manage Schools</a>
+       <a href="{% url 'admin:accounts_user_changelist' %}" class="btn btn-secondary">Manage Users</a>
+
+        <a href="{% url 'admin:teachers_teacher_changelist' %}" class="btn btn-success">Manage Teachers</a>
+    </div>
+</div>
+{% endblock %}

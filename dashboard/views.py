@@ -9,16 +9,24 @@ from students.models import Student
 from finance.models import Invoice, Payment
 from attendance.models import StudentAttendance, TeacherAttendance, SchoolClass
 from accounts.decorators import role_required
-from parents.models import Parent
+from students.models import Parent
 from django.contrib.auth import get_user_model
 
 
 
 
+from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
+
 @login_required
 def dashboard_redirect(request):
     user = request.user
 
+    
+    if user.is_superuser:
+        return redirect('superadmin_dashboard')
+
+    
     if user.role == 'superadmin':
         return redirect('superadmin_dashboard')
 
@@ -27,6 +35,11 @@ def dashboard_redirect(request):
 
     elif user.role == 'teacher':
         if hasattr(user, 'teacher'):
+            teacher = user.teacher
+            if not teacher.is_approved:
+                return render(request, 'dashboard/profile_pending.html', {
+                    'message': 'Your teacher profile is pending admin approval.'
+                })
             return redirect('teacher_dashboard')
         return render(request, 'dashboard/profile_pending.html', {
             'message': 'Teacher profile not created. Contact admin.'
@@ -46,7 +59,9 @@ def dashboard_redirect(request):
             'message': 'Parent profile not created.'
         })
 
+    # Fallback
     return redirect('login')
+
 
 
 User = get_user_model()
