@@ -14,27 +14,27 @@
     </thead>
     <tbody>
         {% for invoice in invoices %}
-        {% with total_paid=invoice.payments.all|sum:"amount" %}
         <tr>
             <td>{{ invoice.id }}</td>
             <td>{{ invoice.student.name }}</td>
             <td>{{ invoice.fee.name }}</td>
             <td>{{ invoice.fee.amount }}</td>
-            <td>{{ total_paid }}</td>
-            <td>{{ invoice.fee.amount|floatformat:2|add:"-"|add:total_paid }}</td>
+            <td>{{ invoice.total_paid }}</td>
+            <td>{{ invoice.balance }}</td>
             <td>
-                {% if invoice.is_paid %}
+                <!-- ALWAYS visible -->
+               
+
+                {% if invoice.balance <= 0 %}
                     <span class="badge bg-success">Paid</span>
-                {% else %}
-                    <a href="{% url 'payment_add' invoice.id %}" class="btn btn-sm btn-primary">Add Payment</a>
                 {% endif %}
             </td>
         </tr>
-        {% endwith %}
         {% empty %}
         <tr>
             <td colspan="7">No invoices found.</td>
         </tr>
         {% endfor %}
     </tbody>
+    
 </table>

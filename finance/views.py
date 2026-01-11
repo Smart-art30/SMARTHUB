@@ -4,6 +4,9 @@ from accounts.decorators import role_required
 from .models import FeeStructure, Invoice, Payment, FeeItem
 from students.models import Student
 from .forms import FeeItemForm
+from django.db.models import Sum
+from schools.models import SchoolClass
+
 
 @login_required
 @role_required('schooladmin')
@@ -22,6 +25,7 @@ def fee_item_list(request, structure_id):
         'fee_items': fee_items
     }
     return render(request, 'finance/fee_items_list.html', context)
+
 @login_required
 @role_required('schooladmin')
 def fee_add(request):
@@ -29,14 +33,14 @@ def fee_add(request):
         name = request.POST.get('name')
         amount = request.POST.get('amount')
 
-        # 1️⃣ Create the fee structure
+      
         fee = FeeStructure.objects.create(
             name=name,
             amount=amount,
             school=request.user.school
         )
 
-        # 2️⃣ Automatically create invoices for all students in the school
+        
         students = Student.objects.filter(school=request.user.school)
         for student in students:
             Invoice.objects.create(
@@ -68,26 +72,56 @@ def invoice_create(request):
     'fees': fees
 })
 
-@login_required
+
 def invoice_list(request):
-    invoices = Invoice.objects.filter(student__school=request.user.school)
+    invoices = Invoice.objects.all().annotate(
+        total_paid=Sum('payments__amount')
+    )
+
+    
+    for invoice in invoices:
+        invoice.total_paid = invoice.total_paid or 0
+        invoice.balance = invoice.fee.amount - invoice.total_paid
+
     context = {
         'invoices': invoices
     }
     return render(request, 'finance/invoice_list.html', context)
-
-
+    
 @login_required
 @role_required('schooladmin')
-def payment_add(request, invoice_id):
-    invoice = get_object_or_404(Invoice, id=invoice_id)
+def payment_add(request):
+    """
+    Admin adds a payment:
+    - Classes filtered by logged-in school
+    - Students and invoices filtered dynamically
+    """
+    classes = SchoolClass.objects.filter(school=request.user.school)
+  
+    students = Student.objects.filter(school=request.user.school)
+    invoices = Invoice.objects.filter(student__school=request.user.school, is_paid=False)
 
     if request.method == 'POST':
-        amount = request.POST.get('amount')
-        payment_method = request.POST.get('method')  
+        student_id = request.POST.get('student')
+        invoice_id = request.POST.get('invoice')
+        amount = float(request.POST.get('amount'))
+        payment_method = request.POST.get('method')
         transaction_reference = request.POST.get('transaction_reference', '')
 
+        invoice = get_object_or_404(Invoice, id=invoice_id)
+
         
+        total_paid = invoice.payments.aggregate(total=Sum('amount'))['total'] or 0
+        if total_paid + amount > invoice.fee.amount:
+            error = f"Cannot pay more than balance: {invoice.fee.amount - total_paid:.2f}"
+            return render(request, 'finance/payment_add.html', {
+                'classes': classes,
+                'students': students,
+                'invoices': invoices,
+                'error': error
+            })
+
+       
         Payment.objects.create(
             invoice=invoice,
             amount=amount,
@@ -95,15 +129,20 @@ def payment_add(request, invoice_id):
             transaction_reference=transaction_reference
         )
 
-        
-        total_paid = sum(p.amount for p in invoice.payments.all())
-        if total_paid >= invoice.fee.amount:  
+        total_paid += amount
+        if total_paid >= invoice.fee.amount:
             invoice.is_paid = True
             invoice.save()
 
-        return redirect('invoice_list')
+        return redirect('payment_list')
 
-    return render(request, 'finance/payment_add.html', {'invoice': invoice})
+    return render(request, 'finance/payment_add.html', {
+        'classes': classes,
+        'students': students,
+        'invoices': invoices
+    })
+
+
 
 def add_fee_item(request, structure_id):
     fee_structure= get_object_or_404(FeeStructure, id=sturucture_id)

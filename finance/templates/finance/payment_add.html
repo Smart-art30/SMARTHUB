@@ -1,23 +1,116 @@
-<!-- finance/templates/finance/payment_add.html -->
 {% extends 'base.html' %}
+{% block title %}Add Payment{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
-    <h2>Add Payment for Invoice: {{ invoice.id }}</h2>
-    <form method="POST">
+    <h2 class="mb-4">Add Payment</h2>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" class="needs-validation" novalidate>
         {% csrf_token %}
+
+        <!-- Select Class -->
+        <div class="mb-3">
+            <label for="student_class" class="form-label">Class</label>
+            <select class="form-select" id="student_class" required>
+                <option value="">Select Class</option>
+                {% for cls in classes %}
+                    <option value="{{ cls.id }}">{{ cls.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Select Student -->
+        <div class="mb-3">
+            <label for="student" class="form-label">Student</label>
+            <select class="form-select" id="student" name="student" required style="max-height:200px; overflow:auto;">
+                <option value="">Select Student</option>
+                {% for student in students %}
+                    <option value="{{ student.id }}" 
+                            data-class="{{ student.student_class.id }}" 
+                            style="display:none;">
+                        {{ student.first_name }} {{ student.last_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Select Invoice -->
+        <div class="mb-3">
+            <label for="invoice" class="form-label">Invoice / Fee Item</label>
+            <select class="form-select" id="invoice" name="invoice" required style="max-height:200px; overflow:auto;">
+                <option value="">Select Invoice</option>
+                {% for invoice in invoices %}
+                    <option value="{{ invoice.id }}" 
+                            data-student="{{ invoice.student.id }}" 
+                            style="display:none;">
+                        {{ invoice.fee.name }} | Total: {{ invoice.fee.amount }} | Paid: {{ invoice.total_paid }} | Balance: {{ invoice.balance }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Payment Details -->
         <div class="mb-3">
             <label for="amount" class="form-label">Amount</label>
-            <input type="number" class="form-control" id="amount" name="amount" required>
+            <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
         </div>
+
         <div class="mb-3">
             <label for="method" class="form-label">Payment Method</label>
-            <select class="form-control" id="method" name="method" required>
+            <select class="form-select" id="method" name="method" required>
+                <option value="">Select Method</option>
                 <option value="cash">Cash</option>
                 <option value="bank">Bank</option>
                 <option value="mpesa">M-Pesa</option>
             </select>
         </div>
+
+        <div class="mb-3">
+            <label for="transaction_reference" class="form-label">
+                Transaction Reference (optional)
+            </label>
+            <input type="text" class="form-control" id="transaction_reference" name="transaction_reference">
+        </div>
+
         <button type="submit" class="btn btn-success">Add Payment</button>
+        <a href="{% url 'payment_list' %}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+<!-- JS for dynamic filtering -->
+<script>
+    const classSelect = document.getElementById('student_class');
+    const studentSelect = document.getElementById('student');
+    const invoiceSelect = document.getElementById('invoice');
+
+    // Filter students when a class is selected
+    classSelect.addEventListener('change', function() {
+        const selectedClass = this.value;
+        for (let option of studentSelect.options) {
+            if (!option.value) continue; // skip placeholder
+            option.style.display = option.dataset.class === selectedClass ? '' : 'none';
+        }
+        studentSelect.value = '';
+        // hide all invoices until student is selected
+        for (let option of invoiceSelect.options) {
+            if (!option.value) continue;
+            option.style.display = 'none';
+        }
+        invoiceSelect.value = '';
+    });
+
+    // Filter invoices when a student is selected
+    studentSelect.addEventListener('change', function() {
+        const selectedStudent = this.value;
+        for (let option of invoiceSelect.options) {
+            if (!option.value) continue; // skip placeholder
+            option.style.display = option.dataset.student === selectedStudent ? '' : 'none';
+        }
+        invoiceSelect.value = '';
+    });
+</script>
 {% endblock %}

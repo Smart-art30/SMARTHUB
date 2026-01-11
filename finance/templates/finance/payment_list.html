@@ -1,4 +1,11 @@
 <h2>All Payments</h2>
+
+{% if request.user.is_staff or request.user.is_superuser %}
+    <a href="{% url 'payment_add' %}" class="btn btn-success mb-3">
+        ➕ Register Payment
+    </a>
+{% endif %}
+
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -8,7 +15,6 @@
             <th>Method</th>
             <th>Transaction Reference</th>
             <th>Date</th>
-            <th>Actions</th> <!-- New column -->
         </tr>
     </thead>
     <tbody>
@@ -20,16 +26,10 @@
             <td>{{ payment.payment_method }}</td>
             <td>{{ payment.transaction_reference }}</td>
             <td>{{ payment.payment_date }}</td>
-            <td>
-                <!-- Add Payment link for the same invoice -->
-                <a href="{% url 'payment_add' payment.invoice.id %}" class="btn btn-sm btn-primary">
-                    Add Payment
-                </a>
-            </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="7">No payments found.</td>
+            <td colspan="6">No payments found.</td>
         </tr>
         {% endfor %}
     </tbody>

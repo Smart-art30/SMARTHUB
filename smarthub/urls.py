@@ -34,7 +34,5 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('finance/', include('finance.urls')),
     path('accounts/', include('accounts.urls')), 
-    #path('accounts/login/', login_view, name='login'),
-    #path('logout/', account_views.logout_view, name='logout'),
-]
+   
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

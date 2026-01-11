@@ -3,6 +3,7 @@ from . import views
 from .views import dashboard_redirect
 from django.contrib.auth import views as auth_views
 from students.views import student_list, student_add
+from teachers.models import Teacher
 
 
 

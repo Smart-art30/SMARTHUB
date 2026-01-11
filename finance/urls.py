@@ -11,6 +11,7 @@ urlpatterns =[
     path('fee-structure/<int:structure_id>/items/add/', views.add_fee_item, name='add_fee_item'),
     path('finance/payment/<int:invoice_id>/', views.payment_add, name='payment_add'),
     path('payments/', views.payment_list, name='payment_list'),
+     path('payment/add/', views.payment_add, name='payment_add'),
 ]
     
 

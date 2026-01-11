@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'attendance',
     'academics',
     'finance',
+    'parents',
     'widget_tweaks',
 ]
 
