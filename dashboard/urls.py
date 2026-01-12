@@ -1,9 +1,11 @@
 from django.urls import path
-from . import views
 from .views import dashboard_redirect
 from django.contrib.auth import views as auth_views
 from students.views import student_list, student_add
 from teachers.models import Teacher
+from academics.views import student_report
+from dashboard import views
+
 
 
 
@@ -16,7 +18,8 @@ urlpatterns=(
     path('',dashboard_redirect, name='dashboard'),
     path('students/', student_list, name='student_list'),
     path('add/', student_add, name='student_add'),
-    path('dashboard/', views.dashboard_redirect, name='dashboard_redirect'),
+    path('dashboard/reports/<int:student_id>/<int:exam_id>/', student_report, name='student_report'),
+    
 
   
     

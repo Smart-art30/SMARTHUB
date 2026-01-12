@@ -1,0 +1,7 @@
+{% for student in students %}
+  {% for exam in exams %}
+    <a href="{% url 'student_report' student.id exam.id %}">
+      View {{ student.name }} - {{ exam.name }}
+    </a>
+  {% endfor %}
+{% endfor %}

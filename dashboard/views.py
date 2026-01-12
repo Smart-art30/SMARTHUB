@@ -11,12 +11,10 @@ from attendance.models import StudentAttendance, TeacherAttendance, SchoolClass
 from accounts.decorators import role_required
 from students.models import Parent
 from django.contrib.auth import get_user_model
+from students.models import Student
+from academics.models import Exam
+from students.models import Student 
 
-
-
-
-from django.shortcuts import redirect, render
-from django.contrib.auth.decorators import login_required
 
 @login_required
 def dashboard_redirect(request):
@@ -78,6 +76,7 @@ def superadmin_dashboard(request):
         'total_users': total_users,
     })
 
+
 @login_required
 @role_required('schooladmin')
 def schooladmin_dashboard(request):
@@ -100,6 +99,13 @@ def schooladmin_dashboard(request):
         invoice__fee_structure__school=school
     ).order_by('-payment_date')[:5]
 
+    students = Student.objects.filter(school=school)
+    exams = Exam.objects.all()
+
+    # Pick default student and exam (first available)
+    student = students.first() if students.exists() else None
+    exam = exams.first() if exams.exists() else None
+
     context = {
         'school': school,
         'classes': classes,
@@ -108,9 +114,13 @@ def schooladmin_dashboard(request):
         'total_invoices': total_invoices,
         'total_payments': total_payments,
         'recent_payments': recent_payments,
+        'student': student,
+        'exam': exam,
     }
 
     return render(request, 'dashboard/schooladmin.html', context)
+
+
 
 @login_required
 @role_required('teacher')
