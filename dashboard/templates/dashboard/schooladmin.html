@@ -61,14 +61,14 @@
                         <a class="nav-link" href="{% url 'payment_list' %}">Payments</a>
                     </li>
                     <li class="nav-item">
-    {% if student and exam %}
-        <a class="nav-link" href="{% url 'student_report' student.id exam.id %}">
-            View Reports
-        </a>
-    {% else %}
-        <span class="nav-link disabled text-muted">No reports available</span>
-    {% endif %}
-</li>
+                   {% if student and exam %}
+                    <a class="nav-link" href="{% url 'student_report' student.id exam.id %}">
+                     View Reports
+                    </a>
+                   {% else %}
+                   <span class="nav-link disabled text-muted">No reports available</span>
+                    {% endif %}
+                   </li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="#">Parents</a>

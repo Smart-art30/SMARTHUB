@@ -7,6 +7,8 @@ from attendance.models import StudentAttendance
 from .forms import UserRegistrationForm
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
+
 
 
 def login_view(request):
@@ -67,7 +69,6 @@ def dashboard_redirect(request):
     elif user.role == 'parent':
         return redirect('parent_dashboard')
     else:
-        # return redirect('login')
         raise PermissionDenied
 
 def student_report(Student, exam):

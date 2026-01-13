@@ -37,20 +37,21 @@
             </div>
         </div>
 
-        <!-- REGISTER -->
-        <div class="col-md-5 ms-md-4 mt-4 mt-md-0">
-            <div class="card shadow p-4">
-                <h3 class="text-center mb-4">Register</h3>
+      
+       <div class="col-md-5 ms-md-4 mt-4 mt-md-0">
+    <div class="card shadow p-4">
+        <h3 class="text-center mb-4">Register</h3>
 
-                <form method="post" action="{% url 'signup' %}">
-                    {% csrf_token %}
-                    {{ register_form.as_p }}
-                    <button type="submit" class="btn btn-success w-100">
-                        Create Account
-                    </button>
-                </form>
-            </div>
-        </div>
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            {{ register_form.as_p }}
+            <button type="submit" class="btn btn-success w-100">
+                Create Account
+            </button>
+        </form>
+    </div>
+</div>
+
 
     </div>
 </div>

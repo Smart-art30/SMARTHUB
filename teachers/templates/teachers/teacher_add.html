@@ -1,77 +1,175 @@
 {% extends 'base.html' %}
 
+{% block title %}Add Teacher{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2>Add Teacher</h2>
-    <div class="card p-4 shadow-sm">
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
 
-            <!-- User Info -->
-            <div class="mb-3">
-                <label for="first_name" class="form-label">First Name</label>
-                <input type="text" name="first_name" id="first_name" class="form-control" required>
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i> Add Teacher</h4>
+                </div>
+                <div class="card-body">
+
+                    <!-- Display Django messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Name -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6 form-floating">
+                                <input type="text" name="first_name" id="first_name" class="form-control form-control-lg"
+                                       placeholder="First Name" required
+                                       value="{{ form_data.first_name|default_if_none:'' }}">
+                                <label for="first_name"><i class="bi bi-person-fill me-1"></i> First Name</label>
+                                <div class="invalid-feedback">Please enter first name.</div>
+                            </div>
+                            <div class="col-md-6 form-floating">
+                                <input type="text" name="last_name" id="last_name" class="form-control form-control-lg"
+                                       placeholder="Last Name" required
+                                       value="{{ form_data.last_name|default_if_none:'' }}">
+                                <label for="last_name"><i class="bi bi-person-fill me-1"></i> Last Name</label>
+                                <div class="invalid-feedback">Please enter last name.</div>
+                            </div>
+                        </div>
+
+                        <!-- Email & Employee ID -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6 form-floating">
+                                <input type="email" name="email" id="email" class="form-control form-control-lg"
+                                       placeholder="Email" required
+                                       value="{{ form_data.email|default_if_none:'' }}">
+                                <label for="email"><i class="bi bi-envelope-fill me-1"></i> Email</label>
+                                <div class="invalid-feedback">Please enter a valid email.</div>
+                            </div>
+                            <div class="col-md-6 form-floating">
+                                <input type="text" name="employee_id" id="employee_id" class="form-control form-control-lg"
+                                       placeholder="Employee ID" required
+                                       value="{{ form_data.employee_id|default_if_none:'' }}">
+                                <label for="employee_id"><i class="bi bi-card-text me-1"></i> Employee ID</label>
+                                <div class="invalid-feedback">Please enter employee ID.</div>
+                            </div>
+                        </div>
+
+                        <!-- Phone & Gender -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6 form-floating">
+                                <input type="text" name="phone" id="phone" class="form-control form-control-lg"
+                                       placeholder="Phone"
+                                       value="{{ form_data.phone|default_if_none:'' }}">
+                                <label for="phone"><i class="bi bi-telephone-fill me-1"></i> Phone</label>
+                            </div>
+                            <div class="col-md-6 form-floating">
+                                <select name="gender" id="gender" class="form-select form-select-lg" required>
+                                    <option value="" disabled {% if not form_data.gender %}selected{% endif %}>Select Gender</option>
+                                    <option value="Male" {% if form_data.gender == 'Male' %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if form_data.gender == 'Female' %}selected{% endif %}>Female</option>
+                                </select>
+                                <label for="gender"><i class="bi bi-gender-ambiguous me-1"></i> Gender</label>
+                                <div class="invalid-feedback">Please select gender.</div>
+                            </div>
+                        </div>
+
+                        <!-- Profile Picture -->
+                        <div class="mb-3">
+                            <label for="profile_picture" class="form-label"><i class="bi bi-image-fill me-1"></i> Profile Picture</label>
+                            <input type="file" name="profile_picture" id="profile_picture" class="form-control form-control-lg">
+                            {% if form_data.profile_picture %}
+                                <small class="text-muted">Previously uploaded: {{ form_data.profile_picture }}</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Designation & Qualification -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6 form-floating">
+                                <input type="text" name="designation" id="designation" class="form-control form-control-lg"
+                                       placeholder="Designation"
+                                       value="{{ form_data.designation|default_if_none:'' }}">
+                                <label for="designation"><i class="bi bi-briefcase-fill me-1"></i> Designation</label>
+                            </div>
+                            <div class="col-md-6 form-floating">
+                                <input type="text" name="qualification" id="qualification" class="form-control form-control-lg"
+                                       placeholder="Qualification"
+                                       value="{{ form_data.qualification|default_if_none:'' }}">
+                                <label for="qualification"><i class="bi bi-mortarboard-fill me-1"></i> Qualification</label>
+                            </div>
+                        </div>
+
+                        <!-- Specialization & Date of Birth -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6 form-floating">
+                                <input type="text" name="specialization" id="specialization" class="form-control form-control-lg"
+                                       placeholder="Specialization"
+                                       value="{{ form_data.specialization|default_if_none:'' }}">
+                                <label for="specialization"><i class="bi bi-stars me-1"></i> Specialization</label>
+                            </div>
+                            <div class="col-md-6 form-floating">
+                                <input type="date" name="date_of_birth" id="date_of_birth" class="form-control form-control-lg"
+                                       placeholder="Date of Birth"
+                                       value="{{ form_data.date_of_birth|default_if_none:'' }}">
+                                <label for="date_of_birth"><i class="bi bi-calendar-event-fill me-1"></i> Date of Birth</label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-success btn-lg w-100">Add Teacher</button>
+                        </div>
+                    </form>
+
+                    <!-- Display temporary credentials after adding teacher -->
+                    {% if temp_username and temp_password %}
+                    <div class="alert alert-info mt-4">
+                        <h5>Temporary Login Credentials</h5>
+                        <p><strong>Username:</strong> {{ temp_username }}</p>
+                        <p><strong>Password:</strong> {{ temp_password }}</p>
+                        <p><strong>Email:</strong> {{ teacher_email }}</p>
+                        <small class="text-muted">Please share these credentials with the teacher. They should change the password after first login.</small>
+                        <button class="btn btn-sm btn-outline-secondary mt-2" onclick="copyCredentials()">Copy to Clipboard</button>
+                    </div>
+                    {% endif %}
+
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label for="last_name" class="form-label">Last Name</label>
-                <input type="text" name="last_name" id="last_name" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" name="email" id="email" class="form-control" required>
-            </div>
-
-            <!-- Professional Info -->
-            <div class="mb-3">
-                <label for="employee_id" class="form-label">Employee ID</label>
-                <input type="text" name="employee_id" id="employee_id" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="phone" class="form-label">Phone</label>
-                <input type="text" name="phone" id="phone" class="form-control">
-            </div>
-
-            <div class="mb-3">
-                <label for="designation" class="form-label">Designation</label>
-                <input type="text" name="designation" id="designation" class="form-control">
-            </div>
-
-            <div class="mb-3">
-                <label for="qualification" class="form-label">Qualification</label>
-                <input type="text" name="qualification" id="qualification" class="form-control">
-            </div>
-
-            <div class="mb-3">
-                <label for="specialization" class="form-label">Specialization</label>
-                <input type="text" name="specialization" id="specialization" class="form-control">
-            </div>
-
-            <div class="mb-3">
-                <label for="date_of_birth" class="form-label">Date of Birth</label>
-                <input type="date" name="date_of_birth" id="date_of_birth" class="form-control">
-            </div>
-
-            <div class="mb-3">
-                <label for="gender" class="form-label">Gender</label>
-                <select name="gender" id="gender" class="form-select">
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="profile_picture" class="form-label">Profile Picture</label>
-                <input type="file" name="profile_picture" id="profile_picture" class="form-control">
-            </div>
-
-            <button type="submit" class="btn btn-success">Add Teacher</button>
-            <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Cancel</a>
-        </form>
+        </div>
     </div>
 </div>
+
+<!-- Bootstrap validation script -->
+<script>
+(function () {
+  'use strict'
+  var forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+})();
+
+// Copy credentials function
+function copyCredentials() {
+    const text = `Username: {{ temp_username }}\nPassword: {{ temp_password }}\nEmail: {{ teacher_email }}`;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Credentials copied to clipboard!');
+    });
+}
+</script>
 {% endblock %}

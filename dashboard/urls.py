@@ -15,10 +15,11 @@ urlpatterns=(
     path('teacher/', views.teacher_dashboard, name = 'teacher_dashboard'),
     path('student/', views.student_dashboard, name = 'student_dashboard'),
     path('parent/', views.parent_dashboard, name='parent_dashboard'),
-    path('',dashboard_redirect, name='dashboard'),
+    path('', dashboard_redirect, name='dashboard_redirect'),
     path('students/', student_list, name='student_list'),
     path('add/', student_add, name='student_add'),
     path('dashboard/reports/<int:student_id>/<int:exam_id>/', student_report, name='student_report'),
+    path('dashboard/', dashboard_redirect, name='dashboard'),
     
 
   
