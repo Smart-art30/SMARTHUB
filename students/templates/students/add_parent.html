@@ -1,4 +1,4 @@
-{% extends "dashboard/base.html" %}
+{% extends "base.html" %}
 {% block title %}Add Parent{% endblock %}
 
 {% block content %}
@@ -51,9 +51,10 @@
             <button class="btn btn-success">
                 <i class="bi bi-save"></i> Save Parent
             </button>
-            <a href="{% url 'parent_list' %}" class="btn btn-secondary">
-                Cancel
-            </a>
+            <a href="{% url 'students:parent_list' %}" class="btn btn-secondary">
+    Cancel
+</a>
+
         </div>
     </form>
 </div>

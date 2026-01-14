@@ -25,8 +25,8 @@ def student_list(request):
 @login_required
 @role_required('schooladmin')
 def student_add(request):
-    school = request.user.school  # Make sure logged-in user has a school
-    classes = SchoolClass.objects.filter(school=school)  # Only classes in this school
+    school = request.user.school 
+    classes = SchoolClass.objects.filter(school=school)  
 
     if request.method == "POST":
         first_name = request.POST.get('first_name')
@@ -100,13 +100,14 @@ def parent_list(request):
         'parents': parents
     })
 
+
 @login_required
 @role_required('schooladmin')
 def add_parent(request):
     school = request.user.school
-    student = Student.objects.filter(school=school)
+    students = Student.objects.filter(school=school)  
 
-    if request.method  == 'POST':
+    if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
@@ -114,17 +115,19 @@ def add_parent(request):
         address = request.POST.get('address')
         student_ids = request.POST.getlist('students')
 
-
+       
         if User.objects.filter(username=email).exists():
-            messages.error(request, 'A user with this email: f"{self.email} already exists."')
-            return redirect('add_parent')
+            messages.error(request, f'A user with this email: "{email}" already exists.')
+            return redirect('students:add_parent')  
 
-        user  = User.objects.create_user(
+        password = secrets.token_urlsafe(8)
+
+        user = User.objects.create_user(
             username=email,
             email=email,
             first_name=first_name,
             last_name=last_name,
-            password=User.objects.make_random_password()
+            password=password
         )
         user.role = 'parent'
         user.school = school
@@ -137,11 +140,14 @@ def add_parent(request):
             address=address
         )
 
+     
         if student_ids:
             parent.students.set(student_ids)
 
-            messages.success(request, 'Parent added successfully.')
-            return redirect('parent_list')
-    return render(request, 'students/add_parent.html',{
-        'students': students
+        messages.success(request, f'Parent added successfully. Temporary password: {password}')
+        return redirect('students/parent_list')
+
+    
+    return render(request, 'students/add_parent.html', {
+        'students': students 
     })
