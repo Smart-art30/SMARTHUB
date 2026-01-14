@@ -102,7 +102,7 @@ def schooladmin_dashboard(request):
     students = Student.objects.filter(school=school)
     exams = Exam.objects.all()
 
-    # Pick default student and exam (first available)
+   
     student = students.first() if students.exists() else None
     exam = exams.first() if exams.exists() else None
 

@@ -1,0 +1,60 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Add Parent{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h3 class="mb-4">Add Parent</h3>
+
+    <form method="post" class="card shadow-sm p-4">
+        {% csrf_token %}
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label>First Name</label>
+                <input type="text" name="first_name" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+                <label>Last Name</label>
+                <input type="text" name="last_name" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+                <label>Email (Username)</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+                <label>Phone</label>
+                <input type="text" name="phone" class="form-control" required>
+            </div>
+
+            <div class="col-md-12">
+                <label>Address</label>
+                <input type="text" name="address" class="form-control">
+            </div>
+
+            <div class="col-md-12">
+                <label>Assign Students</label>
+                <select name="students" class="form-select" multiple>
+                    {% for student in students %}
+                        <option value="{{ student.id }}">
+                            {{ student.user.get_full_name }} — {{ student.school_class }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <small class="text-muted">Hold CTRL to select multiple</small>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button class="btn btn-success">
+                <i class="bi bi-save"></i> Save Parent
+            </button>
+            <a href="{% url 'parent_list' %}" class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

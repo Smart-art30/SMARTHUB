@@ -1,13 +1,14 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
-from .models import Student
+from .models import Student, Parent
 from schools.models import SchoolClass
 from django.contrib.auth import get_user_model
 from .forms import StudentAddForm
 import secrets
 from django.contrib import messages
 from django.db import IntegrityError
+
 
 
 
@@ -87,3 +88,60 @@ def student_detail(request, pk):
     student= get_object_or_404(Student, pk=pk)
 
     return render(request, 'students/student_detail.html', {'student':student})
+
+@login_required
+@role_required('schooladmin')
+
+def parent_list(request):
+    school = request.user.school
+    parents  = Parent.objects.filter(school=school)
+
+    return render(request, 'students/parent_list.html', {
+        'parents': parents
+    })
+
+@login_required
+@role_required('schooladmin')
+def add_parent(request):
+    school = request.user.school
+    student = Student.objects.filter(school=school)
+
+    if request.method  == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
+        student_ids = request.POST.getlist('students')
+
+
+        if User.objects.filter(username=email).exists():
+            messages.error(request, 'A user with this email: f"{self.email} already exists."')
+            return redirect('add_parent')
+
+        user  = User.objects.create_user(
+            username=email,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=User.objects.make_random_password()
+        )
+        user.role = 'parent'
+        user.school = school
+        user.save()
+
+        parent = Parent.objects.create(
+            user=user,
+            school=school,
+            phone=phone,
+            address=address
+        )
+
+        if student_ids:
+            parent.students.set(student_ids)
+
+            messages.success(request, 'Parent added successfully.')
+            return redirect('parent_list')
+    return render(request, 'students/add_parent.html',{
+        'students': students
+    })
