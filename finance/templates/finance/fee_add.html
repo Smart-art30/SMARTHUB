@@ -3,17 +3,54 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Add New Fee Structure</h2>
+
     <form method="POST">
         {% csrf_token %}
+
+        <!-- Class -->
         <div class="mb-3">
-            <label for="name" class="form-label">Fee Name</label>
-            <input type="text" class="form-control" id="name" name="name" required>
+            <label class="form-label">Class</label>
+            <select name="student_class" class="form-control" required>
+                <option value="">-- Select Class --</option>
+                {% for c in classes %}
+                    <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
+            </select>
         </div>
+
+        <!-- Term -->
         <div class="mb-3">
-            <label for="amount" class="form-label">Amount</label>
-            <input type="number" class="form-control" id="amount" name="amount" required>
+            <label class="form-label">Term</label>
+            <select name="term" class="form-control" required>
+                <option value="Term 1">Term 1</option>
+                <option value="Term 2">Term 2</option>
+                <option value="Term 3">Term 3</option>
+            </select>
         </div>
-        <button type="submit" class="btn btn-success">Add Fee</button>
+
+        <!-- Year -->
+        <div class="mb-3">
+            <label class="form-label">Year</label>
+            <input type="number" name="year" class="form-control" value="{{ now|date:'Y' }}" required>
+        </div>
+
+        <hr>
+
+        <h5>Fee Item</h5>
+
+        <!-- Fee Item Name -->
+        <div class="mb-3">
+            <label class="form-label">Fee Name</label>
+            <input type="text" class="form-control" name="name" placeholder="Tuition / Lunch / Transport" required>
+        </div>
+
+        <!-- Amount -->
+        <div class="mb-3">
+            <label class="form-label">Amount</label>
+            <input type="number" step="0.01" class="form-control" name="amount" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Add Fee Structure</button>
     </form>
 </div>
 {% endblock %}

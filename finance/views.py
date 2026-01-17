@@ -6,6 +6,8 @@ from students.models import Student
 from .forms import FeeItemForm
 from django.db.models import Sum
 from schools.models import SchoolClass
+from django.contrib import messages
+
 
 
 @login_required
@@ -29,33 +31,48 @@ def fee_item_list(request, structure_id):
 @login_required
 @role_required('schooladmin')
 def fee_add(request):
+    school = request.user.school
+    classes = SchoolClass.objects.filter(school=school)
+
     if request.method == 'POST':
+        student_class_id = request.POST.get('student_class')
+        term = request.POST.get('term')
+        year = request.POST.get('year')
         name = request.POST.get('name')
         amount = request.POST.get('amount')
 
-      
-        fee = FeeStructure.objects.create(
-            name=name,
-            amount=amount,
-            school=request.user.school
+        student_class = get_object_or_404(
+            SchoolClass,
+            id=student_class_id,
+            school=school
         )
 
-        
-        students = Student.objects.filter(school=request.user.school)
-        for student in students:
-            Invoice.objects.create(
-                student=student,
-                fee=fee,
-            )
+        fee_structure = FeeStructure.objects.create(
+            school=school,
+            student_class=student_class,
+            term=term,
+            year=year
+        )
 
+        FeeItem.objects.create(
+            fee_structure=fee_structure,
+            name=name,
+            amount=amount
+        )
+
+        messages.success(request, 'Fee structure created successfully')
         return redirect('fee_list')
 
-    return render(request, 'finance/fee_add.html')
+    return render(request, 'finance/fee_add.html', {
+        'classes': classes
+    })
+
+
 
 @login_required
 @role_required('schooladmin')
 def invoice_create(request):
-    Students = student.objects.filter(school=request.user.school)
+    students = student.objects.filter(school=request.user.school)
     fees = FeeStructure.objects.filter(school=request.user.school)
 
     if request.method == 'POST':
