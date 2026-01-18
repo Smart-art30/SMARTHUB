@@ -1,0 +1,43 @@
+{% ectends 'base.html %}
+{% block title %}
+
+School attendances
+
+{% block content %}
+
+<form method="post">
+{% csrf_token %}
+
+<select name="student_class">
+  {% for c in classes %}
+    <option value="{{ c.id }}">{{ c }}</option>
+  {% endfor %}
+</select>
+
+<input type="date" name="date" value="{{ date }}">
+<button name="load_students">Load Students</button>
+
+{% if students %}
+<table>
+{% for student in students %}
+<tr>
+  <td>{{ student }}</td>
+  <td>
+    <select name="status_{{ student.id }}">
+      {% for key,label in status_choices %}
+        <option value="{{ key }}">{{ label }}</option>
+      {% endfor %}
+    </select>
+  </td>
+  <td>
+    <input type="text" name="remarks_{{ student.id }}">
+  </td>
+</tr>
+{% endfor %}
+</table>
+
+<button name="save_attendance">Save Attendance</button>
+{% endif %}
+</form>
+
+ {%  endblock%}
