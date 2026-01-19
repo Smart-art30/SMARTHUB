@@ -83,7 +83,7 @@ def attendance_edit(request, pk):
         return redirect('attendance_detail', pk=attendance.pk)
     return render(request, 'attendance/attendance_edit.html', {
         'attendance': attendance,
-        'status_choice': StudentAttendance.STATUS_CHOICES
+        'status_choices': StudentAttendance.STATUS_CHOICES
     })
 
 @login_required
@@ -122,15 +122,15 @@ def bulk_attendance(request):
             student_class=selected_class
         )
         for student in students:
-            status = request.POST.get(f'status_{studemt.id}')
-            remarks = request.POST.get(f'remarks_{studemt.id}', '')
+            status = request.POST.get(f'status_{student.id}')
+            remarks = request.POST.get(f'remarks_{student.id}', '')
 
-            StudentAttendance.objects.updated_or_create(
-                studemt=student,
+            StudentAttendance.objects.update_or_create(
+                student=student,
                 date =  date,
                 defaults={
                     'school': school,
-                    'studemt_class':studemt_class,
+                    'student_class':student_class,
                     'status':status,
                     'remarks': remarks,
                     'marked_by': request.user.teacher
@@ -156,7 +156,7 @@ def student_attendance_report(request, student_id):
     records = StudentAttendance.objects.filter(
         student=student
     )
-    return render(request, 'attendance/student_report.html',{
+    return render(request, 'attendance/student_attendance_report.html',{
         'student': student,
         'records': records
     })
@@ -164,14 +164,14 @@ def student_attendance_report(request, student_id):
 @login_required
 def class_attendance_report(request, class_id):
     school = request.user.school
-    studemt_class = get_object_or_404(
+    student_class = get_object_or_404(
         SchoolClass, id=class_id, school=school
     )
     records = StudentAttendance.objects.filter(
-        studemt_class=studemt_class
+        student_class=student_class
     )
     return render(request, 'attendance/class_report.html',{
-        'studemt_class': student_class,
+        'student_class': student_class,
         'records': records
     })
             
