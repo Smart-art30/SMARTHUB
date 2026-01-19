@@ -62,17 +62,10 @@ def generate_unique_username(email):
     return username
 
 
-# -----------------------------
-# Add teacher view
-# -----------------------------
 @login_required
 @role_required('schooladmin')
 def teacher_add(request):
-    temp_username = None
-    temp_password = None
-    teacher_email = None
-
-    # Pre-fill form data
+    
     form_data = {
         'first_name': '',
         'last_name': '',
@@ -87,85 +80,91 @@ def teacher_add(request):
     }
 
     if request.method == 'POST':
-        # Get form data
+        
         for field in form_data:
             form_data[field] = request.POST.get(field)
 
-        first_name = form_data['first_name']
-        last_name = form_data['last_name']
-        email = form_data['email']
-        employee_id = form_data['employee_id']
-        phone = form_data['phone']
-        designation = form_data['designation']
-        qualification = form_data['qualification']
-        specialization = form_data['specialization']
-        date_of_birth = form_data['date_of_birth']
-        gender = form_data['gender']
-        profile_picture = request.FILES.get('profile_picture')
-
-        # Validate required fields
-        if not all([first_name, last_name, email, employee_id, gender]):
+      
+        required_fields = ['first_name', 'last_name', 'email', 'employee_id', 'gender']
+        if not all(form_data[field] for field in required_fields):
             messages.error(request, 'Please fill all required fields including gender.')
             return render(request, 'teachers/teacher_add.html', {'form_data': form_data})
 
-        # Check if employee ID already exists
-        if Teacher.objects.filter(employee_id=employee_id).exists():
-            messages.error(request, f"A teacher with Employee ID '{employee_id}' already exists.")
+        
+        if Teacher.objects.filter(employee_id=form_data['employee_id']).exists():
+            messages.error(request, f"A teacher with Employee ID '{form_data['employee_id']}' already exists.")
             return render(request, 'teachers/teacher_add.html', {'form_data': form_data})
 
-        # Generate username and password
-        username = generate_unique_username(email)
-        random_password = generate_random_password()
+        email = form_data['email']
+        random_password = generate_random_password()  
 
+        
         try:
             user = User.objects.create(
-                username=username,
-                first_name=first_name,
-                last_name=last_name,
+                username=email,  
+                first_name=form_data['first_name'],
+                last_name=form_data['last_name'],
                 email=email,
                 password=make_password(random_password),
                 role='teacher'
             )
         except IntegrityError:
-            messages.error(request, f"A user with username '{username}' already exists. Try a different email.")
+            messages.error(request, f"A user with email '{email}' already exists. Try a different email.")
             return render(request, 'teachers/teacher_add.html', {'form_data': form_data})
 
+       
         teacher = Teacher.objects.create(
             user=user,
             school=request.user.school,
-            employee_id=employee_id,
-            phone=phone,
-            designation=designation,
-            qualification=qualification,
-            specialization=specialization,
-            date_of_birth=date_of_birth if date_of_birth else None,
-            gender=gender,
+            employee_id=form_data['employee_id'],
+            phone=form_data['phone'],
+            designation=form_data['designation'],
+            qualification=form_data['qualification'],
+            specialization=form_data['specialization'],
+            date_of_birth=form_data['date_of_birth'] or None,
+            gender=form_data['gender'],
         )
 
+       
+        profile_picture = request.FILES.get('profile_picture')
         if profile_picture:
             teacher.profile_picture = profile_picture
             teacher.save()
 
-        # Pass credentials to template
-        temp_username = username
-        temp_password = random_password
-        teacher_email = email
-
-        messages.success(request, f'Teacher added! Temporary credentials displayed below.')
+        messages.success(request, 'Teacher added! Temporary credentials displayed below.')
         return render(request, 'teachers/teacher_add.html', {
-            'temp_username': temp_username,
-            'temp_password': temp_password,
-            'teacher_email': teacher_email,
+            'temp_username': email,         
+            'temp_password': random_password,
+            'teacher_email': email,
             'form_data': form_data
         })
 
     return render(request, 'teachers/teacher_add.html', {'form_data': form_data})
 
-# -----------------------------
-# Teacher detail
-# -----------------------------
 @login_required
 @role_required('schooladmin')
 def teacher_detail(request, pk):
     teacher = get_object_or_404(Teacher, pk=pk)
     return render(request, 'teachers/teacher_detail.html', {'teacher': teacher})
+
+    
+@login_required
+@role_required('teacher')
+def teacher_profile_edit(request):
+    teacher = request.user.teacher
+
+    if request.method == 'POST':
+        form = TeacherProfileForm(
+            request.POST,
+            request.FILES,
+            instance=teacher
+        )
+        if form.is_valid():
+            form.save()
+            return redirect('teacher_dashboard')
+    else:
+        form = TeacherProfileForm(instance=teacher)
+
+    return render(request, 'dashboard/teacher_profile_edit.html', {
+        'form': form
+    })

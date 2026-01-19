@@ -22,3 +22,4 @@ class MessageLog(models.Model):
     def __str__(self):
         return f'{self.recipient_name} - {self.status}'
 
+

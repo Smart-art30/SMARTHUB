@@ -14,52 +14,56 @@ from django.contrib.auth import get_user_model
 from students.models import Student
 from academics.models import Exam
 from students.models import Student 
+from notifications.models import Notification
 
 
 @login_required
 def dashboard_redirect(request):
     user = request.user
 
-    
-    if user.is_superuser:
-        return redirect('superadmin_dashboard')
+    # 🔹 Django superuser (admin panel or dashboard)
+    if user.is_superuser or user.role == 'superadmin':
+        return redirect('dashboard:superadmin_dashboard')
 
-    
-    if user.role == 'superadmin':
-        return redirect('superadmin_dashboard')
+    # 🔹 School Admin
+    if user.role == 'schooladmin':
+        return redirect('dashboard:schooladmin_dashboard')
 
-    elif user.role == 'schooladmin':
-        return redirect('schooladmin_dashboard')
-
-    elif user.role == 'teacher':
+    # 🔹 Teacher (NO approval check)
+    if user.role == 'teacher':
         if hasattr(user, 'teacher'):
-            teacher = user.teacher
-            if not teacher.is_approved:
-                return render(request, 'dashboard/profile_pending.html', {
-                    'message': 'Your teacher profile is pending admin approval.'
-                })
-            return redirect('teacher_dashboard')
-        return render(request, 'dashboard/profile_pending.html', {
-            'message': 'Teacher profile not created. Contact admin.'
-        })
+            return redirect('dashboard:teacher_dashboard')
 
-    elif user.role == 'student':
+        return render(
+            request,
+            'dashboard/profile_pending.html',
+            {'message': 'Teacher profile not created. Contact admin.'}
+        )
+
+    # 🔹 Student
+    if user.role == 'student':
         if hasattr(user, 'student'):
-            return redirect('student_dashboard')
-        return render(request, 'dashboard/profile_pending.html', {
-            'message': 'Student profile not created.'
-        })
+            return redirect('dashboard:student_dashboard')
 
-    elif user.role == 'parent':
+        return render(
+            request,
+            'dashboard/profile_pending.html',
+            {'message': 'Student profile not created.'}
+        )
+
+    # 🔹 Parent
+    if user.role == 'parent':
         if hasattr(user, 'parent'):
-            return redirect('parent_dashboard')
-        return render(request, 'dashboard/profile_pending.html', {
-            'message': 'Parent profile not created.'
-        })
+            return redirect('dashboard:parent_dashboard')
 
-    # Fallback
+        return render(
+            request,
+            'dashboard/profile_pending.html',
+            {'message': 'Parent profile not created.'}
+        )
+
+    # 🔻 Fallback
     return redirect('login')
-
 
 
 User = get_user_model()
@@ -121,20 +125,41 @@ def schooladmin_dashboard(request):
     return render(request, 'dashboard/schooladmin.html', context)
 
 
-
 @login_required
 @role_required('teacher')
 def teacher_dashboard(request):
     teacher = request.user.teacher  
 
-    classes = teacher.assigned_classes.all()
-    subjects = teacher.user.subject_set.all()
+    class_links = teacher.assigned_classes.select_related('school_class')
+    subjects = request.user.subjects.all()
 
-    return render(request, 'dashboard/teacher.html', {
+    # Students per class
+    from students.models import Student
+    class_data = []
+    for tc in class_links:
+        class_data.append({
+            'class': tc.school_class,
+            'student_count': Student.objects.filter(
+                school_class=tc.school_class
+            ).count()
+        })
+
+    
+    notifications = Notification.objects.filter(
+        user=request.user,
+        school=teacher.school
+    )[:5]
+
+    context = {
         'teacher': teacher,
-        'classes': classes,
+        'classes': class_data,
         'subjects': subjects,
-    })
+        'notifications': notifications,
+        'total_classes': len(class_data),
+        'total_subjects': subjects.count(),
+    }
+
+    return render(request, 'dashboard/teacher.html', context)
 
 @login_required
 @role_required('student')
@@ -154,3 +179,19 @@ def parent_dashboard(request):
     })
 
 
+
+@login_required
+@role_required('teacher')
+def teacher_profile_edit(request):
+    teacher = request.user.teacher
+
+    if request.method == 'POST':
+        teacher.phone = request.POST.get('phone')
+        teacher.qualification = request.POST.get('qualification')
+        teacher.specialization = request.POST.get('specialization')
+        teacher.save()
+        return redirect('teacher_dashboard')
+
+    return render(request, 'dashboard/teacher_profile_edit.html', {
+        'teacher': teacher
+    })
