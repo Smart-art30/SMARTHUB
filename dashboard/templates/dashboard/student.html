@@ -1,9 +1,69 @@
-{% for student in students %}
-    {% for exam in exams %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'student_report' student.id exam.id %}">
-                View Report: {{ student.full_name }} - {{ exam.name }}
-            </a>
-        </li>
-    {% endfor %}
-{% endfor %}
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">🎓 Student Dashboard</h2>
+
+    <div class="row align-items-center mb-4">
+        <div class="col-md-3 text-center">
+            {% if student.photo %}
+                <img src="{{ student.photo.url }}" class="rounded-circle img-fluid" alt="{{ student.user.get_full_name }}" style="max-width: 120px;">
+            {% else %}
+                <img src="https://via.placeholder.com/120" class="rounded-circle img-fluid" alt="{{ student.user.get_full_name }}">
+            {% endif %}
+        </div>
+        <div class="col-md-9">
+            <h4>{{ student.user.get_full_name }}</h4>
+            <p class="mb-1"><strong>Admission No:</strong> {{ student.admission_number }}</p>
+            <p class="mb-1"><strong>Class:</strong> {{ student.student_class }}</p>
+            <p class="mb-1"><strong>School:</strong> {{ student.school }}</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Total Attendance</h5>
+                    <h3>{{ student.attendance_set.all|length }}</h3>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Class</h5>
+                    <h3>{{ student.student_class }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Status</h5>
+                    <span class="badge bg-success">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5>Actions</h5>
+            <a href="{% url 'attendance:student_attendance_report' student.id %}" class="btn btn-outline-primary me-2">📅 View Attendance</a>
+
+            {% if exams %}
+                {% for exam in exams %}
+                    <a href="{% url 'student_report' student.id exam.id %}" class="btn btn-outline-success me-2 mb-2">
+                        📊 {{ exam.name }} Results
+                    </a>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No exam reports available.</p>
+            {% endif %}
+
+            <a href="#" class="btn btn-outline-secondary">⚙️ Update Profile</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
