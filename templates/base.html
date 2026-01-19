@@ -24,7 +24,7 @@ select.form-control option {
     <div class="container">
 
         <!-- Brand / Home -->
-        <a class="navbar-brand fw-bold" href="{% url 'dashboard_redirect' %}">SmartHub</a>
+        <a class="navbar-brand fw-bold" href="{% url 'dashboard:dashboard_redirect' %}">SmartHub</a>
 
         <!-- Toggler for small screens -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
@@ -37,9 +37,11 @@ select.form-control option {
 
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard_redirect' %}">
-                            Dashboard
-                        </a>
+                        <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}"
+   href="{% url 'dashboard:dashboard_redirect' %}">
+    Dashboard
+</a>
+
                     </li>
 
                     <li class="nav-item">

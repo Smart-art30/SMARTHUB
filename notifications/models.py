@@ -17,7 +17,7 @@ class Notification(models.Model):
         ('email', 'Email'),
         ('in_app', 'In-App'),
     ]
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notification')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
     school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     message = models.TextField()

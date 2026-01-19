@@ -1,5 +1,156 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
 {% block content %}
-<h2> Teacher Dashboard</h2>
-<p>Your classes and subjects</p>
+<div class="container mt-4">
+
+    <!-- Welcome -->
+    <div class="mb-3">
+        <h4>Welcome, {{ teacher.user.first_name }} 👋</h4>
+        <p class="text-muted mb-0">Here is your teaching overview</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Classes</h6>
+                    <h3>{{ total_classes }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Subjects</h6>
+                    <h3>{{ total_subjects }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">School</h6>
+                    <strong>{{ teacher.school.name }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Status</h6>
+                    <span class="badge bg-success">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <!-- Profile -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    {% if teacher.profile_picture %}
+                        <img src="{{ teacher.profile_picture.url }}" class="rounded-circle mb-3" width="120">
+                    {% else %}
+                        <img src="{% static 'images/default-avatar.png' %}" class="rounded-circle mb-3" width="120">
+                    {% endif %}
+                    <h6>{{ teacher.user.get_full_name }}</h6>
+                    <small class="text-muted">{{ teacher.designation }}</small>
+
+                    <hr>
+                    <a href="{% url 'dashboard:teacher_profile_edit' %}" class="btn btn-outline-secondary btn-sm w-100">
+                        Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+
+            <div class="row">
+
+                <!-- Classes -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-primary text-white">
+                            Assigned Classes
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for item in classes %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ item.class.name }} {{ item.class.stream }}
+                                <span class="badge bg-secondary">
+                                    {{ item.student_count }} students
+                                </span>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{% url 'attendance:teacher_mark' item.class.id %}"
+                                   class="btn btn-sm btn-outline-primary w-100">
+                                    Mark Attendance
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item text-muted">No classes assigned</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Subjects -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-success text-white">
+                            Assigned Subjects
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for subject in subjects %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ subject.name }}
+                                <a href="{% url 'academics:enter_marks' subject.id %}"
+                                   class="btn btn-sm btn-success">
+                                    Enter Marks
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item text-muted">No subjects assigned</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Notifications -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning">
+                    🔔 Notifications
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for note in notifications %}
+                    <li class="list-group-item">
+                        <strong>{{ note.title }}</strong><br>
+                        <small class="text-muted">
+                            {{ note.get_notification_type_display }} |
+                            {{ note.created_at|date:"M d, Y H:i" }}
+                        </small>
+                        <p class="mb-0">{{ note.message }}</p>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">No notifications</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endblock %}

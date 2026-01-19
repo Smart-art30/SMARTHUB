@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'academics',
     'finance',
     'widget_tweaks',
+    'notifications',
 ]
 
 MIDDLEWARE = [
