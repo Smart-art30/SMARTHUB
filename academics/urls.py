@@ -13,6 +13,12 @@ urlpatterns = [
 
     path('exams/', views.exam_list, name='exam_list'),
     path('exams/add/', views.exam_add, name='exam_add'),
+    path('choose-class/', views.choose_class, name='choose_class'),
+    path('class/<int:class_id>/marks/', views.class_mark_entry, name='class_mark_entry'),
+    path('enter-marks/<int:exam_subject_id>/', views.mark_entry, name='enter_marks'),
+    path('exams/<int:exam_id>/assign-subjects/', views.exam_subject_add, name='exam_subject_add'),
+
+
   
 
     

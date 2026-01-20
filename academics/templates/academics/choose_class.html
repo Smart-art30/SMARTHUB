@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Select Class</h3>
+
+<ul class="list-group">
+    {% for c in classes %}
+    <li class="list-group-item">
+        <a href="{% url 'class_mark_entry' c.id %}">
+            {{ c.name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
