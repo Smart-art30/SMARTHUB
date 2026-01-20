@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>{{ school_class.name }} – Select Subject</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Exam</th>
+            <th>Subject</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for es in exam_subjects %}
+        <tr>
+            <td>{{ es.exam.name }}</td>
+            <td>{{ es.subject.name }}</td>
+            <td>
+                <a href="{% url 'enter_marks' es.id %}"
+                   class="btn btn-sm btn-primary">
+                    Enter Marks
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No subjects assigned to this class.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

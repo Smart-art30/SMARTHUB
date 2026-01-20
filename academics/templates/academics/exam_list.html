@@ -1,11 +1,38 @@
-{% extends 'base.html %}
-{% block content %}
-<h3>Exams</h3>
-<a href="{% url 'add_exam' %}" class="btn btn-primary mb-2">Add Exams</a>
+{% extends 'base.html' %}
 
-<ul>
-    {% for e in exams %}
-    <li>{{ e.name }} ({{ e.term }})</li>
-    {% endfor%}
-</ul>
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-3">Exams</h3>
+    <a href="{% url 'academics:exam_add' %}" class="btn btn-primary mb-3">Add Exam</a>
+
+    {% if exams %}
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Term</th>
+                <th>Year</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in exams %}
+            <tr>
+                <td>{{ e.name }}</td>
+                <td>{{ e.term }}</td>
+                <td>{{ e.year }}</td>
+                <td>
+                    <a href="{% url 'academics:enter_marks' e.id %}" class="btn btn-sm btn-success">
+                        Enter Marks
+                    </a>
+                    <!-- You can add Edit/Delete buttons here if needed -->
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="text-muted">No exams found. Click "Add Exam" to create one.</p>
+    {% endif %}
+</div>
 {% endblock %}

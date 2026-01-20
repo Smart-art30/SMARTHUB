@@ -6,6 +6,10 @@ from schools.models import SchoolClass
 from students.models import Student
 from .forms import SubjectForm
 from .models import Subject 
+from .models import ExamSubject
+from django.contrib import messages
+
+
 
 
 @login_required
@@ -36,30 +40,107 @@ def subject_add(request):
 def exam_list(request):
     exams = Exam.objects.filter(school=request.user.school)
     return render(request, 'academics/exam_list.html', {'exams': exams})
-
 @login_required
 @role_required('schooladmin')
 def exam_add(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         term = request.POST.get('term')
-        Exam.objects.create(
+        year = int(request.POST.get('year'))
+
+        exam = Exam.objects.create(
             name=name,
             term=term,
+            year=year,
             school=request.user.school
         )
-        return redirect('exam_list')
+
+    
+        classes = SchoolClass.objects.filter(school=request.user.school)
+        subjects = Subject.objects.filter(school=request.user.school)
+
+        for cls in classes:
+            for subj in subjects:
+                ExamSubject.objects.get_or_create(
+                    exam=exam,
+                    subject=subj,
+                    school_class=cls
+                )
+
+        messages.success(request, "Exam created successfully with all subjects for all classes.")
+        return redirect('academics:exam_list')
+
     return render(request, 'academics/exam_add.html')
+
+
+
+@login_required
+@role_required('schooladmin')
+def exam_subject_add(request, exam_id):
+    exam = get_object_or_404(Exam, id=exam_id, school=request.user.school)
+    classes = SchoolClass.objects.filter(school=request.user.school)
+    subjects = Subject.objects.filter(school=request.user.school)
+
+    if request.method == 'POST':
+        
+        for cls in classes:
+            subject_ids = request.POST.getlist(f'class_{cls.id}_subjects')
+            for subj_id in subject_ids:
+                subj = Subject.objects.get(id=subj_id, school=request.user.school)
+                
+                ExamSubject.objects.get_or_create(
+                    exam=exam,
+                    subject=subj,
+                    school_class=cls
+                )
+
+        messages.success(request, "ExamSubjects assigned successfully.")
+        return redirect('exam_list')
+
+    return render(request, 'academics/exam_subject_add.html', {
+        'exam': exam,
+        'classes': classes,
+        'subjects': subjects
+    })
+
+
+@login_required
+@role_required('teacher')
+def choose_class(request):
+    classes = SchoolClass.objects.filter(school=request.user.school)
+    return render(request, 'academics/choose_class.html', {
+        'classes': classes
+    })
+
+
+@login_required
+@role_required('teacher')
+def class_mark_entry(request, class_id):
+    school_class = get_object_or_404(
+        SchoolClass,
+        id=class_id,
+        school=request.user.school
+    )
+
+    exam_subjects = ExamSubject.objects.filter(
+        school_class=school_class
+    )
+
+    return render(request, 'academics/class_mark_entry.html', {
+        'school_class': school_class,
+        'exam_subjects': exam_subjects
+    })
+
+
 
 @login_required
 @role_required('teacher')
 def mark_entry(request, exam_subject_id):
     exam_subject = get_object_or_404(
-        ExamSubject,
-        id=exam_subject_id,
-        exam__school=request.user.school
-    )
-
+    ExamSubject,
+    id=exam_subject_id,
+    exam__school=request.user.school
+)
     students = Student.objects.filter(
         school_class=exam_subject.exam.school_class
     )

@@ -25,7 +25,7 @@ class Subject(models.Model):
 class Exam(models.Model):
     
     school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
-    school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
+    
     name = models.CharField(max_length=100)
     term = models.CharField(max_length= 20)
     year = models.IntegerField()
@@ -34,14 +34,17 @@ class Exam(models.Model):
     def __str__(self):
         return f'{self.name} - {self.term} ({self.year})'
 
-
 class ExamSubject(models.Model):
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    school_class = models.ForeignKey(
+        SchoolClass, on_delete=models.CASCADE
+    )
     max_mark = models.PositiveIntegerField(default=100)
 
-    def __str__(self):
-        return f'{self.subject.name} - {self.exam.name}'
+    class Meta:
+        unique_together = ('exam', 'subject', 'school_class')
+
 
 class StudentMark(models.Model):
     student = models.ForeignKey('students.Student', on_delete=models.CASCADE)

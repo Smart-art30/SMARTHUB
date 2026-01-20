@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Assign Subjects for {{ exam.name }}</h3>
+
+<form method="post">
+    {% csrf_token %}
+    {% for cls in classes %}
+    <h5>{{ cls.name }}</h5>
+    {% for subj in subjects %}
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox"
+               name="class_{{ cls.id }}_subjects"
+               value="{{ subj.id }}"
+               id="cls{{ cls.id }}subj{{ subj.id }}">
+        <label class="form-check-label" for="cls{{ cls.id }}subj{{ subj.id }}">
+            {{ subj.name }}
+        </label>
+    </div>
+    {% endfor %}
+    <hr>
+    {% endfor %}
+
+    <button class="btn btn-success mt-3">Save Assignments</button>
+</form>
+{% endblock %}
