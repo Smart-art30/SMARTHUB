@@ -17,6 +17,7 @@ from students.models import Student
 from notifications.models import Notification
 
 
+
 @login_required
 def dashboard_redirect(request):
     user = request.user

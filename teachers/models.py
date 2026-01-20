@@ -44,3 +44,15 @@ class TeacherClass(models.Model):
 
     def __str__(self):
         return f'{self.teacher} -> {self.school_class}'
+
+
+class TeacherSubjectAssignment(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('teacher', 'school_class', 'subject')
+
+    def __str__(self):
+        return f"{self.teacher} -> {self.subject} ({self.school_class})"

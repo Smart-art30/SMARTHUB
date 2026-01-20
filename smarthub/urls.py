@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import redirect
+#from django.shortcuts import redirect
 from django.conf import settings
 from django.conf.urls.static import static
 from accounts import views as account_views
@@ -25,7 +25,7 @@ from accounts import views as account_views
 
 
 urlpatterns = [
-    path('', lambda request: redirect('dashboard')),
+    path('', include('dashboard.urls')),
     path('admin/', admin.site.urls),
     path('dashboard/', include('dashboard.urls')),
     path('schools/', include('schools.urls')),
@@ -35,5 +35,7 @@ urlpatterns = [
     path('finance/', include('finance.urls')),
     path('accounts/', include('accounts.urls')), 
     path('attendance/', include('attendance.urls')),
+    path('teachers/', include('teachers.urls', namespace='teachers')),
+    path('schooladmin/', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
