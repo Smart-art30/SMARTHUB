@@ -191,6 +191,27 @@
                         </div>
                     </div>
                 </div>
+                                                        <!-- Subjects Widget -->
+                <div class="row g-4 mb-5">
+                    <!-- Other cards... -->
+
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Total Subjects</h5>
+                                <p class="card-text display-6">{{ subject_count }}</p>
+                                <div class="d-flex justify-content-center gap-2 mt-3">
+                                    <a href="{% url 'academics:subject_list' %}" class="btn btn-light btn-sm">
+                                        Manage Subjects
+                                    </a>
+                                    <a href="{% url 'academics:subject_add' %}" class="btn btn-light btn-sm">
+                                        <i class="bi bi-plus-circle me-1"></i> Add
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Charts -->
                 <div class="row mb-5">
@@ -242,6 +263,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Your Classes Section -->
                 <div class="row mb-5">

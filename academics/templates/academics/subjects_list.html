@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Subjects in {{ request.user.school.name }}</h2>
+<a href="{% url 'academics:subject_add' %}" class="btn btn-primary mb-3">Add New Subject</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Code</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for subject in subjects %}
+        <tr>
+            <td>{{ subject.name }}</td>
+            <td>{{ subject.code|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="2">No subjects added yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}

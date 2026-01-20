@@ -15,6 +15,7 @@ from students.models import Student
 from academics.models import Exam
 from students.models import Student 
 from notifications.models import Notification
+from academics.models import Subject
 
 
 
@@ -106,6 +107,7 @@ def schooladmin_dashboard(request):
 
     students = Student.objects.filter(school=school)
     exams = Exam.objects.all()
+    subject_count = Subject.objects.filter(school=school).count()
 
    
     student = students.first() if students.exists() else None
@@ -121,6 +123,7 @@ def schooladmin_dashboard(request):
         'recent_payments': recent_payments,
         'student': student,
         'exam': exam,
+        'subject_count': subject_count,
     }
 
     return render(request, 'dashboard/schooladmin.html', context)
@@ -131,10 +134,9 @@ def schooladmin_dashboard(request):
 def teacher_dashboard(request):
     teacher = request.user.teacher  
 
+    
     class_links = teacher.assigned_classes.select_related('school_class')
-    subjects = request.user.subjects.all()
-
-    # Students per class
+    
     from students.models import Student
     class_data = []
     for tc in class_links:
@@ -145,7 +147,12 @@ def teacher_dashboard(request):
             ).count()
         })
 
-    
+    #
+    from teachers.models import TeacherSubjectAssignment, Subject
+    subjects = Subject.objects.filter(
+        teachersubjectassignment__teacher=teacher
+    ).distinct()
+
     notifications = Notification.objects.filter(
         user=request.user,
         school=teacher.school
@@ -161,6 +168,7 @@ def teacher_dashboard(request):
     }
 
     return render(request, 'dashboard/teacher.html', context)
+
 
 @login_required
 @role_required('student')

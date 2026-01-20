@@ -35,6 +35,7 @@ urlpatterns = [
     path('finance/', include('finance.urls')),
     path('accounts/', include('accounts.urls')), 
     path('attendance/', include('attendance.urls')),
+    path('academics/', include('academics.urls', namespace='academics')), 
     path('teachers/', include('teachers.urls', namespace='teachers')),
     path('schooladmin/', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
 ]

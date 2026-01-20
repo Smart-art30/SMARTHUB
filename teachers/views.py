@@ -170,14 +170,19 @@ def teacher_profile_edit(request):
         'form': form
     })
 
-
 def add_teacher_subject(request):
+    school = request.user.school 
+
     if request.method == 'POST':
-        form = TeacherSubjectAssignmentForm(request.POST)
+        form = TeacherSubjectAssignmentForm(request.POST, school=school)
         if form.is_valid():
-            form.save()
+            assignment = form.save(commit=False)
+            assignment.school = school  
+            assignment.save()
+
             messages.success(request, 'Teacher assigned to subject successfully.')
             return redirect('dashboard:schooladmin_dashboard')
     else:
-        form = TeacherSubjectAssignmentForm()
+        form = TeacherSubjectAssignmentForm(school=school)
+
     return render(request, 'teachers/add_teacher_subject.html', {'form': form})
