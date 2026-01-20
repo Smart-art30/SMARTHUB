@@ -12,10 +12,11 @@ urlpatterns = [
     path('exams/entry/', views.mark_entry, name='mark_entry'),
 
     
-    path('dashboard/', views.dashboard_redirect, name='dashboard_redirect'),
+    path('dashboard/', views.dashboard_redirect, name='schooladmin_dashboard'),
 
     
     path('dashboard/reports/', views.report_list, name='report_list'),
+    path('teacher/enter-marks/<int:subject_id>/', views.enter_marks, name='enter_marks'),
 
     path('dashboard/reports/<int:student_id>/<int:exam_id>/', views.student_report, name='student_report'),
 ]

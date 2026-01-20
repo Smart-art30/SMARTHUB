@@ -42,30 +42,43 @@ def exam_add(request):
     return render(request, 'academics/exam_add.html')
 
 @login_required
-@role_required('schooladmin')
-def mark_entry(request):
-    students = Student.objects.filter(school=request.user.school)
-    exams = Exam.objects.filter(school=request.user.school)
-    subjects = Subject.objects.filter(school=request.user.school)
+@role_required('teacher')
+def mark_entry(request, exam_subject_id):
+    exam_subject = get_object_or_404(
+        ExamSubject,
+        id=exam_subject_id,
+        exam__school=request.user.school
+    )
+
+    students = Student.objects.filter(
+        school_class=exam_subject.exam.school_class
+    )
 
     if request.method == 'POST':
-        student_id = request.POST.get('student')
-        exam_subject_id = request.POST.get('exam_subject')
-        marks_value = request.POST.get('marks')
+        for student in students:
+            marks = request.POST.get(f'marks_{student.id}')
 
-        StudentMark.objects.create(
-            student_id=student_id,
-            exam_subject_id=exam_subject_id,
-            marks=marks_value
-        )
+            if marks:
+                StudentMark.objects.update_or_create(
+                    student=student,
+                    exam_subject=exam_subject,
+                    defaults={'marks': marks}
+                )
 
-        return redirect('mark_entry')
+        messages.success(request, "Marks saved successfully.")
+        return redirect('teacher_dashboard')
+
+    existing_marks = {
+        m.student_id: m.marks
+        for m in StudentMark.objects.filter(exam_subject=exam_subject)
+    }
 
     return render(request, 'academics/mark_entry.html', {
+        'exam_subject': exam_subject,
         'students': students,
-        'exams': exams,
-        'subjects': subjects,
+        'existing_marks': existing_marks
     })
+
 
 @login_required
 def student_report(request, student_id, exam_id):

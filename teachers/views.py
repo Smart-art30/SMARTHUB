@@ -10,6 +10,7 @@ import string, secrets
 from django.contrib import messages
 from django.db import IntegrityError
 from django.core.mail import send_mail
+from .forms import TeacherSubjectAssignmentForm
 
 
 
@@ -168,3 +169,15 @@ def teacher_profile_edit(request):
     return render(request, 'dashboard/teacher_profile_edit.html', {
         'form': form
     })
+
+
+def add_teacher_subject(request):
+    if request.method == 'POST':
+        form = TeacherSubjectAssignmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Teacher assigned to subject successfully.')
+            return redirect('dashboard:schooladmin_dashboard')
+    else:
+        form = TeacherSubjectAssignmentForm()
+    return render(request, 'teachers/add_teacher_subject.html', {'form': form})

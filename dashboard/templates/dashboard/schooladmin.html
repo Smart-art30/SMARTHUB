@@ -46,13 +46,14 @@
                 <h5 class="text-center">Navigation</h5>
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'schooladmin_dashboard' %}">Dashboard</a>
+                        <a class="nav-link active" href="{% url 'dashboard:schooladmin_dashboard' %}">Dashboard</a>
+
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'student_list' %}">Students</a>
+                        <a class="nav-link" href="{% url 'dashboard:student_list' %}">Students</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'teacher_list' %}">Teachers</a>
+                        <a class="nav-link" href="{% url 'teachers:teacher_list' %}">Teachers</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'invoice_list' %}">Invoices</a>
@@ -79,6 +80,11 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'attendance:attendance_list' %}">Attendance</a>
+
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'teachers:add_teacher_subject' %}">Assign Subject</a>
+                       
 
                     </li>
                 </ul>
