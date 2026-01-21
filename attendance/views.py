@@ -5,6 +5,8 @@ from django.utils import timezone
 from  .models import StudentAttendance
 from students.models import Student
 from schools.models import SchoolClass
+from accounts.decorators import role_required
+
 
 @login_required
 def attendance_list(request):
@@ -177,3 +179,65 @@ def class_attendance_report(request, class_id):
             
 
 
+@login_required
+@role_required('teacher')
+def teacher_mark(request, class_id):
+    students = Student.objects.filter(student_class_id=class_id)
+    student_class = SchoolClass.objects.get(id=class_id)
+
+    if request.method == "POST":
+        for student in students:
+            status = request.POST.get(f"status_{student.id}")
+            remarks = request.POST.get(f"remarks_{student.id}", "")
+
+            if status:
+                StudentAttendance.objects.update_or_create(
+                    student=student,
+                    date=timezone.now().date(),
+                    defaults={
+                        "status": status,
+                        "remarks": remarks,
+                        "teacher": request.user.teacher,
+                    }
+                )
+
+        messages.success(request, "Attendance saved successfully.")
+        return redirect("dashboard:teacher_dashboard")
+
+    return render(request, "attendance/teacher_mark.html", {
+        "students": students,
+        "student_class": student_class,
+        "status_choices": StudentAttendance.STATUS_CHOICES, 
+    })
+
+
+
+
+@login_required
+@role_required('teacher')
+def class_attendance_report(request, class_id):
+    student_class = get_object_or_404(SchoolClass, id=class_id)
+
+   
+    date = request.GET.get("date")
+
+    records = StudentAttendance.objects.filter(
+        student__student_class=student_class
+    ).select_related("student", "marked_by")
+
+    if date:
+        records = records.filter(date=date)
+
+    students = Student.objects.filter(student_class=student_class)
+
+    context = {
+        "student_class": student_class,
+        "records": records.order_by("-date"),
+        "students": students,
+        "selected_date": date,
+    }
+    return render(
+        request,
+        "attendance/class_report.html",
+        context
+    )

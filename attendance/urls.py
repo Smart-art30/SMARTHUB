@@ -11,7 +11,8 @@ urlpatterns = [
     path('bulk/', views.bulk_attendance, name='bulk_attendance'),
     path('report/student/<int:student_id>/', views.student_attendance_report, name='student_attendance_report'),
     path('report/class/<int:class_id>/', views.class_attendance_report, name='class_attendance_report'),
-    
+    path('teacher/mark/<int:class_id>/', views.teacher_mark, name='teacher_mark'),
+
 
 
 

@@ -92,12 +92,18 @@
                                     {{ item.student_count }} students
                                 </span>
                             </li>
-                            <li class="list-group-item">
-                                <a href="{% url 'attendance:teacher_mark' item.class.id %}"
-                                   class="btn btn-sm btn-outline-primary w-100">
-                                    Mark Attendance
-                                </a>
-                            </li>
+                                                <li class="list-group-item">
+                            <a href="{% url 'attendance:teacher_mark' item.class.id %}"
+                            class="btn btn-sm btn-outline-primary w-100 mb-2">
+                                Mark Attendance
+                            </a>
+
+    <a href="{% url 'attendance:class_attendance_report' item.class.id %}"
+       class="btn btn-sm btn-outline-secondary w-100">
+        View Attendance Report
+    </a>
+</li>
+
                             {% empty %}
                             <li class="list-group-item text-muted">No classes assigned</li>
                             {% endfor %}

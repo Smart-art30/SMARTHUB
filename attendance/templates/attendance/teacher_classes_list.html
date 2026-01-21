@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Select a Class to Mark Attendance</h2>
+    <ul class="list-group mt-3">
+        {% for cls in classes %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ cls.name }}
+            <a href="{% url 'attendance:teacher_mark' cls.id %}" class="btn btn-primary btn-sm">Mark Attendance</a>
+        </li>
+        {% empty %}
+        <li class="list-group-item">No classes available.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -128,7 +128,6 @@ def schooladmin_dashboard(request):
 
     return render(request, 'dashboard/schooladmin.html', context)
 
-
 @login_required
 @role_required('teacher')
 def teacher_dashboard(request):
@@ -140,14 +139,14 @@ def teacher_dashboard(request):
     from students.models import Student
     class_data = []
     for tc in class_links:
+       
         class_data.append({
             'class': tc.school_class,
             'student_count': Student.objects.filter(
-                school_class=tc.school_class
+                student_class=tc.school_class
             ).count()
         })
 
-    #
     from teachers.models import TeacherSubjectAssignment, Subject
     subjects = Subject.objects.filter(
         teachersubjectassignment__teacher=teacher

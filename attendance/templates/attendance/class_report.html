@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>
+    Attendance Report —
+    {{ student_class.name }} {{ student_class.stream }}
+</h3>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="date"
+               name="date"
+               class="form-control"
+               value="{{ selected_date }}">
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100">
+            Filter
+        </button>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Student</th>
+            <th>Status</th>
+            <th>Remarks</th>
+            <th>Marked By</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td>{{ r.date }}</td>
+            <td>{{ r.student.user.get_full_name }}</td>
+            <td>
+                <span class="badge bg-info">
+                    {{ r.get_status_display }}
+                </span>
+            </td>
+            <td>{{ r.remarks|default:"-" }}</td>
+            <td>{{ r.marked_by.user.get_full_name }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center text-muted">
+                No attendance records found
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
