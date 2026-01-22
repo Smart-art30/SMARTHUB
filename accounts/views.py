@@ -13,7 +13,7 @@ from django.core.exceptions import PermissionDenied
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('dashboard:dashboard_redirect')
 
     register_form = UserRegistrationForm()
 
@@ -25,8 +25,12 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, f'Welcome back, {user.username}!')
-            next_url = request.GET.get('next') or 'dashboard'
-            return redirect(next_url)
+
+            next_url = request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
+            return redirect('dashboard:dashboard_redirect')
+
         else:
             messages.error(request, 'Invalid username or password.')
 
@@ -37,8 +41,8 @@ def login_view(request):
 @require_POST
 def logout_view(request):
     logout(request)
-    return redirect('login')
-
+    
+    return redirect('accounts:login')
 
 
 def register_view(request):

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Select Class</h3>
+
+<div class="list-group">
+  {% for class in classes %}
+    <a href="{% url 'academics:class_overview' class.id %}"
+   class="list-group-item list-group-item-action">
+
+      {{ class.name }} {{ class.stream }}
+    </a>
+  {% empty %}
+    <p>No classes assigned.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

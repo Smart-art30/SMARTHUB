@@ -1,31 +1,23 @@
 from django.urls import path
 from . import views
 
-
-app_name = 'academics' 
+app_name = 'academics'
 
 urlpatterns = [
    
     path('subjects/', views.subject_list, name='subject_list'),
     path('subjects/add/', views.subject_add, name='subject_add'),
-    path('subjects/', views.subject_list, name='subject_list'),
-    path('enter-marks/<int:exam_subject_id>/', views.mark_entry, name='enter_marks'),
 
+   
     path('exams/', views.exam_list, name='exam_list'),
     path('exams/add/', views.exam_add, name='exam_add'),
-    path('choose-class/', views.choose_class, name='choose_class'),
-    path('class/<int:class_id>/marks/', views.class_mark_entry, name='class_mark_entry'),
-    path('enter-marks/<int:exam_subject_id>/', views.mark_entry, name='enter_marks'),
     path('exams/<int:exam_id>/assign-subjects/', views.exam_subject_add, name='exam_subject_add'),
 
+    path('marks/classes/', views.select_class, name='select_class'),  
+    path('marks/classes/<int:class_id>/', views.class_overview, name='class_overview'),  
+    path('marks/classes/<int:class_id>/subject/<int:subject_id>/', views.select_exam, name='select_exam'), 
+    path('marks/exam/<int:exam_id>/', views.enter_marks, name='enter_marks'), 
 
-  
-
-    
-
-
-    
     path('dashboard/reports/', views.report_list, name='report_list'),
-
     path('dashboard/reports/<int:student_id>/<int:exam_id>/', views.student_report, name='student_report'),
 ]

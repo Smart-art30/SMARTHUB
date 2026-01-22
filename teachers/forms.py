@@ -19,17 +19,18 @@ class TeacherProfileForm(forms.ModelForm):
             'profile_picture',
         ]
 
-
-class TeacherSubjectAssignmentForm(forms.ModelForm):
-    class Meta:
-        model = TeacherSubjectAssignment
-        fields = ['teacher', 'subject', 'school_class']
+class TeacherSubjectAssignmentForm(forms.Form):
+    teacher = forms.ModelChoiceField(queryset=Teacher.objects.none())
+    school_class = forms.ModelChoiceField(queryset=SchoolClass.objects.none())
+    subject = forms.ModelMultipleChoiceField(
+        queryset=Subject.objects.none(),
+        widget=forms.CheckboxSelectMultiple  # or SelectMultiple
+    )
 
     def __init__(self, *args, **kwargs):
         school = kwargs.pop('school', None)
         super().__init__(*args, **kwargs)
-
         if school:
             self.fields['teacher'].queryset = Teacher.objects.filter(school=school)
-            self.fields['subject'].queryset = Subject.objects.filter(school=school)
             self.fields['school_class'].queryset = SchoolClass.objects.filter(school=school)
+            self.fields['subject'].queryset = Subject.objects.filter(school=school)
