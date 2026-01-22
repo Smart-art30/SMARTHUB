@@ -1,13 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 from accounts.decorators import role_required
-from .models import Subject, Exam, StudentMark
 from schools.models import SchoolClass
 from students.models import Student
+from .models import Subject, Exam, StudentMark
 from .forms import SubjectForm
-from .models import Subject 
-from .models import ExamSubject
-from django.contrib import messages
+from teachers.models import Teacher
+
+
 
 
 
@@ -104,71 +106,121 @@ def exam_subject_add(request, exam_id):
     })
 
 
+
+
+
+
 @login_required
 @role_required('teacher')
-def choose_class(request):
-    classes = SchoolClass.objects.filter(school=request.user.school)
-    return render(request, 'academics/choose_class.html', {
+def select_class(request):
+    teacher = get_object_or_404(Teacher, user=request.user)
+
+    classes = (
+        SchoolClass.objects
+        .filter(
+            teacherclass__teacher=teacher,
+            school=teacher.school
+        )
+        .distinct()
+        .order_by('name', 'stream')
+    )
+
+    return render(request, 'academics/select_class.html', {
         'classes': classes
     })
 
 
 @login_required
 @role_required('teacher')
-def class_mark_entry(request, class_id):
+def class_overview(request, class_id):
+    teacher = get_object_or_404(Teacher, user=request.user)
+
     school_class = get_object_or_404(
         SchoolClass,
         id=class_id,
-        school=request.user.school
+        school=teacher.school
     )
 
-    exam_subjects = ExamSubject.objects.filter(
-        school_class=school_class
-    )
 
-    return render(request, 'academics/class_mark_entry.html', {
+    students = Student.objects.filter(student_class=school_class)
+
+    
+    subjects = Subject.objects.filter(
+        teachersubjectassignment__school_class=school_class,
+        teachersubjectassignment__teacher=teacher
+    ).distinct()
+
+    return render(request, 'academics/class_overview.html', {
         'school_class': school_class,
-        'exam_subjects': exam_subjects
+        'students': students,
+        'subjects': subjects
     })
 
 
 
 @login_required
 @role_required('teacher')
-def mark_entry(request, exam_subject_id):
-    exam_subject = get_object_or_404(
-    ExamSubject,
-    id=exam_subject_id,
-    exam__school=request.user.school
-)
+def select_exam(request, class_id, subject_id):
+    teacher = get_object_or_404(Teacher, user=request.user)
+
+    school_class = get_object_or_404(
+        SchoolClass,
+        id=class_id,
+        school=teacher.school
+    )
+
+    subject = get_object_or_404(Subject, id=subject_id)
+
+   
+    exams = Exam.objects.filter(
+        school=teacher.school,
+        school_class=school_class,
+        subject=subject
+    )
+
+    return render(request, 'academics/select_exam.html', {
+        'school_class': school_class,
+        'subject': subject,
+        'exams': exams
+    })
+
+@login_required
+@role_required('teacher')
+def enter_marks(request, exam_id):
+    exam = get_object_or_404(
+        Exam,
+        id=exam_id,
+        school=request.user.school
+    )
+
     students = Student.objects.filter(
-        school_class=exam_subject.exam.school_class
+        school_class=exam.school_class
     )
 
     if request.method == 'POST':
         for student in students:
             marks = request.POST.get(f'marks_{student.id}')
-
-            if marks:
+            if marks != '':
                 StudentMark.objects.update_or_create(
                     student=student,
-                    exam_subject=exam_subject,
+                    exam=exam,
                     defaults={'marks': marks}
                 )
 
         messages.success(request, "Marks saved successfully.")
-        return redirect('teacher_dashboard')
+        return redirect('class_overview', class_id=exam.school_class.id)
 
     existing_marks = {
         m.student_id: m.marks
-        for m in StudentMark.objects.filter(exam_subject=exam_subject)
+        for m in StudentMark.objects.filter(exam=exam)
     }
 
-    return render(request, 'academics/mark_entry.html', {
-        'exam_subject': exam_subject,
+    return render(request, 'academics/enter_marks.html', {
+        'exam': exam,
         'students': students,
         'existing_marks': existing_marks
     })
+
 
 
 @login_required
@@ -176,8 +228,7 @@ def student_report(request, student_id, exam_id):
     student = get_object_or_404(Student, id=student_id)
     exam = get_object_or_404(Exam, id=exam_id)
 
-    exam_subjects = exam.examsubject_set.all()
-    marks = StudentMark.objects.filter(student=student, exam_subject__in=exam_subjects)
+    marks = StudentMark.objects.filter(student=student, exam=exam)
 
     total = sum(m.marks for m in marks)
     average = total / marks.count() if marks.exists() else 0
@@ -199,3 +250,4 @@ def report_list(request):
         'students': students,
         'exams': exams,
     })
+

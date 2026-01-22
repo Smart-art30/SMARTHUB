@@ -26,7 +26,7 @@
                         <a class="nav-link" href="#">Welcome, {{ request.user.username }}</a>
                     </li>
                    <li class="nav-item">
-    <form method="post" action="{% url 'logout' %}" class="d-inline">
+    <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
         {% csrf_token %}
         <button type="submit" class="btn btn-link nav-link text-warning p-0" style="border:none; background:none;">
             Logout
@@ -56,27 +56,19 @@
                         <a class="nav-link" href="{% url 'teachers:teacher_list' %}">Teachers</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'invoice_list' %}">Invoices</a>
+                        <a class="nav-link" href="{% url 'finance:invoice_list' %}">Invoices</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'payment_list' %}">Payments</a>
+                        <a class="nav-link" href="{% url 'finance:payment_list' %}">Payments</a>
                     </li>
-                    <!-- <li class="nav-item">
-                   {% if student and exam %}
-                    <a class="nav-link" href="{% url 'students:student_report' student.id exam.id %}">
-                     View Reports
-                    </a>
-                   {% else %}
-                   <span class="nav-link disabled text-muted">No reports available</span>
-                    {% endif %}
-                   </li> -->
+                  
 
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'students:parent_list' %}">Parents</a>
 
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'fee_list' %}">Fee Structure</a>
+                        <a class="nav-link" href="{% url 'finance:fee_list' %}">Fee Structure</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'attendance:attendance_list' %}">Attendance</a>
@@ -315,10 +307,10 @@
                             </table>
                         </div>
                         {% else %}
-                            <p>No classes found. <a href="{% url 'add_class' %}">Add your first class</a>.</p>
+                            <p>No classes found. <a href="{% url 'schools:add_class' %}">Add your first class</a>.</p>
                         {% endif %}
 
-                        <a href="{% url 'add_class' %}" class="btn btn-primary mt-3">
+                        <a href="{% url 'schools:add_class' %}" class="btn btn-primary mt-3">
                             <i class="bi bi-plus-circle me-1"></i> Add New Class
                         </a>
                     </div>

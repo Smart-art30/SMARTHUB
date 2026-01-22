@@ -16,27 +16,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-#from django.shortcuts import redirect
 from django.conf import settings
 from django.conf.urls.static import static
-from accounts import views as account_views
-
-
-
 
 urlpatterns = [
-    path('', include('dashboard.urls')),
     path('admin/', admin.site.urls),
-    path('dashboard/', include('dashboard.urls')),
-    path('schools/', include('schools.urls')),
-    path('students/', include('students.urls')),
-    path('teachers/', include('teachers.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('finance/', include('finance.urls')),
-    path('accounts/', include('accounts.urls')), 
-    path('attendance/', include('attendance.urls')),
-    path('academics/', include('academics.urls', namespace='academics')), 
-    path('teachers/', include('teachers.urls', namespace='teachers')),
-    path('schooladmin/', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
+
+    
+    path('', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
+
+    path('schools/', include(('schools.urls', 'schools'), namespace='schools')),
+    path('students/', include(('students.urls', 'students'), namespace='students')),
+
+    
+    path('teachers/', include(('teachers.urls', 'teachers'), namespace='teachers')),
+
+    path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
+
+    path('finance/', include(('finance.urls', 'finance'), namespace='finance')),
+    path('attendance/', include(('attendance.urls', 'attendance'), namespace='attendance')),
+    path('academics/', include(('academics.urls', 'academics'), namespace='academics')),
 ]
+
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

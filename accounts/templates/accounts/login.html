@@ -1,4 +1,4 @@
-{% extends "accounts/base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Login | SmartHub{% endblock %}
@@ -7,7 +7,7 @@
 <div class="container min-vh-100 d-flex align-items-center justify-content-center">
     <div class="row justify-content-center w-100">
 
-        <!-- LOGIN -->
+        <!-- LOGIN FORM -->
         <div class="col-md-5">
             <div class="card shadow p-4">
                 <h3 class="text-center mb-4">Login</h3>
@@ -18,7 +18,7 @@
                     {% endfor %}
                 {% endif %}
 
-                <form method="post" action="{% url 'login' %}">
+                <form method="post" action="{% url 'accounts:login' %}">
                     {% csrf_token %}
                     <input type="hidden" name="login_submit">
 
@@ -37,21 +37,20 @@
             </div>
         </div>
 
-      
-       <div class="col-md-5 ms-md-4 mt-4 mt-md-0">
-    <div class="card shadow p-4">
-        <h3 class="text-center mb-4">Register</h3>
+        <!-- REGISTER FORM -->
+        <div class="col-md-5 ms-md-4 mt-4 mt-md-0">
+            <div class="card shadow p-4">
+                <h3 class="text-center mb-4">Register</h3>
 
-        <form method="post" action="{% url 'register' %}">
-            {% csrf_token %}
-            {{ register_form.as_p }}
-            <button type="submit" class="btn btn-success w-100">
-                Create Account
-            </button>
-        </form>
-    </div>
-</div>
-
+                <form method="post" action="{% url 'accounts:register' %}">
+                    {% csrf_token %}
+                    {{ register_form.as_p }}
+                    <button type="submit" class="btn btn-success w-100">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+        </div>
 
     </div>
 </div>
