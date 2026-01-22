@@ -55,6 +55,10 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'teachers:teacher_list' %}">Teachers</a>
                     </li>
+                       <li class="nav-item">
+                        <a class="nav-link" href="{% url 'teachers:assign_teacher_subject' %}">Assign class</a>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'finance:invoice_list' %}">Invoices</a>
                     </li>
@@ -294,10 +298,10 @@
                                         <td>{{ cls.section|default:"-" }}</td>
                                         <td>{{ cls.created_at|date:"d M Y H:i" }}</td>
                                         <td class="text-center">
-                                            <a href="{% url 'edit_class' cls.id %}" class="btn btn-sm btn-warning me-1" title="Edit Class">
+                                            <a href="{% url 'schools:edit_class' cls.id %}" class="btn btn-sm btn-warning me-1" title="Edit Class">
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
-                                            <a href="{% url 'delete_class' cls.id %}" class="btn btn-sm btn-danger" title="Delete Class">
+                                            <a href="{% url 'schools:delete_class' cls.id %}" class="btn btn-sm btn-danger" title="Delete Class">
                                                 <i class="bi bi-trash-fill"></i>
                                             </a>
                                         </td>

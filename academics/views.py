@@ -8,6 +8,8 @@ from students.models import Student
 from .models import Subject, Exam, StudentMark
 from .forms import SubjectForm
 from teachers.models import Teacher
+from .models import Exam, ExamSubject, SchoolClass, Subject
+
 
 
 
@@ -42,34 +44,73 @@ def subject_add(request):
 def exam_list(request):
     exams = Exam.objects.filter(school=request.user.school)
     return render(request, 'academics/exam_list.html', {'exams': exams})
+
+
 @login_required
 @role_required('schooladmin')
 def exam_add(request):
+    """
+    View to create a new exam for all classes in the school,
+    and link all subjects to each class via ExamSubject.
+    """
     if request.method == 'POST':
-        name = request.POST.get('name')
-        term = request.POST.get('term')
-        year = int(request.POST.get('year'))
+        # Get data from the form
+        name = request.POST.get('name', '').strip()
+        term = request.POST.get('term', '').strip()
+        year_str = request.POST.get('year', '').strip()
 
-        exam = Exam.objects.create(
-            name=name,
-            term=term,
-            year=year,
-            school=request.user.school
-        )
+        # Validate inputs
+        if not name or not term or not year_str:
+            messages.error(request, "All fields are required.")
+            return render(request, 'academics/exam_add.html')
 
-    
+        try:
+            year = int(year_str)
+        except ValueError:
+            messages.error(request, "Year must be a valid number.")
+            return render(request, 'academics/exam_add.html')
+
+        # Fetch all classes and subjects for the school
         classes = SchoolClass.objects.filter(school=request.user.school)
         subjects = Subject.objects.filter(school=request.user.school)
 
-        for cls in classes:
-            for subj in subjects:
-                ExamSubject.objects.get_or_create(
-                    exam=exam,
-                    subject=subj,
-                    school_class=cls
-                )
+        if not classes.exists():
+            messages.error(request, "No classes found for your school.")
+            return render(request, 'academics/exam_add.html')
 
-        messages.success(request, "Exam created successfully with all subjects for all classes.")
+        if not subjects.exists():
+            messages.error(request, "No subjects found for your school.")
+            return render(request, 'academics/exam_add.html')
+
+      
+        exams_created = 0
+        exam_subjects_created = 0
+
+        for cls in classes:
+            
+            exam, created = Exam.objects.get_or_create(
+                name=name,
+                term=term,
+                year=year,
+                school=request.user.school,
+                school_class=cls
+            )
+            if created:
+                exams_created += 1
+
+            for subj in subjects:
+                _, es_created = ExamSubject.objects.get_or_create(
+                    exam=exam,
+                    school_class=cls,
+                    subject=subj
+                )
+                if es_created:
+                    exam_subjects_created += 1
+
+        messages.success(
+            request,
+            f"Exams created: {exams_created}, ExamSubjects created: {exam_subjects_created}."
+        )
         return redirect('academics:exam_list')
 
     return render(request, 'academics/exam_add.html')

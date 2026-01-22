@@ -11,6 +11,10 @@ from django.contrib import messages
 from django.db import IntegrityError
 from django.core.mail import send_mail
 from .forms import TeacherSubjectAssignmentForm
+from .models import TeacherSubjectAssignment
+from schools.models import SchoolClass
+from academics.models import Subject
+
 
 
 
@@ -170,19 +174,66 @@ def teacher_profile_edit(request):
         'form': form
     })
 
-def add_teacher_subject(request):
-    school = request.user.school 
 
+def add_teacher_subject(request):
+    school = request.user.school  
     if request.method == 'POST':
         form = TeacherSubjectAssignmentForm(request.POST, school=school)
         if form.is_valid():
-            assignment = form.save(commit=False)
-            assignment.school = school  
-            assignment.save()
+            teacher = form.cleaned_data['teacher']
+            school_class = form.cleaned_data['school_class']
+            subjects = form.cleaned_data['subject']
 
-            messages.success(request, 'Teacher assigned to subject successfully.')
-            return redirect('dashboard:schooladmin_dashboard')
+            for subject in subjects:
+                assignment, created = TeacherSubjectAssignment.objects.get_or_create(
+                    teacher=teacher,
+                    school_class=school_class,
+                    subject=subject
+                )
+                if created:
+                    messages.success(request, f'Subject {subject.name} assigned successfully.')
+                else:
+                    messages.warning(request, f'Subject {subject.name} was already assigned.')
+
+            return redirect('teachers:add_teacher_subject')  
     else:
         form = TeacherSubjectAssignmentForm(school=school)
 
     return render(request, 'teachers/add_teacher_subject.html', {'form': form})
+
+
+
+@login_required
+@role_required('schooladmin')
+def assign_teacher_subject(request):
+    if request.method == 'POST':
+        teacher_id = request.POST.get('teacher')
+        class_id = request.POST.get('school_class')
+        subject_id = request.POST.get('subject')
+
+        teacher = get_object_or_404(Teacher, id=teacher_id)
+        school_class = get_object_or_404(SchoolClass, id=class_id)
+        subject = get_object_or_404(Subject, id=subject_id)
+
+        assignment, created = TeacherSubjectAssignment.objects.get_or_create(
+            teacher=teacher,
+            school_class=school_class,
+            subject=subject
+        )
+
+        if created:
+            messages.success(request, "Teacher assigned successfully!")
+        else:
+            messages.warning(request, "This teacher is already assigned to this subject in this class.")
+
+        return redirect('teachers:assign_teacher_subject')
+
+    teachers = Teacher.objects.all()
+    classes = SchoolClass.objects.all()
+    subjects = Subject.objects.all()
+
+    return render(request, 'teachers/assign_teacher_subject.html', {
+        'teachers': teachers,
+        'classes': classes,
+        'subjects': subjects
+    })

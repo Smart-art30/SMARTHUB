@@ -2,15 +2,15 @@
 {% block content %}
 <div class="container mt-4">
     <h3>Classes</h3>
-    <a href="{% url 'add_class' %}" class="btn btn-primary mb-3">Add Class</a>
+    <a href="{% url 'schools:add_class' %}" class="btn btn-primary mb-3">Add Class</a>
 
     <ul class="list-group">
         {% for c in classes %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 {{ c.name }}
                 <div>
-                    <a href="{% url 'edit_class' c.id %}" class="btn btn-sm btn-warning">Edit</a>
-                    <a href="{% url 'delete_class' c.id %}" class="btn btn-sm btn-danger">Delete</a>
+                    <a href="{% url 'schools:edit_class' c.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'schools:delete_class' c.id %}" class="btn btn-sm btn-danger">Delete</a>
                 </div>
             </li>
         {% empty %}

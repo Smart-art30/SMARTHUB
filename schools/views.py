@@ -5,6 +5,9 @@ from .models import SubscriptionPlan, SchoolClass
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
 from .forms import SchoolClassForm
+from django.shortcuts import get_object_or_404
+from django.contrib import messages
+
 
 
 
@@ -28,7 +31,7 @@ def school_signup(request):
             return redirect('login')
     else:
         form = SchoolSignupForm()
-    return render(request, 'schools/sighup.html',{'form': form})
+    return render(request, 'schools/signup.html',{'form': form})
         
 
 @login_required
@@ -46,7 +49,7 @@ def add_class(request):
             school_class = form.save(commit=False)
             school_class.school = request.user.school
             school_class.save()
-            return redirect('class_list')
+            return redirect('schools:class_list')  
     else:
         form = SchoolClassForm()
 
@@ -60,7 +63,7 @@ def edit_class(request, class_id):
         form = SchoolClassForm(request.POST, instance=classes)
         if form.is_valid():
             form.save()
-            return redirect('schooladin_dashborad')
+            return redirect('schooladmin_dashborad')
     else:
         form=SchoolClassForm(instance=classes)
     return render(request, 'schools/add_class.html', {'form':form, 'edit':True})
@@ -68,8 +71,15 @@ def edit_class(request, class_id):
 @login_required
 @role_required('schooladmin')
 def delete_class(request, class_id):
-    cls = get_object_or_404(SchoolClass, id=class_id, school=request.user.school)
+    try:
+        cls = SchoolClass.objects.get(id=class_id, school=request.user.school)
+    except SchoolClass.DoesNotExist:
+        messages.error(request, "This class does not exist or you don't have permission to delete it.")
+        return redirect('schools:class_list')
+
     if request.method == 'POST':
         cls.delete()
-        return redirect('schooladmin_dashboard')
+        messages.success(request, f"Class '{cls.name}' deleted successfully.")
+        return redirect('schools:class_list')
+
     return render(request, 'schools/confirm_delete.html', {'object': cls})
