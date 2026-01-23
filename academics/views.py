@@ -9,6 +9,9 @@ from .models import Subject, Exam, StudentMark
 from .forms import SubjectForm
 from teachers.models import Teacher
 from .models import Exam, ExamSubject, SchoolClass, Subject
+from teachers.models import TeacherSubjectAssignment
+from schools.models import SchoolClass
+from teachers.models import TeacherClass
 
 
 
@@ -149,26 +152,29 @@ def exam_subject_add(request, exam_id):
 
 
 
-
-
 @login_required
 @role_required('teacher')
-def select_class(request):
-    teacher = get_object_or_404(Teacher, user=request.user)
+def select_class(request, class_id):
+    teacher = request.user.teacher
 
-    classes = (
-        SchoolClass.objects
-        .filter(
-            teacherclass__teacher=teacher,
-            school=teacher.school
-        )
-        .distinct()
-        .order_by('name', 'stream')
+    selected_class = get_object_or_404(
+        SchoolClass.objects.filter(
+            teachersubjectassignment__teacher=teacher
+        ).distinct(),
+        id=class_id
     )
 
+    assignments = TeacherSubjectAssignment.objects.filter(
+        teacher=teacher,
+        school_class=selected_class
+    ).select_related('subject')
+
     return render(request, 'academics/select_class.html', {
-        'classes': classes
+        'school_class': selected_class,
+        'assignments': assignments,
     })
+
+
 
 
 @login_required
@@ -198,7 +204,6 @@ def class_overview(request, class_id):
     })
 
 
-
 @login_required
 @role_required('teacher')
 def select_exam(request, class_id, subject_id):
@@ -213,10 +218,16 @@ def select_exam(request, class_id, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
 
    
+    exam_subject = get_object_or_404(
+        ExamSubject,
+        school_class=school_class,
+        subject=subject
+    )
+
     exams = Exam.objects.filter(
         school=teacher.school,
         school_class=school_class,
-        subject=subject
+        examsubject=exam_subject
     )
 
     return render(request, 'academics/select_exam.html', {
@@ -225,18 +236,30 @@ def select_exam(request, class_id, subject_id):
         'exams': exams
     })
 
+
 @login_required
 @role_required('teacher')
 def enter_marks(request, exam_id):
+    teacher = request.user.teacher
+    teacher_school = teacher.school  
+
     exam = get_object_or_404(
         Exam,
         id=exam_id,
-        school=request.user.school
+        school=teacher_school  
     )
 
     students = Student.objects.filter(
-        school_class=exam.school_class
+        student_class=exam.school_class
     )
+
+    # Attach existing marks to each student
+    existing_marks = {
+        m.student_id: m.marks
+        for m in StudentMark.objects.filter(exam=exam)
+    }
+    for student in students:
+        student.existing_mark = existing_marks.get(student.id, '')
 
     if request.method == 'POST':
         for student in students:
@@ -249,18 +272,13 @@ def enter_marks(request, exam_id):
                 )
 
         messages.success(request, "Marks saved successfully.")
-        return redirect('class_overview', class_id=exam.school_class.id)
-
-    existing_marks = {
-        m.student_id: m.marks
-        for m in StudentMark.objects.filter(exam=exam)
-    }
+        return redirect('academics:class_overview', class_id=exam.school_class.id)
 
     return render(request, 'academics/enter_marks.html', {
         'exam': exam,
-        'students': students,
-        'existing_marks': existing_marks
+        'students': students
     })
+
 
 
 
@@ -292,3 +310,33 @@ def report_list(request):
         'exams': exams,
     })
 
+@login_required
+@role_required('schooladmin')
+def assign_teacher(request):
+    if request.method == "POST":
+        teacher = Teacher.objects.get(id=request.POST['teacher'])
+        school_class = SchoolClass.objects.get(id=request.POST['school_class'])
+        subject = Subject.objects.get(id=request.POST['subject'])
+
+        obj, created = TeacherClass.objects.get_or_create(
+            teacher=teacher,
+            school_class=school_class,
+            subject=subject
+        )
+
+        if created:
+            messages.success(
+                request, 
+                f"{teacher.user.get_full_name()} assigned to {school_class.name} ({subject.name})"
+            )
+        else:
+            messages.warning(request, "This assignment already exists.")
+
+        return redirect('academics:assign_teacher')
+
+    context = {
+        'teachers': Teacher.objects.all(),
+        'classes': SchoolClass.objects.all(),
+        'subjects': Subject.objects.all(),
+    }
+    return render(request, 'academics/assign_teacher.html', context)

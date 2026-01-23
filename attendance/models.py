@@ -37,6 +37,8 @@ class StudentAttendance(models.Model):
     def __str__(self):
         return f"{self.student} | {self.date} | {self.status}"
 
+        
+
 class TeacherAttendance(models.Model):
     STATUS_CHOICES = [
         ('present', 'Present'),

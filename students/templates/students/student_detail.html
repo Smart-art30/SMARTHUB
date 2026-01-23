@@ -13,7 +13,7 @@
         <p><strong>Date of Birth:</strong> {{ student.date_of_birth|date:"d M Y" }}</p>
         <p><strong>Gender:</strong> {{ student.gender|title }}</p>
         <p><strong>Created At:</strong> {{ student.created_at|date:"d M Y H:i" }}</p>
-        <a href="{% url 'student_list' %}" class="btn btn-secondary mt-2">Back to List</a>
+        <a href="{% url 'students:student_list' %}" class="btn btn-secondary mt-2">Back to List</a>
     </div>
 </div>
 {% endblock %}

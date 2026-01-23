@@ -14,7 +14,7 @@
 
     <!-- Quick Stats -->
     <div class="row mb-4">
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-6 mb-2">
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     <h6 class="text-muted">Classes</h6>
@@ -23,7 +23,7 @@
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-6 mb-2">
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     <h6 class="text-muted">Subjects</h6>
@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-6 mb-2">
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     <h6 class="text-muted">School</h6>
@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-6 mb-2">
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     <h6 class="text-muted">Status</h6>
@@ -54,87 +54,94 @@
     <div class="row">
 
         <!-- Profile -->
-        <div class="col-md-3">
+        <div class="col-md-3 mb-4">
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     {% if teacher.profile_picture %}
-                        <img src="{{ teacher.profile_picture.url }}" class="rounded-circle mb-3" width="120">
+                        <img src="{{ teacher.profile_picture.url }}" class="rounded-circle mb-3" width="120" alt="Profile Picture">
                     {% else %}
-                        <img src="{% static 'images/default-avatar.png' %}" class="rounded-circle mb-3" width="120">
+                        <img src="{% static 'images/default-avatar.png' %}" class="rounded-circle mb-3" width="120" alt="Default Avatar">
                     {% endif %}
                     <h6>{{ teacher.user.get_full_name }}</h6>
                     <small class="text-muted">{{ teacher.designation }}</small>
 
                     <hr>
-                    <a href="{% url 'dashboard:teacher_profile_edit' %}" class="btn btn-outline-secondary btn-sm w-100">
+                    <a href="{% url 'dashboard:teacher_profile_edit' %}" class="btn btn-outline-secondary btn-sm w-100 mb-2">
                         Edit Profile
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="col-md-9">
+                    <!-- Main Content -->
+                <div class="col-md-9">
 
-            <div class="row">
-
-                <!-- Classes -->
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-primary text-white">
-                            Assigned Classes
+                    <div class="row">
+                        <!-- Classes -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-header bg-primary text-white">
+                                    Assigned Classes
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    {% for item in classes %}
+                                    <li class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span>{{ item.class.name }} {{ item.class.stream }}</span>
+                                            <span class="badge bg-secondary">
+                                                {{ item.student_count }} students
+                                            </span>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'attendance:teacher_mark' item.class.id %}"
+                                            class="btn btn-sm btn-outline-primary flex-fill">
+                                                Mark Attendance
+                                            </a>
+                                            <a href="{% url 'attendance:class_attendance_report' item.class.id %}"
+                                            class="btn btn-sm btn-outline-secondary flex-fill">
+                                                View Report
+                                            </a>
+                                        </div>
+                                    </li>
+                                    {% empty %}
+                                    <li class="list-group-item text-muted">No classes assigned</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
                         </div>
-                        <ul class="list-group list-group-flush">
-                            {% for item in classes %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ item.class.name }} {{ item.class.stream }}
-                                <span class="badge bg-secondary">
-                                    {{ item.student_count }} students
-                                </span>
-                            </li>
-                                                <li class="list-group-item">
-                            <a href="{% url 'attendance:teacher_mark' item.class.id %}"
-                            class="btn btn-sm btn-outline-primary w-100 mb-2">
-                                Mark Attendance
-                            </a>
 
-    <a href="{% url 'attendance:class_attendance_report' item.class.id %}"
-       class="btn btn-sm btn-outline-secondary w-100">
-        View Attendance Report
-    </a>
-</li>
 
-                            {% empty %}
-                            <li class="list-group-item text-muted">No classes assigned</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
 
-                <!-- Subjects -->
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-success text-white">
-                            Assigned Subjects
+                        <!-- Subjects -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-header bg-success text-white">
+                                    Assigned Subjects
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    {% for assign in assignments %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ assign.subject.name }}</strong><br>
+                                            <small class="text-muted">
+                                                {{ assign.school_class.name }} {{ assign.school_class.stream }}
+                                            </small>
+                                        </div>
+
+                                       <a href="{% url 'academics:select_exam' assign.school_class.id assign.subject.id %}" class="btn btn-sm btn-primary">
+    Select Exam
+</a>
+
+                                    </li>
+                                    {% empty %}
+                                    <li class="list-group-item text-muted">
+                                        No subjects assigned
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
                         </div>
-                        <ul class="list-group list-group-flush">
-                            {% for subject in subjects %}
-                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ subject.name }}
-                            <a href="{% url 'academics:select_class' %}"
-                            class="btn btn-sm btn-primary">
-                                Enter Marks
-                            </a>
-                        </li>
 
-                            {% empty %}
-                            <li class="list-group-item text-muted">No subjects assigned</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
 
             <!-- Notifications -->
             <div class="card shadow-sm">
@@ -145,10 +152,7 @@
                     {% for note in notifications %}
                     <li class="list-group-item">
                         <strong>{{ note.title }}</strong><br>
-                        <small class="text-muted">
-                            {{ note.get_notification_type_display }} |
-                            {{ note.created_at|date:"M d, Y H:i" }}
-                        </small>
+                        <small class="text-muted">{{ note.get_notification_type_display }} | {{ note.created_at|date:"M d, Y H:i" }}</small>
                         <p class="mb-0">{{ note.message }}</p>
                     </li>
                     {% empty %}

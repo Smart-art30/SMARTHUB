@@ -41,11 +41,11 @@ def student_add(request):
         
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists")
-            return redirect('student_add')
+            return redirect('students:student_add')
 
         if Student.objects.filter(admission_number=admission, school=school).exists():
             messages.error(request, f"Admission number {admission} already exists in this school.")
-            return redirect('student_add')
+            return redirect('students:student_add')
 
     
         password = secrets.token_urlsafe(8)
@@ -76,12 +76,13 @@ def student_add(request):
 
         except IntegrityError:
             messages.error(request, "Could not create student due to duplicate data.")
-            return redirect('student_add')
+            return redirect('students:student_add')
 
         messages.success(request, f"Student added successfully. Temporary password: {password}")
-        return redirect('student_list')
+        return redirect('students:student_list')
 
     return render(request, 'students/student_add.html', {'classes': classes})
+
 
 @login_required
 def student_detail(request, pk):

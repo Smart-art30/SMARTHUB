@@ -1,21 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-
 <h3>Exams for {{ subject.name }} ({{ school_class.name }} {{ school_class.stream }})</h3>
 
-{% if exams %}
-  <ul class="list-group">
+<ul class="list-group list-group-flush">
     {% for exam in exams %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        {{ exam.name }}
-        <a href="{% url 'academics:enter_marks' exam.id %}" class="btn btn-sm btn-primary">
-          Enter Marks
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <strong>{{ exam.name }}</strong>
+            <br>
+            <small class="text-muted">Date: {{ exam.date }}</small>
+        </div>
+
+       
+        <a href="{% url 'academics:enter_marks' exam.id %}" class="btn btn-sm btn-success">
+            Enter Marks
         </a>
-      </li>
+    </li>
+    {% empty %}
+    <li class="list-group-item text-muted">
+        No exams available for this subject.
+    </li>
     {% endfor %}
-  </ul>
-{% else %}
-  <p>No exams assigned for this subject.</p>
-{% endif %}
+</ul>
+
+<a href="{% url 'dashboard:teacher_dashboard' %}" class="btn btn-secondary mt-3">
+    Back to Dashboard
+</a>
+
 
 {% endblock %}

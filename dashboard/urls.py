@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from students.views import student_list, student_add
 from academics.views import student_report
+from academics import views as academics_views
 
 app_name = 'dashboard'
 
@@ -29,4 +30,7 @@ urlpatterns = [
         student_report,
         name='student_report'
     ),
+
+    
+
 ]
