@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Assign Teacher{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Assign Teacher to Class & Subject</h3>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-2">
+            <label>Teacher</label>
+            <select name="teacher" class="form-control" required>
+                {% for t in teachers %}
+                <option value="{{ t.id }}">{{ t.user.get_full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-2">
+            <label>Class</label>
+            <select name="school_class" class="form-control" required>
+                {% for c in classes %}
+                <option value="{{ c.id }}">{{ c.name }} {{ c.stream }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-2">
+            <label>Subject</label>
+            <select name="subject" class="form-control" required>
+                {% for s in subjects %}
+                <option value="{{ s.id }}">{{ s.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button class="btn btn-success">Assign</button>
+    </form>
+</div>
+{% endblock %}

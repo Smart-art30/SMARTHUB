@@ -28,7 +28,6 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username
-
 class TeacherClass(models.Model):
     teacher = models.ForeignKey(
         Teacher,
@@ -39,11 +38,19 @@ class TeacherClass(models.Model):
         SchoolClass,
         on_delete=models.CASCADE
     )
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.CASCADE,
+        related_name="assigned_teachers",
+        null=True,     
+        blank=True
+    )
+
     class Meta:
-        unique_together = ('teacher', 'school_class')
+        unique_together = ('teacher', 'school_class', 'subject')
 
     def __str__(self):
-        return f'{self.teacher} -> {self.school_class}'
+        return f'{self.teacher} -> {self.school_class} -> {self.subject}'
 
 
 class TeacherSubjectAssignment(models.Model):

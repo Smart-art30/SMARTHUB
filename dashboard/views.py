@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 import teachers.views as teacher_views
-from teachers.models import Teacher
+from teachers.models import Teacher,TeacherSubjectAssignment
 from schools.models import School
 from django.http import Http404
 from students.models import Student
@@ -15,7 +15,10 @@ from students.models import Student
 from academics.models import Exam
 from students.models import Student 
 from notifications.models import Notification
-from academics.models import Subject
+from academics.models import Subject,AcademicTerm
+from django.db.models import Count
+
+
 
 
 
@@ -131,39 +134,48 @@ def schooladmin_dashboard(request):
 @login_required
 @role_required('teacher')
 def teacher_dashboard(request):
-    teacher = request.user.teacher  
+    teacher = request.user.teacher
 
-    
-    class_links = teacher.assigned_classes.select_related('school_class')
-    
-    from students.models import Student
-    class_data = []
-    for tc in class_links:
-       
-        class_data.append({
-            'class': tc.school_class,
-            'student_count': Student.objects.filter(
-                student_class=tc.school_class
-            ).count()
-        })
+    active_term = AcademicTerm.objects.filter(is_active=True).first()
 
-    from teachers.models import TeacherSubjectAssignment, Subject
-    subjects = Subject.objects.filter(
-        teachersubjectassignment__teacher=teacher
-    ).distinct()
+    assignments = (
+        TeacherSubjectAssignment.objects
+        .filter(teacher=teacher)
+        .select_related('school_class', 'subject')
+        .annotate(student_count=Count('school_class__student'))
+        .order_by('school_class__name', 'subject__name')
+    )
+
+  
+    classes = {}
+    for a in assignments:
+        class_id = a.school_class.id
+        if class_id not in classes:
+            classes[class_id] = {
+                'class': a.school_class,
+                'student_count': a.student_count
+            }
+
+    classes = classes.values()
+
+    total_classes = len(classes)
+    total_subjects = assignments.values('subject').distinct().count()
+    workload = assignments.count()
 
     notifications = Notification.objects.filter(
         user=request.user,
         school=teacher.school
-    )[:5]
+    ).order_by('-created_at')[:5]
 
     context = {
         'teacher': teacher,
-        'classes': class_data,
-        'subjects': subjects,
+        'assignments': assignments,
+        'classes': classes, 
         'notifications': notifications,
-        'total_classes': len(class_data),
-        'total_subjects': subjects.count(),
+        'active_term': active_term,
+        'total_classes': total_classes,
+        'total_subjects': total_subjects,
+        'workload': workload,
     }
 
     return render(request, 'dashboard/teacher.html', context)

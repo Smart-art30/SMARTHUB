@@ -177,15 +177,38 @@ def class_attendance_report(request, class_id):
         'records': records
     })
             
-
-
 @login_required
 @role_required('teacher')
 def teacher_mark(request, class_id):
-    students = Student.objects.filter(student_class_id=class_id)
-    student_class = SchoolClass.objects.get(id=class_id)
+    """
+    Allows a teacher to mark attendance for a class.
+    Ensures that the class belongs to the same school as the teacher.
+    """
+    # Get the teacher object linked to the logged-in user
+    teacher = getattr(request.user, "teacher", None)
+    if not teacher:
+        messages.error(request, "You are not registered as a teacher.")
+        return redirect("dashboard:teacher_dashboard")
+
+    teacher_school = teacher.school
+
+    try:
+        # Try to get the class for the teacher's school
+        student_class = SchoolClass.objects.get(id=class_id)
+    except SchoolClass.DoesNotExist:
+        messages.error(request, "The selected class does not exist.")
+        return redirect("dashboard:teacher_dashboard")
+
+   
+    if student_class.school != teacher_school:
+        messages.error(request, f"You cannot mark attendance for '{student_class}' because it belongs to another school.")
+        return redirect("dashboard:teacher_dashboard")
+
+    
+    students = Student.objects.filter(student_class=student_class, school=teacher_school)
 
     if request.method == "POST":
+        today = timezone.now().date()
         for student in students:
             status = request.POST.get(f"status_{student.id}")
             remarks = request.POST.get(f"remarks_{student.id}", "")
@@ -193,11 +216,13 @@ def teacher_mark(request, class_id):
             if status:
                 StudentAttendance.objects.update_or_create(
                     student=student,
-                    date=timezone.now().date(),
+                    date=today,
                     defaults={
+                        "school": teacher_school,
+                        "student_class": student_class,
                         "status": status,
                         "remarks": remarks,
-                        "teacher": request.user.teacher,
+                        "marked_by": teacher,
                     }
                 )
 
@@ -207,8 +232,9 @@ def teacher_mark(request, class_id):
     return render(request, "attendance/teacher_mark.html", {
         "students": students,
         "student_class": student_class,
-        "status_choices": StudentAttendance.STATUS_CHOICES, 
+        "status_choices": StudentAttendance.STATUS_CHOICES,
     })
+
 
 
 

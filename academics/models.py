@@ -72,3 +72,13 @@ class ExamSubject(models.Model):
 
     def __str__(self):
         return f'{self.exam} - {self.school_class} - {self.subject}'
+
+
+class AcademicTerm(models.Model):
+    name = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=False)
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    def __str__(self):
+        return self.name

@@ -1,13 +1,12 @@
 {% extends 'base.html' %}
-{% load dict_filters %}
 
 {% block content %}
 <div class="container mt-4">
-    <h3>Enter Marks for {{ exam_subject.subject.name }} - Class {{ exam_subject.school_class.name }}</h3>
+    <h3>Enter Marks for {{ exam.subject.name }} - Class {{ exam.school_class.name }}</h3>
     <p>
-        <strong>Exam:</strong> {{ exam_subject.exam.name }} ({{ exam_subject.exam.term }} {{ exam_subject.exam.year }})
+        <strong>Exam:</strong> {{ exam.name }} ({{ exam.term }} {{ exam.year }})
         <br>
-        <strong>Max Marks:</strong> {{ exam_subject.max_mark }}
+        <strong>Max Marks:</strong> {{ exam.max_mark }}
     </p>
 
     {% if students %}
@@ -25,14 +24,15 @@
                 <tr>
                     <td>{{ student.user.get_full_name }}</td>
                     <td>
-                        <input type="number" 
-                               name="marks_{{ student.id }}" 
-                               class="form-control" 
-                               value="{{ existing_marks|dict_get:student.id }}" 
-                               max="{{ exam_subject.max_mark }}" 
-                               min="0" 
-                               step="0.1" 
-                               required>
+                       <input type="number" 
+                            name="marks_{{ student.id }}" 
+                            class="form-control" 
+                            value="{{ student.existing_mark }}" 
+                            max="{{ exam.max_mark }}" 
+                            min="0" 
+                            step="0.1" 
+                            required>
+
                     </td>
                 </tr>
                 {% endfor %}
