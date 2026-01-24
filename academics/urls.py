@@ -23,4 +23,6 @@ urlpatterns = [
     path('assign-teacher/', views.assign_teacher, name='assign_teacher'),
     path('dashboard/reports/', views.report_list, name='report_list'),
     path('dashboard/reports/<int:student_id>/<int:exam_id>/', views.student_report, name='student_report'),
+    path('select-classes/', views.select_marks_classes, name='select_classes'),
+    path('enter-marks/', views.enter_marks_multi, name='enter_marks_multi'),
 ]

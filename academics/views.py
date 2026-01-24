@@ -236,47 +236,49 @@ def select_exam(request, class_id, subject_id):
         'exams': exams
     })
 
-
 @login_required
 @role_required('teacher')
 def enter_marks(request, exam_id):
     teacher = request.user.teacher
-    teacher_school = teacher.school  
+    teacher_school = teacher.school
 
     exam = get_object_or_404(
         Exam,
         id=exam_id,
-        school=teacher_school  
+        school_class__school=teacher_school
     )
 
-    students = Student.objects.filter(
-        student_class=exam.school_class
-    )
+    students = Student.objects.filter(student_class=exam.school_class)
+    subjects = exam.subjects.all()
 
-    # Attach existing marks to each student
-    existing_marks = {
-        m.student_id: m.marks
-        for m in StudentMark.objects.filter(exam=exam)
-    }
-    for student in students:
-        student.existing_mark = existing_marks.get(student.id, '')
+    existing_marks = {}
+    marks_qs = StudentMark.objects.filter(exam=exam)
+    for m in marks_qs:
+        existing_marks.setdefault(m.student_id, {})[m.subject_id] = m.marks
 
     if request.method == 'POST':
         for student in students:
-            marks = request.POST.get(f'marks_{student.id}')
-            if marks != '':
-                StudentMark.objects.update_or_create(
-                    student=student,
-                    exam=exam,
-                    defaults={'marks': marks}
-                )
-
+            for subject in subjects:
+                mark_value = request.POST.get(f'marks_{student.id}_{subject.id}')
+                if mark_value != '':
+                    StudentMark.objects.update_or_create(
+                        student=student,
+                        exam=exam,
+                        subject=subject,
+                        defaults={'marks': mark_value}
+                    )
         messages.success(request, "Marks saved successfully.")
         return redirect('academics:class_overview', class_id=exam.school_class.id)
 
+    
+    for student in students:
+        student.marks = {subject.id: existing_marks.get(student.id, {}).get(subject.id, '') for subject in subjects}
+        student.total = sum([float(v) for v in student.marks.values() if v != ''])
+
     return render(request, 'academics/enter_marks.html', {
         'exam': exam,
-        'students': students
+        'students': students,
+        'subjects': subjects,
     })
 
 
@@ -287,18 +289,28 @@ def student_report(request, student_id, exam_id):
     student = get_object_or_404(Student, id=student_id)
     exam = get_object_or_404(Exam, id=exam_id)
 
-    marks = StudentMark.objects.filter(student=student, exam=exam)
+    subjects = Subject.objects.filter(school=student.school)
 
-    total = sum(m.marks for m in marks)
-    average = total / marks.count() if marks.exists() else 0
+    marks_list = []
+    total = 0
+
+    for subject in subjects:
+        mark_obj = StudentMark.objects.filter(student=student, exam=exam, subject=subject).first()
+        score = mark_obj.marks if mark_obj else 0
+        total += score
+        marks_list.append({'subject': subject, 'score': score})
+
+    average = total / subjects.count() if subjects.exists() else 0
 
     return render(request, 'academics/student_report.html', {
         'student': student,
         'exam': exam,
-        'marks': marks,
+        'marks': marks_list,
         'total': total,
         'average': average,
     })
+
+
 
 @login_required
 @role_required('schooladmin')
@@ -340,3 +352,91 @@ def assign_teacher(request):
         'subjects': Subject.objects.all(),
     }
     return render(request, 'academics/assign_teacher.html', context)
+
+
+
+@login_required
+@role_required('teacher')
+def select_marks_classes(request):
+    """
+    Page for teacher to select one or more assigned classes
+    before entering marks.
+    """
+    teacher = request.user.teacher
+    classes = teacher.assigned_classes.all()
+
+    if request.method == 'POST':
+        class_ids = request.POST.getlist('classes')
+        if class_ids:
+            return redirect('academics:enter_marks_multi') + f"?classes={','.join(class_ids)}"
+
+    return render(request, 'academics/select_classes.html', {
+        'classes': classes
+    })
+
+
+
+
+@login_required
+@role_required('teacher')
+def enter_marks_multi(request):
+    """
+    Display students x subjects table for selected classes and exams.
+    """
+    teacher = request.user.teacher
+    class_ids = request.GET.get('classes', '')
+    class_ids = [int(cid) for cid in class_ids.split(',') if cid]
+
+    selected_classes = SchoolClass.objects.filter(id__in=class_ids, teachers=teacher)
+
+    # All students in selected classes
+    students = Student.objects.filter(student_class__in=selected_classes).order_by('student_class__name', 'user__last_name')
+
+    # Subjects for these classes assigned to this teacher
+    subjects = Subject.objects.filter(teacher_assignments__teacher=teacher, teacher_assignments__school_class__in=selected_classes).distinct()
+
+    # Get or create the latest exam for each subject+class
+    exam_dict = {}
+    for subject in subjects:
+        for cls in selected_classes:
+            exam, created = Exam.objects.get_or_create(
+                school_class=cls,
+                subject=subject,
+                defaults={'name': f'{subject.name} Exam', 'term': 'Term 1', 'year': 2026, 'max_mark': 100}
+            )
+            exam_dict[(cls.id, subject.id)] = exam
+
+    # Get existing marks
+    existing_marks = StudentMark.objects.filter(
+        student__in=students,
+        exam__in=exam_dict.values()
+    )
+    marks_dict = {}
+    for mark in existing_marks:
+        marks_dict.setdefault(mark.student_id, {})[mark.exam.subject.id] = mark.marks
+
+    if request.method == 'POST':
+        for student in students:
+            for subject in subjects:
+                exam = exam_dict[(student.student_class.id, subject.id)]
+                mark_value = request.POST.get(f'marks_{student.id}_{subject.id}')
+                if mark_value != '':
+                    StudentMark.objects.update_or_create(
+                        student=student,
+                        exam=exam,
+                        subject=subject,
+                        defaults={'marks': mark_value}
+                    )
+        messages.success(request, "Marks saved successfully!")
+        return redirect('dashboard:teacher_dashboard')
+
+    # Attach marks and total to each student
+    for student in students:
+        student.marks = {subject.id: marks_dict.get(student.id, {}).get(subject.id, '') for subject in subjects}
+        student.total = sum([float(v) for v in student.marks.values() if v != ''])
+
+    return render(request, 'academics/enter_marks_multi.html', {
+        'students': students,
+        'subjects': subjects,
+        'selected_classes': selected_classes,
+    })

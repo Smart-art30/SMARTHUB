@@ -31,6 +31,7 @@ urlpatterns = [
         name='student_report'
     ),
 
-    
+   
+   
 
 ]
