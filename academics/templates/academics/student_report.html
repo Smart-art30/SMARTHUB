@@ -3,24 +3,34 @@
 
 <h3>Report Card</h3>
 
-<p><strong>Student:</strong>{{ student.user.get_full_name}}</p>
-<p><strong>Class</strong>{{ studemt.school_class.name }}</p>
-<p><strong>Exam:</strong>{{ exam.name }}</p>
+<p><strong>Student:</strong> {{ student.user.get_full_name }}</p>
+<p><strong>Class:</strong> {{ student.school_class.name }}</p>
+<p><strong>Exam:</strong> {{ exam.name }}</p>
 
 <table class="table table-bordered mt-3">
-    <tr>
-        <th>Subject</th>
-        <th>score</th>
-    </tr>
-    {% for m in marks %}
-    <tr>
-        <td>{{ m.subject.name }}</td>
-        <td>{{ m.score}}</td>
-    </tr>
-    {% endfor %}
+    <thead class="table-light">
+        <tr>
+            <th>Subject</th>
+            <th>Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for m in marks %}
+        <tr>
+            <td>{{ m.subject.name }}</td>
+            <td>
+                {% if m.score %}
+                    {{ m.score }}
+                {% else %}
+                    0
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
-<p><strong>Total:</strong>{{ total }}</p>
-<p><strong>Average:</strong>{{ average|floatformat:2}}</p>
+<p><strong>Total:</strong> {{ total }}</p>
+<p><strong>Average:</strong> {{ average|floatformat:2 }}</p>
 
 {% endblock %}

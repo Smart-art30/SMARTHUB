@@ -4,164 +4,212 @@
 {% block title %}Teacher Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-
-    <!-- Welcome -->
-    <div class="mb-3">
-        <h4>Welcome, {{ teacher.user.first_name }} 👋</h4>
-        <p class="text-muted mb-0">Here is your teaching overview</p>
-    </div>
-
-    <!-- Quick Stats -->
-    <div class="row mb-4">
-        <div class="col-md-3 col-sm-6 mb-2">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
-                    <h6 class="text-muted">Classes</h6>
-                    <h3>{{ total_classes }}</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6 mb-2">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
-                    <h6 class="text-muted">Subjects</h6>
-                    <h3>{{ total_subjects }}</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6 mb-2">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
-                    <h6 class="text-muted">School</h6>
-                    <strong>{{ teacher.school.name }}</strong>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6 mb-2">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
-                    <h6 class="text-muted">Status</h6>
-                    <span class="badge bg-success">Active</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
+<div class="container-fluid">
     <div class="row">
 
-        <!-- Profile -->
-        <div class="col-md-3 mb-4">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
+        <!-- Sidebar Navigation -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse shadow-sm">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-3">
                     {% if teacher.profile_picture %}
-                        <img src="{{ teacher.profile_picture.url }}" class="rounded-circle mb-3" width="120" alt="Profile Picture">
+                        <img src="{{ teacher.profile_picture.url }}" class="rounded-circle mb-2" width="100" alt="Profile Picture">
                     {% else %}
-                        <img src="{% static 'images/default-avatar.png' %}" class="rounded-circle mb-3" width="120" alt="Default Avatar">
+                        <img src="{% static 'images/default-avatar.png' %}" class="rounded-circle mb-2" width="100" alt="Default Avatar">
                     {% endif %}
-                    <h6>{{ teacher.user.get_full_name }}</h6>
+                    <h6 class="mb-0">{{ teacher.user.get_full_name }}</h6>
                     <small class="text-muted">{{ teacher.designation }}</small>
+                </div>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-1">
+                        <a class="nav-link active" aria-current="page" href="{% url 'dashboard:teacher_dashboard' %}">
+                            <i class="bi bi-house-door-fill me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item mb-1">
+                        <a class="nav-link" href="{% url 'dashboard:teacher_profile_edit' %}">
+                            <i class="bi bi-person-fill me-2"></i> Edit Profile
+                        </a>
+                    </li>
+                    <li class="nav-item mb-1">
+                        <a class="nav-link" href="{% url 'academics:select_classes' %}">
+                            <i class="bi bi-journal-text me-2"></i> Enter Marks
+                        </a>
+                    </li>
+                    <li class="nav-item mb-1">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-calendar-check me-2"></i> Attendance
+                        </a>
+                    </li>
+                    <li class="nav-item mb-1">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-bell-fill me-2"></i> Notifications
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-                    <hr>
-                    <a href="{% url 'dashboard:teacher_profile_edit' %}" class="btn btn-outline-secondary btn-sm w-100 mb-2">
-                        Edit Profile
-                    </a>
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <!-- Welcome -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h4>Welcome, {{ teacher.user.first_name }} 👋</h4>
+                <small class="text-muted">Here is your teaching overview</small>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h6 class="text-muted">Classes</h6>
+                            <h3>{{ total_classes }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h6 class="text-muted">Subjects</h6>
+                            <h3>{{ total_subjects }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h6 class="text-muted">School</h6>
+                            <strong>{{ teacher.school.name }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h6 class="text-muted">Status</h6>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            
+
+           <div class="col-md-12 mb-4">
+    <div class="card shadow-sm h-100">
+
+        <div class="card-header bg-primary text-white">
+            Teaching Assignments
         </div>
 
-                    <!-- Main Content -->
-                <div class="col-md-9">
+        <div class="card-body">
 
-                    <div class="row">
-                        <!-- Classes -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card shadow-sm h-100">
-                                <div class="card-header bg-primary text-white">
-                                    Assigned Classes
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-3" id="assignmentTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active"
+                            id="classes-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#classes"
+                            type="button"
+                            role="tab">
+                        Classes
+                    </button>
+                </li>
+
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link"
+                            id="subjects-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#subjects"
+                            type="button"
+                            role="tab">
+                        Subjects
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+
+                <!-- Classes Tab -->
+                <div class="tab-pane fade show active" id="classes" role="tabpanel">
+                    <ul class="list-group scrollable-list">
+                        {% for item in classes %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>{{ item.class.name }} {{ item.class.stream }}</span>
+                                    <span class="badge bg-secondary">{{ item.student_count }} students</span>
                                 </div>
-                                <ul class="list-group list-group-flush">
-                                    {% for item in classes %}
-                                    <li class="list-group-item">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span>{{ item.class.name }} {{ item.class.stream }}</span>
-                                            <span class="badge bg-secondary">
-                                                {{ item.student_count }} students
-                                            </span>
-                                        </div>
-                                        <div class="d-flex gap-2">
-                                            <a href="{% url 'attendance:teacher_mark' item.class.id %}"
-                                            class="btn btn-sm btn-outline-primary flex-fill">
-                                                Mark Attendance
-                                            </a>
-                                            <a href="{% url 'attendance:class_attendance_report' item.class.id %}"
-                                            class="btn btn-sm btn-outline-secondary flex-fill">
-                                                View Report
-                                            </a>
-                                        </div>
-                                    </li>
-                                    {% empty %}
-                                    <li class="list-group-item text-muted">No classes assigned</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
-
-
-
-                        <!-- Subjects -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card shadow-sm h-100">
-                                <div class="card-header bg-success text-white">
-                                    Assigned Subjects
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'attendance:teacher_mark' item.class.id %}"
+                                       class="btn btn-sm btn-outline-primary flex-fill">
+                                        Mark Attendance
+                                    </a>
+                                    <a href="{% url 'attendance:class_attendance_report' item.class.id %}"
+                                       class="btn btn-sm btn-outline-secondary flex-fill">
+                                        View Report
+                                    </a>
                                 </div>
-                                <ul class="list-group list-group-flush">
-                                    {% for assign in assignments %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong>{{ assign.subject.name }}</strong><br>
-                                            <small class="text-muted">
-                                                {{ assign.school_class.name }} {{ assign.school_class.stream }}
-                                            </small>
-                                        </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">
+                                No classes assigned
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-                                       <a href="{% url 'academics:select_exam' assign.school_class.id assign.subject.id %}" class="btn btn-sm btn-primary">
-    Select Exam
-</a>
+                <!-- Subjects Tab -->
+                <div class="tab-pane fade" id="subjects" role="tabpanel">
+                    <ul class="list-group scrollable-list">
+                        {% for assign in assignments %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ assign.subject.name }}</strong><br>
+                                    <small class="text-muted">
+                                        {{ assign.school_class.name }} {{ assign.school_class.stream }}
+                                    </small>
+                                </div>
+                                <a href="{% url 'academics:select_exam' assign.school_class.id assign.subject.id %}"
+                                   class="btn btn-sm btn-primary">
+                                    Select Exam
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">
+                                No subjects assigned
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-                                    </li>
-                                    {% empty %}
-                                    <li class="list-group-item text-muted">
-                                        No subjects assigned
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
             <!-- Notifications -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-warning">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
                     🔔 Notifications
                 </div>
                 <ul class="list-group list-group-flush">
                     {% for note in notifications %}
-                    <li class="list-group-item">
-                        <strong>{{ note.title }}</strong><br>
-                        <small class="text-muted">{{ note.get_notification_type_display }} | {{ note.created_at|date:"M d, Y H:i" }}</small>
-                        <p class="mb-0">{{ note.message }}</p>
-                    </li>
+                        <li class="list-group-item">
+                            <strong>{{ note.title }}</strong><br>
+                            <small class="text-muted">{{ note.get_notification_type_display }} | {{ note.created_at|date:"M d, Y H:i" }}</small>
+                            <p class="mb-0">{{ note.message }}</p>
+                        </li>
                     {% empty %}
-                    <li class="list-group-item text-muted">No notifications</li>
+                        <li class="list-group-item text-muted">No notifications</li>
                     {% endfor %}
                 </ul>
             </div>
-
-        </div>
+        </main>
     </div>
 </div>
 {% endblock %}

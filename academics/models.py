@@ -37,14 +37,14 @@ class Exam(models.Model):
     def __str__(self):
         return f'{self.name} - {self.term} ({self.year})'
 
-
 class StudentMark(models.Model):
-    student = models.ForeignKey('students.Student', on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)  # <- Add this
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    subject = models.ForeignKey('academics.Subject', on_delete=models.CASCADE)  # only one subject
     marks = models.FloatField()
 
     class Meta:
-        unique_together = ('student', 'exam')
+        unique_together = ('student', 'exam', 'subject')
 
     def grade(self):
         if self.marks >= 80:
@@ -59,7 +59,8 @@ class StudentMark(models.Model):
             return 'E'
 
     def __str__(self):
-        return f'{self.student} - {self.exam} - {self.marks}'
+        return f'{self.student} - {self.exam} - {self.subject} - {self.marks}'
+
 
 
 class ExamSubject(models.Model):

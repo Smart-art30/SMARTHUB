@@ -1,15 +1,10 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
 <div class="container mt-4">
-    <h3>Enter Marks - Class {{ exam.school_class.name }}</h3>
-    <p>
-        <strong>Exam:</strong> {{ exam.name }} ({{ exam.term }} {{ exam.year }})
-        <br>
-        <strong>Max Marks:</strong> {{ exam.max_mark }}
-    </p>
+    <h4>Enter Marks</h4>
+    <p>Classes: {% for cls in selected_classes %}{{ cls.name }} {{ cls.stream }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 
-    {% if students %}
     <form method="post">
         {% csrf_token %}
         <table class="table table-bordered table-striped">
@@ -28,13 +23,11 @@
                     <td>{{ student.user.get_full_name }}</td>
                     {% for subject in subjects %}
                         <td>
-                            <input type="number"
-                                   name="marks_{{ student.id }}_{{ subject.id }}"
-                                   class="form-control"
-                                   value="{{ student.marks.subject.id|default:'' }}"
-                                   max="{{ exam.max_mark }}"
-                                   min="0"
-                                   step="0.1">
+                            <input type="number" 
+                                   name="marks_{{ student.id }}_{{ subject.id }}" 
+                                   class="form-control" 
+                                   value="{{ student.marks.subject.id|default:'' }}" 
+                                   min="0" max="100" step="0.1">
                         </td>
                     {% endfor %}
                     <td>{{ student.total }}</td>
@@ -44,10 +37,5 @@
         </table>
         <button type="submit" class="btn btn-success">Save Marks</button>
     </form>
-    {% else %}
-    <div class="alert alert-warning">
-        No students found in this class.
-    </div>
-    {% endif %}
 </div>
 {% endblock %}
