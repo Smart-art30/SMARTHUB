@@ -11,7 +11,8 @@ urlpatterns=[
     path('parents/', views.parent_list, name= 'parent_list'),
     path('add_parents/', views.add_parent, name = 'add_parent'),
 
-    path('reports/<int:student_id>/<int:exam_id>/', academics_views.student_report, name='student_report'),
+    #path('reports/<int:student_id>/<int:exam_id>/', academics_views.student_report, name='student_report'),
+    #path('reports/<int:student_id>/', views.student_report, name='student_report'),
 
     
 ]

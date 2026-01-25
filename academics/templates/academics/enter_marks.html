@@ -4,8 +4,7 @@
 <div class="container mt-4">
     <h3>Enter Marks - Class {{ exam.school_class.name }}</h3>
     <p>
-        <strong>Exam:</strong> {{ exam.name }} ({{ exam.term }} {{ exam.year }})
-        <br>
+        <strong>Exam:</strong> {{ exam.name }} ({{ exam.term }} {{ exam.year }})<br>
         <strong>Max Marks:</strong> {{ exam.max_mark }}
     </p>
 
@@ -20,24 +19,26 @@
                         <th>{{ subject.name }}</th>
                     {% endfor %}
                     <th>Total</th>
+                    <th>Average</th>
                 </tr>
             </thead>
             <tbody>
                 {% for student in students %}
                 <tr>
                     <td>{{ student.user.get_full_name }}</td>
-                    {% for subject in subjects %}
+                    {% for item in student.marks_list %}
                         <td>
                             <input type="number"
-                                   name="marks_{{ student.id }}_{{ subject.id }}"
+                                   name="marks_{{ student.id }}_{{ item.subject.id }}"
                                    class="form-control"
-                                   value="{{ student.marks.subject.id|default:'' }}"
+                                   value="{{ item.mark }}"
                                    max="{{ exam.max_mark }}"
                                    min="0"
                                    step="0.1">
                         </td>
                     {% endfor %}
-                    <td>{{ student.total }}</td>
+                    <td><strong>{{ student.total }}</strong></td>
+                    <td><strong>{{ student.average|floatformat:2 }}</strong></td>
                 </tr>
                 {% endfor %}
             </tbody>

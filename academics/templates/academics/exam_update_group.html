@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Edit Exam</h3>
+
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="name" value="{{ exam.name }}" class="form-control mb-2">
+    <input type="text" name="term" value="{{ exam.term }}" class="form-control mb-2">
+    <input type="number" name="year" value="{{ exam.year }}" class="form-control mb-2">
+
+    <button class="btn btn-success">Save Changes</button>
+    <a href="{% url 'academics:exam_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
