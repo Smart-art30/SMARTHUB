@@ -3,39 +3,104 @@
 {% block content %}
 <div class="container mt-4">
     <h4>Enter Marks</h4>
-    <p>Classes: {% for cls in selected_classes %}{{ cls.name }} {{ cls.stream }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
 
-    <form method="post">
+    <p>
+        Classes: 
+        {% for cls in selected_classes %}
+            <strong>{{ cls.name }} {{ cls.stream }}</strong>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+
+    {% if students %}
+    <form method="post" id="marks-form">
         {% csrf_token %}
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped table-responsive" id="marks-table">
             <thead class="table-dark">
                 <tr>
+                    <th>Rank</th>
                     <th>Student</th>
                     {% for subject in subjects %}
                         <th>{{ subject.name }}</th>
+                        <th>Rubric</th>
                     {% endfor %}
                     <th>Total</th>
                 </tr>
             </thead>
             <tbody>
                 {% for student in students %}
-                <tr>
+                <tr data-student-id="{{ student.id }}">
+                    <td class="rank-cell"></td>
                     <td>{{ student.user.get_full_name }}</td>
-                    {% for subject in subjects %}
+                    {% for item in student.marks_list %}
                         <td>
-                            <input type="number" 
-                                   name="marks_{{ student.id }}_{{ subject.id }}" 
-                                   class="form-control" 
-                                   value="{{ student.marks.subject.id|default:'' }}" 
-                                   min="0" max="100" step="0.1">
+                            <input type="number"
+                                   class="form-control mark-input"
+                                   name="marks_{{ student.id }}_{{ item.subject.id }}"
+                                   value="{{ item.mark }}"
+                                   min="0"
+                                   max="100"
+                                   step="0.1">
                         </td>
+                        <td class="rubric-cell"></td>
                     {% endfor %}
-                    <td>{{ student.total }}</td>
+                    <td class="total-cell">{{ student.total|floatformat:1 }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         <button type="submit" class="btn btn-success">Save Marks</button>
     </form>
+    {% else %}
+    <div class="alert alert-warning">
+        No students found in the selected classes.
+    </div>
+    {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    function getRubric(mark) {
+        mark = parseFloat(mark);
+        if (isNaN(mark)) return '';
+        if (mark >= 80) return 'E.E';
+        if (mark >= 60) return 'M.E';
+        if (mark >= 40) return 'A.E';
+        return 'B.E';
+    }
+
+    function updateTotalsAndRanks() {
+        let rows = Array.from(document.querySelectorAll('#marks-table tbody tr'));
+        rows.forEach(row => {
+            let total = 0;
+            row.querySelectorAll('.mark-input').forEach(input => {
+                let val = parseFloat(input.value);
+                if (!isNaN(val)) total += val;
+                // update rubric
+                let rubricCell = input.parentElement.nextElementSibling;
+                rubricCell.textContent = getRubric(input.value);
+            });
+            row.querySelector('.total-cell').textContent = total.toFixed(1);
+            row.dataset.total = total; // store total for ranking
+        });
+
+        // sort by total descending
+        rows.sort((a, b) => parseFloat(b.dataset.total) - parseFloat(a.dataset.total));
+
+        // update ranks
+        rows.forEach((row, index) => {
+            row.querySelector('.rank-cell').textContent = index + 1;
+            row.parentElement.appendChild(row); // re-append to sort in DOM
+        });
+    }
+
+    // listen to any change in input
+    document.querySelectorAll('.mark-input').forEach(input => {
+        input.addEventListener('input', updateTotalsAndRanks);
+    });
+
+    // initial call to populate rubric and ranks
+    updateTotalsAndRanks();
+});
+</script>
 {% endblock %}

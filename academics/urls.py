@@ -13,6 +13,10 @@ urlpatterns = [
     path('exams/add/', views.exam_add, name='exam_add'),
     path('exams/<int:exam_id>/assign-subjects/', views.exam_subject_add, name='exam_subject_add'),
     path('marks/classes/<int:class_id>/', views.select_class, name='select_class'),
+    path('reports/<int:student_id>/', views.student_report, name='student_report'),
+
+
+    path('consolidated-report/', views.consolidated_student_report, name='consolidated_report'),
 
     path('marks/classes/', views.select_class, name='select_class'),  
     path('marks/classes/<int:class_id>/', views.class_overview, name='class_overview'),  
@@ -25,4 +29,23 @@ urlpatterns = [
     path('dashboard/reports/<int:student_id>/<int:exam_id>/', views.student_report, name='student_report'),
     path('select-classes/', views.select_marks_classes, name='select_classes'),
     path('enter-marks/', views.enter_marks_multi, name='enter_marks_multi'),
+    path(
+    'exams/<str:name>/<str:term>/<int:year>/marks/',
+    views.enter_marks_group,
+    name='enter_marks_group'
+),
+
+    path(
+        'exams/<str:name>/<str:term>/<int:year>/edit/',
+        views.exam_update_group,
+        name='exam_update_group'
+    ),
+    path(
+        'exams/<str:name>/<str:term>/<int:year>/delete/',
+        views.exam_delete_group,
+        name='exam_delete_group'
+    ),
+
+
+
 ]

@@ -1,36 +1,64 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h3>Report Card</h3>
+<div class="text-center mb-4">
+    {% if student.school.logo %}
+        <img src="{{ student.school.logo.url }}" alt="{{ student.school.name }}" style="height:80px; object-fit:contain;">
+    {% endif %}
+    <h2>{{ student.school.name }}</h2>
+    <h4>Report Card</h4>
+</div>
 
-<p><strong>Student:</strong> {{ student.user.get_full_name }}</p>
-<p><strong>Class:</strong> {{ student.school_class.name }}</p>
-<p><strong>Exam:</strong> {{ exam.name }}</p>
+<div class="d-flex align-items-center mb-3">
+    {% if student.photo %}
+        <img src="{{ student.photo.url }}" alt="{{ student.user.get_full_name }}" class="rounded me-3" style="width:100px; height:100px; object-fit:cover; border:1px solid #ccc;">
+    {% else %}
+        <div class="rounded bg-secondary text-white d-flex justify-content-center align-items-center me-3" style="width:100px; height:100px;">
+            No Photo
+        </div>
+    {% endif %}
+    <div>
+        <p><strong>Student:</strong> {{ student.user.get_full_name }}</p>
+        <p><strong>Class:</strong> {{ student.school_class.name }}{% if student.school_class.stream %} {{ student.school_class.stream }}{% endif %}</p>
+    </div>
+</div>
 
-<table class="table table-bordered mt-3">
-    <thead class="table-light">
-        <tr>
-            <th>Subject</th>
-            <th>Score</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for m in marks %}
-        <tr>
-            <td>{{ m.subject.name }}</td>
-            <td>
-                {% if m.score %}
-                    {{ m.score }}
-                {% else %}
-                    0
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% for exam_report in report_data %}
+<div class="mb-4">
+    <h4>{{ exam_report.exam.name }} - {{ exam_report.exam.term }}</h4>
 
-<p><strong>Total:</strong> {{ total }}</p>
-<p><strong>Average:</strong> {{ average|floatformat:2 }}</p>
+    <table class="table table-bordered mt-2">
+        <thead class="table-light">
+            <tr>
+                <th>Subject</th>
+                <th>Score</th>
+                <th>Rubric</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in exam_report.marks %}
+            <tr>
+                <td>{{ m.subject.name }}</td>
+                <td>{{ m.score|default:0 }}</td>
+                <td>
+                    {% if m.score >= 80 %}
+                        E.E
+                    {% elif m.score >= 60 %}
+                        M.E
+                    {% elif m.score >= 40 %}
+                        A.E
+                    {% else %}
+                        B.E
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><strong>Total:</strong> {{ exam_report.total }}</p>
+    <p><strong>Average:</strong> {{ exam_report.average|floatformat:2 }}</p>
+</div>
+{% endfor %}
 
 {% endblock %}

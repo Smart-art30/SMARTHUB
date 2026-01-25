@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Delete Exam</h3>
+
+<p>
+    Are you sure you want to delete
+    <strong>{{ name }} – {{ term }} {{ year }}</strong>
+    for all classes?
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger">Yes, Delete</button>
+    <a href="{% url 'academics:exam_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

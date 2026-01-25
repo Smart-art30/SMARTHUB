@@ -1,0 +1,30 @@
+{% for student_data in report_data %}
+  <h3>{{ student_data.student.get_full_name }} - {{ student_data.student.student_class.name }}</h3>
+
+  {% for exam_data in student_data.exams %}
+    <h4>{{ exam_data.exam.name }} ({{ exam_data.exam.term }})</h4>
+    <table border="1" cellpadding="5" cellspacing="0">
+      <tr>
+        <th>Subject</th>
+        <th>Marks</th>
+      </tr>
+      {% for mark in exam_data.marks %}
+        <tr>
+          <td>{{ mark.subject.name }}</td>
+          <td>{{ mark.score }}</td>
+        </tr>
+      {% endfor %}
+      <tr>
+        <td><strong>Total</strong></td>
+        <td><strong>{{ exam_data.total }}</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Average</strong></td>
+        <td><strong>{{ exam_data.average|floatformat:2 }}</strong></td>
+      </tr>
+    </table>
+    <br>
+  {% endfor %}
+
+  <hr>
+{% endfor %}
