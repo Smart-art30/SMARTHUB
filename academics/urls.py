@@ -46,6 +46,10 @@ urlpatterns = [
         name='exam_delete_group'
     ),
 
-
-
+    path('subject/add/', views.subject_add, name='subject_add'),
+    path('subject/<int:pk>/edit/', views.subject_edit, name='subject_edit'),
+    path('subject/<int:pk>/delete/', views.subject_delete, name='subject_delete'),
+    path('subjects/', views.subject_list, name='subject_list'), 
 ]
+
+

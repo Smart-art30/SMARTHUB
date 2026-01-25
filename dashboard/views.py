@@ -131,6 +131,8 @@ def schooladmin_dashboard(request):
 
     return render(request, 'dashboard/schooladmin.html', context)
 
+
+
 @login_required
 @role_required('teacher')
 def teacher_dashboard(request):

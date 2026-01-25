@@ -14,12 +14,18 @@ from django.db import IntegrityError
 
 
 User = get_user_model()
-
 @login_required
 @role_required('schooladmin')
 def student_list(request):
-    students = Student.objects.filter(school=request.user.school)
-    return render(request, 'students/students_list.html',{'students':students} )
+    classes = SchoolClass.objects.filter(
+        school=request.user.school
+    ).prefetch_related('student_set')
+
+    return render(
+        request,
+        'students/students_list.html',
+        {'classes': classes}
+    )
 
 
 @login_required

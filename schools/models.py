@@ -1,5 +1,6 @@
 from django.db import models
 
+
        
 class SubscriptionPlan(models.Model):
     name = models.CharField(max_length= 50)
@@ -28,13 +29,14 @@ class School(models.Model):
     def __str__(self):
         return self.name
 
+
 class SchoolClass(models.Model):
-    school = models.ForeignKey(School, on_delete = models.CASCADE)
-    name = models.CharField(max_length = 50)
-    stream  =  models.CharField(max_length=100)
-    section = models.CharField(max_length = 10, blank = True, null = True)
-    created_at= models.DateTimeField(auto_now_add=True)
+    school = models.ForeignKey('School', on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    stream = models.CharField(max_length=100)
+    section = models.CharField(max_length=10, blank=True, null=True)
+    subjects = models.ManyToManyField('academics.Subject', blank=True)  
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.name}{self.section} {self.stream} ({self.school.name})'
- 

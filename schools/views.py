@@ -40,33 +40,39 @@ def class_list(request):
     classes = SchoolClass.objects.filter(school=request.user.school)
     return render(request, 'schools/class_list.html', {'classes': classes})
 
+
 @login_required
 @role_required('schooladmin')
 def add_class(request):
     if request.method == 'POST':
-        form = SchoolClassForm(request.POST)
+        form = SchoolClassForm(request.POST, user=request.user)  
         if form.is_valid():
             school_class = form.save(commit=False)
             school_class.school = request.user.school
             school_class.save()
-            return redirect('schools:class_list')  
+            form.save_m2m() 
+            messages.success(request, f"Class '{school_class}' added successfully.")
+            return redirect('schools:class_list')
     else:
-        form = SchoolClassForm()
-
+        form = SchoolClassForm(user=request.user)  
     return render(request, 'schools/add_class.html', {'form': form})
+
 
 @login_required
 @role_required('schooladmin')
 def edit_class(request, class_id):
-    classes = get_object_or_404(SchoolClass, id=class_id, school=request.user.school)
+    cls = get_object_or_404(SchoolClass, id=class_id, school=request.user.school)
     if request.method == 'POST':
-        form = SchoolClassForm(request.POST, instance=classes)
+        form = SchoolClassForm(request.POST, instance=cls, user=request.user)
         if form.is_valid():
             form.save()
-            return redirect('schooladmin_dashborad')
+            messages.success(request, f"Class '{cls}' updated successfully.")
+            return redirect('schools:class_list')
     else:
-        form=SchoolClassForm(instance=classes)
-    return render(request, 'schools/add_class.html', {'form':form, 'edit':True})
+        form = SchoolClassForm(instance=cls, user=request.user)
+    return render(request, 'schools/add_class.html', {'form': form, 'edit': True})
+
+
 
 @login_required
 @role_required('schooladmin')
