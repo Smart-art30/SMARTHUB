@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h4>Assign Subjects to Class</h4>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_teacher" class="form-label">Teacher</label>
+            {{ form.teacher }}
+        </div>
+        <div class="mb-3">
+            <label for="id_school_class" class="form-label">Class</label>
+            {{ form.school_class }}
+        </div>
+        <div class="mb-3">
+            <label for="id_subject" class="form-label">Subjects</label>
+            {{ form.subject }}
+        </div>
+        <button type="submit" class="btn btn-primary">Assign</button>
+    </form>
+</div>
+{% endblock %}

@@ -2,60 +2,123 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h4>Enter Marks</h4>
+    <h4 style="font-size:1rem;">Enter Marks</h4>
 
-    <p>
-        Classes: 
-        {% for cls in selected_classes %}
-            <strong>{{ cls.name }} {{ cls.stream }}</strong>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </p>
+    {% for cls, subjects in classes_with_subjects %}
+        <h5 class="mt-3" style="font-size:0.9rem;">{{ cls.name }} {{ cls.stream }}</h5>
 
-    {% if students %}
-    <form method="post" id="marks-form">
-        {% csrf_token %}
-        <table class="table table-bordered table-striped table-responsive" id="marks-table">
-            <thead class="table-dark">
-                <tr>
-                    <th>Rank</th>
-                    <th>Student</th>
-                    {% for subject in subjects %}
-                        <th>{{ subject.name }}</th>
-                        <th>Rubric</th>
-                    {% endfor %}
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for student in students %}
-                <tr data-student-id="{{ student.id }}">
-                    <td class="rank-cell"></td>
-                    <td>{{ student.user.get_full_name }}</td>
-                    {% for item in student.marks_list %}
-                        <td>
-                            <input type="number"
-                                   class="form-control mark-input"
-                                   name="marks_{{ student.id }}_{{ item.subject.id }}"
-                                   value="{{ item.mark }}"
-                                   min="0"
-                                   max="100"
-                                   step="0.1">
-                        </td>
-                        <td class="rubric-cell"></td>
-                    {% endfor %}
-                    <td class="total-cell">{{ student.total|floatformat:1 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button type="submit" class="btn btn-success">Save Marks</button>
-    </form>
-    {% else %}
-    <div class="alert alert-warning">
-        No students found in the selected classes.
-    </div>
-    {% endif %}
+        {% if subjects %}
+        <div class="table-responsive">
+            <form method="post">
+                {% csrf_token %}
+                <table class="table table-bordered table-striped table-responsive" id="marks-table-{{ cls.id }}">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="font-size:0.7rem;">Rank</th>
+                            <th style="font-size:0.7rem;">Student</th>
+                            {% for subject in subjects %}
+                                <th style="font-size:0.7rem;">{{ subject.name }}</th>
+                                <th style="font-size:0.7rem;">Rubric</th>
+                            {% endfor %}
+                            <th style="font-size:0.7rem;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            {% if student.student_class.id == cls.id %}
+                            <tr data-student-id="{{ student.id }}">
+                                <td class="rank-cell" style="font-size:0.65rem;"></td>
+                                <td style="font-size:0.65rem;">{{ student.user.get_full_name }}</td>
+                                {% for mark in student.marks_list %}
+                                    {% if mark.subject in subjects %}
+                                    <td>
+                                        <input type="number"
+                                               name="marks_{{ student.id }}_{{ mark.subject.id }}"
+                                               class="form-control mark-input"
+                                               value="{{ mark.mark }}"
+                                               min="0"
+                                               max="100"
+                                               step="0.1"
+                                               style="font-size:0.65rem; padding:0.15rem;">
+                                    </td>
+                                    <td class="rubric-cell" style="font-size:0.65rem; text-align:center;"></td>
+                                    {% endif %}
+                                {% endfor %}
+                                <td class="total-cell" style="font-size:0.65rem;">{{ student.total|floatformat:1 }}</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="2" style="font-size:0.7rem;">Average</th>
+                            {% for subject in subjects %}
+                                <th class="subject-average" data-subject-id="{{ subject.id }}" style="font-size:0.65rem;"></th>
+                                <th></th>
+                            {% endfor %}
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+                <button type="submit" class="btn btn-success mb-4">Save Marks for {{ cls.name }}</button>
+            </form>
+        </div>
+
+        <!-- Subject Performance Summary -->
+        <h6 style="font-size:0.8rem;">Subject Performance Summary</h6>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="font-size:0.7rem;">Subject Name</th>
+                        <th style="font-size:0.7rem;">Average</th>
+                    </tr>
+                </thead>
+                <tbody id="subject-summary-{{ cls.id }}"></tbody>
+            </table>
+        </div>
+
+        {% else %}
+            <div class="alert alert-warning">No subjects assigned for {{ cls.name }}.</div>
+        {% endif %}
+    {% empty %}
+        <div class="alert alert-warning">No classes selected or assigned.</div>
+    {% endfor %}
 </div>
+
+<style>
+/* Compact styling for A4 landscape */
+.table td, .table th { padding: 0.15rem !important; }
+input.mark-input { height: calc(1.2rem + 2px); font-size: 0.65rem; }
+.rubric-cell { font-weight:bold; text-align:center; }
+
+/* Rubric colors */
+.rubric-ee { background-color: #28a745; color: #fff; }
+.rubric-me { background-color: #ffc107; color: #212529; }
+.rubric-ae { background-color: #fd7e14; color: #fff; }
+.rubric-be { background-color: #dc3545; color: #fff; }
+
+/* Top 3 ranks */
+.rank-1 { background-color: gold !important; font-weight: bold; }
+.rank-2 { background-color: silver !important; font-weight: bold; }
+.rank-3 { background-color: #cd7f32 !important; font-weight: bold; }
+
+/* Landscape print styling */
+@media print {
+    body { font-size: 9pt; }
+    table { page-break-inside: auto; width: 100%; }
+    tr { page-break-inside: avoid; page-break-after: auto; }
+    thead { display: table-header-group; }
+    tfoot { display: table-footer-group; }
+    button { display: none; }
+    @page { size: A4 landscape; margin: 10mm; }
+}
+
+/* Subject Performance Summary colors */
+.subject-best { background-color: #28a745; color: #fff; font-weight:bold; }
+.subject-worst { background-color: #dc3545; color: #fff; font-weight:bold; }
+.subject-mid { background-color: #ffc107; font-weight:bold; color:#212529; }
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -69,38 +132,101 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'B.E';
     }
 
-    function updateTotalsAndRanks() {
-        let rows = Array.from(document.querySelectorAll('#marks-table tbody tr'));
-        rows.forEach(row => {
-            let total = 0;
-            row.querySelectorAll('.mark-input').forEach(input => {
-                let val = parseFloat(input.value);
-                if (!isNaN(val)) total += val;
-                // update rubric
-                let rubricCell = input.parentElement.nextElementSibling;
-                rubricCell.textContent = getRubric(input.value);
-            });
-            row.querySelector('.total-cell').textContent = total.toFixed(1);
-            row.dataset.total = total; // store total for ranking
-        });
-
-        // sort by total descending
-        rows.sort((a, b) => parseFloat(b.dataset.total) - parseFloat(a.dataset.total));
-
-        // update ranks
-        rows.forEach((row, index) => {
-            row.querySelector('.rank-cell').textContent = index + 1;
-            row.parentElement.appendChild(row); // re-append to sort in DOM
-        });
+    function getRubricClass(mark) {
+        mark = parseFloat(mark);
+        if (isNaN(mark)) return '';
+        if (mark >= 80) return 'rubric-ee';
+        if (mark >= 60) return 'rubric-me';
+        if (mark >= 40) return 'rubric-ae';
+        return 'rubric-be';
     }
 
-    // listen to any change in input
-    document.querySelectorAll('.mark-input').forEach(input => {
-        input.addEventListener('input', updateTotalsAndRanks);
-    });
+    document.querySelectorAll('table[id^="marks-table-"]').forEach(table => {
 
-    // initial call to populate rubric and ranks
-    updateTotalsAndRanks();
+        let debounceTimeout = null;
+
+        function updateMarks() {
+            let rows = Array.from(table.querySelectorAll('tbody tr'));
+            let subjectSums = {};
+            let subjectCounts = {};
+
+            table.querySelectorAll('.mark-input').forEach(input => {
+                let subjectId = input.name.split('_')[2];
+                subjectSums[subjectId] = 0;
+                subjectCounts[subjectId] = 0;
+            });
+
+            rows.forEach(row => {
+                let total = 0;
+                row.querySelectorAll('.mark-input').forEach(input => {
+                    let val = parseFloat(input.value);
+                    let subjectId = input.name.split('_')[2];
+                    if (!isNaN(val)) {
+                        total += val;
+                        subjectSums[subjectId] += val;
+                        subjectCounts[subjectId] += 1;
+                    }
+                    let rubricCell = input.parentElement.nextElementSibling;
+                    rubricCell.textContent = getRubric(input.value);
+                    rubricCell.className = 'rubric-cell ' + getRubricClass(input.value);
+                });
+                row.querySelector('.total-cell').textContent = total.toFixed(1);
+                row.dataset.total = total;
+            });
+
+            // Update ranks
+            rows.sort((a,b) => parseFloat(b.dataset.total) - parseFloat(a.dataset.total));
+            rows.forEach((row,index) => {
+                row.querySelector('.rank-cell').textContent = index + 1;
+                row.parentElement.appendChild(row);
+                row.classList.remove('rank-1','rank-2','rank-3');
+                if(index===0) row.classList.add('rank-1');
+                if(index===1) row.classList.add('rank-2');
+                if(index===2) row.classList.add('rank-3');
+            });
+
+            // Subject averages
+            table.querySelectorAll('.subject-average').forEach(th => {
+                let subjId = th.dataset.subjectId;
+                let avg = subjectCounts[subjId] ? (subjectSums[subjId]/subjectCounts[subjId]).toFixed(1) : 0;
+                th.textContent = avg;
+            });
+
+            // Subject Performance Summary with color coding
+            let summaryTbody = document.querySelector(`#subject-summary-${table.id.split('-').pop()}`);
+            if(summaryTbody){
+                summaryTbody.innerHTML = '';
+                let subjectAvgs = [];
+                table.querySelectorAll('.subject-average').forEach(th => {
+                    let name = th.previousElementSibling.textContent;
+                    let avg = parseFloat(th.textContent);
+                    subjectAvgs.push({name:name, avg: avg});
+                });
+                subjectAvgs.sort((a,b)=>b.avg - a.avg);
+                let maxAvg = subjectAvgs[0].avg;
+                let minAvg = subjectAvgs[subjectAvgs.length-1].avg;
+
+                subjectAvgs.forEach(s=>{
+                    let tr = document.createElement('tr');
+                    let cls = 'subject-mid';
+                    if(s.avg === maxAvg) cls = 'subject-best';
+                    else if(s.avg === minAvg) cls = 'subject-worst';
+                    tr.innerHTML = `<td style="font-size:0.65rem;" class="${cls}">${s.name}</td>
+                                    <td style="font-size:0.65rem;" class="${cls}">${s.avg}</td>`;
+                    summaryTbody.appendChild(tr);
+                });
+            }
+        }
+
+        table.querySelectorAll('.mark-input').forEach(input=>{
+            input.addEventListener('input', ()=>{
+                if(debounceTimeout) clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(updateMarks, 500);
+            });
+        });
+
+        updateMarks();
+    });
 });
 </script>
 {% endblock %}

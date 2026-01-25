@@ -1,7 +1,47 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="text-center mb-4">
+<style>
+    /* A4 print-friendly styles */
+    @media print {
+        body {
+            font-size: 10pt;
+        }
+        .container {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        table {
+            font-size: 9pt;
+        }
+        .table th, .table td {
+            padding: 0.25rem;
+        }
+        h2, h4 {
+            margin: 0.2rem 0;
+        }
+        .d-flex {
+            flex-wrap: wrap;
+        }
+        .no-print {
+            display: none;
+        }
+        img {
+            max-height: 80px;
+        }
+    }
+
+    /* Screen styles remain readable */
+    .student-photo {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 1px solid #ccc;
+    }
+</style>
+
+<div class="text-center mb-3">
     {% if student.school.logo %}
         <img src="{{ student.school.logo.url }}" alt="{{ student.school.name }}" style="height:80px; object-fit:contain;">
     {% endif %}
@@ -9,56 +49,62 @@
     <h4>Report Card</h4>
 </div>
 
-<div class="d-flex align-items-center mb-3">
+<div class="d-flex align-items-center mb-2">
     {% if student.photo %}
-        <img src="{{ student.photo.url }}" alt="{{ student.user.get_full_name }}" class="rounded me-3" style="width:100px; height:100px; object-fit:cover; border:1px solid #ccc;">
+        <img src="{{ student.photo.url }}" alt="{{ student.user.get_full_name }}" class="rounded me-3 student-photo">
     {% else %}
-        <div class="rounded bg-secondary text-white d-flex justify-content-center align-items-center me-3" style="width:100px; height:100px;">
+        <div class="rounded bg-secondary text-white d-flex justify-content-center align-items-center me-3 student-photo">
             No Photo
         </div>
     {% endif %}
     <div>
         <p><strong>Student:</strong> {{ student.user.get_full_name }}</p>
-        <p><strong>Class:</strong> {{ student.school_class.name }}{% if student.school_class.stream %} {{ student.school_class.stream }}{% endif %}</p>
+        <p><strong>Class:</strong> {{ student.student_class.name }}{% if student.student_class.stream %} {{ student.student_class.stream }}{% endif %}</p>
     </div>
 </div>
 
 {% for exam_report in report_data %}
-<div class="mb-4">
-    <h4>{{ exam_report.exam.name }} - {{ exam_report.exam.term }}</h4>
+<div class="mb-3">
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Subject</th>
+                    <th>Score</th>
+                    <th>Rubric</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in exam_report.marks %}
+                <tr>
+                    <td>{{ m.subject.name }}</td>
+                    <td>{{ m.score|default:0 }}</td>
+                    <td>
+                        {% if m.score >= 80 %}
+                            E.E
+                        {% elif m.score >= 60 %}
+                            M.E
+                        {% elif m.score >= 40 %}
+                            A.E
+                        {% else %}
+                            B.E
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <table class="table table-bordered mt-2">
-        <thead class="table-light">
-            <tr>
-                <th>Subject</th>
-                <th>Score</th>
-                <th>Rubric</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for m in exam_report.marks %}
-            <tr>
-                <td>{{ m.subject.name }}</td>
-                <td>{{ m.score|default:0 }}</td>
-                <td>
-                    {% if m.score >= 80 %}
-                        E.E
-                    {% elif m.score >= 60 %}
-                        M.E
-                    {% elif m.score >= 40 %}
-                        A.E
-                    {% else %}
-                        B.E
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <p><strong>Total:</strong> {{ exam_report.total }}</p>
-    <p><strong>Average:</strong> {{ exam_report.average|floatformat:2 }}</p>
+    <div class="d-flex justify-content-between mt-1">
+        <p><strong>Total:</strong> {{ exam_report.total }}</p>
+        <p><strong>Average:</strong> {{ exam_report.average|floatformat:2 }}</p>
+    </div>
 </div>
 {% endfor %}
+
+<div class="text-center no-print">
+    <button onclick="window.print();" class="btn btn-primary">Print Report</button>
+</div>
 
 {% endblock %}

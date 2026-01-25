@@ -15,26 +15,21 @@ from teachers.models import TeacherClass
 from django.urls import reverse
 
 
-
-
-
-
-
-
 @login_required
 @role_required('schooladmin')
 def subject_list(request):
     subjects = Subject.objects.filter(school=request.user.school).order_by('name')
     return render(request, 'academics/subjects_list.html', {'subjects': subjects})
 
+
 @login_required
 def subject_add(request):
     school = request.user.school 
-    
 
     if request.method == 'POST':
         form = SubjectForm(request.POST, school=school)
         if form.is_valid():
+            
             subject = form.save(commit=False)
             subject.school = school
             subject.save()
@@ -43,6 +38,36 @@ def subject_add(request):
         form = SubjectForm(school=school)
 
     return render(request, 'academics/subjects_add.html', {'form': form})
+
+
+@login_required
+def subject_edit(request, pk):
+    school = request.user.school
+    subject = get_object_or_404(Subject, pk=pk, school=school)  
+
+    if request.method == 'POST':
+        form = SubjectForm(request.POST, instance=subject, school=school)
+        if form.is_valid():
+            form.save()
+            return redirect('academics:subject_list')
+    else:
+        form = SubjectForm(instance=subject, school=school)
+
+    return render(request, 'academics/subjects_add.html', {'form': form, 'edit': True})
+
+
+@login_required
+def subject_delete(request, pk):
+    school = request.user.school
+    subject = get_object_or_404(Subject, pk=pk, school=school)
+
+    if request.method == 'POST':
+        subject.delete()
+        return redirect('academics:subject_list')
+
+    return render(request, 'academics/subject_confirm_delete.html', {'subject': subject})
+
+
 
 @login_required
 @role_required('schooladmin')
@@ -213,6 +238,7 @@ def class_overview(request, class_id):
     })
 
 
+
 @login_required
 @role_required('teacher')
 def select_exam(request, class_id, subject_id):
@@ -226,13 +252,19 @@ def select_exam(request, class_id, subject_id):
 
     subject = get_object_or_404(Subject, id=subject_id)
 
-   
-    exam_subject = get_object_or_404(
-        ExamSubject,
+    # --- Fetch ExamSubjects safely ---
+    exam_subjects = ExamSubject.objects.filter(
         school_class=school_class,
         subject=subject
     )
 
+    if not exam_subjects.exists():
+        raise Http404("No exam found for this class and subject")
+
+   
+    exam_subject = exam_subjects.first()
+
+    # --- Fetch related exams ---
     exams = Exam.objects.filter(
         school=teacher.school,
         school_class=school_class,
@@ -246,34 +278,38 @@ def select_exam(request, class_id, subject_id):
     })
 
 
+
 @login_required
 @role_required('teacher')
 def enter_marks(request, exam_id):
     teacher = request.user.teacher
     teacher_school = teacher.school
 
-    
+    # Fetch the exam safely
     exam = get_object_or_404(
         Exam,
         id=exam_id,
         school_class__school=teacher_school
     )
 
-    students = Student.objects.filter(student_class=exam.school_class).order_by('user__last_name', 'user__first_name')
+    # Fetch students in the class
+    students = Student.objects.filter(
+        student_class=exam.school_class
+    ).order_by('user__last_name', 'user__first_name')
 
-    
+    # Subjects assigned to this teacher for the class
     subjects = Subject.objects.filter(
         teachersubjectassignment__teacher=teacher,
         teachersubjectassignment__school_class=exam.school_class
     ).distinct()
 
-    
+    # Get existing marks as a dict: student_id -> {subject_id: mark}
     existing_marks = {}
     marks_qs = StudentMark.objects.filter(exam=exam)
     for m in marks_qs:
         existing_marks.setdefault(m.student_id, {})[m.subject_id] = m.marks
 
-   
+    # Prepare marks list per student
     for student in students:
         student.marks_list = []
         total = 0
@@ -285,22 +321,25 @@ def enter_marks(request, exam_id):
         student.total = total
         student.average = total / len(subjects) if subjects else 0
 
-    #
+    # Save marks
     if request.method == 'POST':
         for student in students:
             for subject in subjects:
-                mark_value = request.POST.get(f'marks_{student.id}_{subject.id}', '')
-                if mark_value.strip() != '':
+                mark_value = request.POST.get(f'marks_{student.id}_{subject.id}', '').strip()
+                if mark_value:
                     try:
                         mark_float = float(mark_value)
                     except ValueError:
                         mark_float = 0
+
+                    # Safe update_or_create
                     StudentMark.objects.update_or_create(
                         student=student,
                         exam=exam,
-                        subject=subject,
+                        subject=subject,  # include subject to satisfy NOT NULL
                         defaults={'marks': mark_float}
                     )
+
         messages.success(request, "Marks saved successfully.")
         return redirect('academics:class_overview', class_id=exam.school_class.id)
 
@@ -310,49 +349,47 @@ def enter_marks(request, exam_id):
         'subjects': subjects,
     })
 
-
 @login_required
 def student_report(request, student_id):
     student = get_object_or_404(Student, id=student_id)
 
-    exams = Exam.objects.filter(school_class=student.student_class).order_by('name')
-
+    
     subjects = Subject.objects.filter(
-        studentmark__student=student,
-        studentmark__exam__in=exams
+        teachersubjectassignment__school_class=student.student_class
     ).distinct().order_by('name')
 
-    report_data = []
+   
+    exams = Exam.objects.filter(
+        school_class=student.student_class
+    ).order_by('name')
 
-    for exam in exams:
-        marks_list = []
-        total = 0
-        for subject in subjects:
-            mark_obj = StudentMark.objects.filter(
-                student=student,
-                exam=exam,
-                subject=subject
-            ).first()
+    
+    marks_list = []
+    total = 0
 
-            if mark_obj:
-                score = mark_obj.marks
-                total += score
-            else:
-                score = 0  
+    for subject in subjects:
+       
+        marks_qs = StudentMark.objects.filter(
+            student=student,
+            subject=subject,
+            exam__in=exams
+        )
 
-            marks_list.append({
-                'subject': subject,
-                'score': score
-            })
+        subject_total = sum([m.marks for m in marks_qs])
+        total += subject_total
 
-        average = total / len(marks_list) if marks_list else 0
-
-        report_data.append({
-            'exam': exam,
-            'marks': marks_list,
-            'total': total,
-            'average': average,
+        marks_list.append({
+            'subject': subject,
+            'score': subject_total
         })
+
+    average = total / len(marks_list) if marks_list else 0
+
+    report_data = [{
+        'marks': marks_list,
+        'total': total,
+        'average': average,
+    }]
 
     return render(request, 'academics/student_report.html', {
         'student': student,
@@ -365,12 +402,21 @@ def student_report(request, student_id):
 @login_required
 @role_required('schooladmin')
 def report_list(request):
-    students = Student.objects.filter(school=request.user.school)
+    classes = SchoolClass.objects.filter(
+        school=request.user.school
+    ).prefetch_related('student_set')
+
     exams = Exam.objects.filter(school=request.user.school)
-    return render(request, 'academics/report_list.html', {
-        'students': students,
-        'exams': exams,
-    })
+
+    return render(
+        request,
+        'academics/report_list.html',
+        {
+            'classes': classes,
+            'exams': exams,
+        }
+    )
+
 
 
 @login_required
@@ -428,13 +474,12 @@ def select_marks_classes(request):
     })
 
 
-
 @login_required
 @role_required('teacher')
 def enter_marks_multi(request):
     teacher = request.user.teacher
 
-    
+    # ---- GET SELECTED CLASSES ----
     class_ids = request.GET.get('classes', '')
     class_ids = [int(cid) for cid in class_ids.split(',') if cid]
 
@@ -442,6 +487,7 @@ def enter_marks_multi(request):
         teacher=teacher,
         school_class_id__in=class_ids
     )
+
     selected_classes = SchoolClass.objects.filter(
         id__in=teacher_classes.values_list('school_class_id', flat=True)
     ).distinct()
@@ -449,60 +495,81 @@ def enter_marks_multi(request):
     if not selected_classes.exists():
         return HttpResponseForbidden("You are not assigned to these classes.")
 
-    # Get students in those classes
+    # ---- STUDENTS ----
     students = Student.objects.filter(
         student_class__in=selected_classes
-    ).order_by('student_class__name', 'user__last_name')
+    ).select_related('student_class', 'user').order_by(
+        'student_class__name', 'user__last_name'
+    )
 
-    # Get subjects assigned to this teacher in these classes
-    subjects = Subject.objects.filter(
-        teachersubjectassignment__teacher=teacher,
-        teachersubjectassignment__school_class__in=selected_classes
-    ).distinct()
-
-    # Prepare exams and exam_subjects
-    exam_subjects_map = {}
-    exam_dict = {}
+    # ---- SUBJECTS PER CLASS ----
+    class_subjects = {}
     for cls in selected_classes:
-        for subject in subjects:
-            exam_subject, _ = ExamSubject.objects.get_or_create(
-                subject=subject,
-                school_class=cls
-            )
-            exam_subjects_map[(cls.id, subject.id)] = exam_subject
+        class_subjects[cls.id] = Subject.objects.filter(
+            teachersubjectassignment__teacher=teacher,
+            teachersubjectassignment__school_class=cls
+        ).distinct()
 
+    # Prepare list of tuples (class, subjects) for template
+    classes_with_subjects = []
+    for cls in selected_classes:
+        subjects = class_subjects.get(cls.id, [])
+        classes_with_subjects.append((cls, subjects))
+
+    # ---- EXAMS PER CLASS & SUBJECT ----
+    exam_dict = {}
+    for cls, subjects in classes_with_subjects:
+        for subject in subjects:
             exam, _ = Exam.objects.get_or_create(
+                school=cls.school,
                 school_class=cls,
-                examsubject=exam_subject,
-                defaults={
-                    'name': f'{subject.name} Exam',
-                    'term': 'Term 1',
-                    'year': 2026,
-                    'max_mark': 100
-                }
+                term='Term 1',  # adjust dynamically if needed
+                year=2026,      # adjust dynamically if needed
+                name=f'{subject.name} Exam',
+                defaults={'max_mark': 100}
             )
             exam_dict[(cls.id, subject.id)] = exam
 
-    # Load existing marks
+    # ---- EXISTING MARKS ----
     existing_marks = StudentMark.objects.filter(
         student__in=students,
         exam__in=exam_dict.values()
-    )
+    ).select_related('student', 'exam', 'subject')
 
-    # Attach a marks_list to each student
+    # ---- PREPARE MARKS LIST PER STUDENT ----
     for student in students:
         student.marks_list = []
         total = 0
-        for subject in subjects:
-            exam = exam_dict[(student.student_class.id, subject.id)]
-            mark_obj = existing_marks.filter(student=student, exam=exam, subject=subject).first()
+        student_subjects = class_subjects.get(student.student_class.id, [])
+
+        for subject in student_subjects:
+            # Only subjects assigned to this teacher
+            if not TeacherSubjectAssignment.objects.filter(
+                teacher=teacher,
+                school_class=student.student_class,
+                subject=subject
+            ).exists():
+                continue
+
+            exam = exam_dict.get((student.student_class.id, subject.id))
+            mark_obj = existing_marks.filter(
+                student=student,
+                exam=exam,
+                subject=subject  # match by subject too
+            ).first()
+
             mark_value = mark_obj.marks if mark_obj else ''
-            student.marks_list.append({'subject': subject, 'mark': mark_value})
+            student.marks_list.append({
+                'subject': subject,
+                'mark': mark_value
+            })
+
             if mark_value != '':
                 total += float(mark_value)
+
         student.total = total
 
-    # Save marks on POST
+    # ---- SAVE MARKS ----
     if request.method == 'POST':
         for student in students:
             for item in student.marks_list:
@@ -510,26 +577,33 @@ def enter_marks_multi(request):
                 exam = exam_dict.get((student.student_class.id, subject.id))
                 if not exam:
                     continue
-                mark_value = request.POST.get(f'marks_{student.id}_{subject.id}', '')
-                if mark_value.strip() != '':
+
+                mark_value = request.POST.get(f'marks_{student.id}_{subject.id}', '').strip()
+                if mark_value:
                     try:
                         mark_float = float(mark_value)
                     except ValueError:
                         mark_float = 0
+
+                    # Include subject to satisfy NOT NULL constraint
                     StudentMark.objects.update_or_create(
                         student=student,
                         exam=exam,
-                        subject=subject,
+                        subject=subject,   # <--- FIXED HERE
                         defaults={'marks': mark_float}
                     )
+
         messages.success(request, "Marks saved successfully!")
         return redirect('dashboard:teacher_dashboard')
 
+    # ---- RENDER ----
     return render(request, 'academics/enter_marks_multi.html', {
         'students': students,
-        'subjects': subjects,
-        'selected_classes': selected_classes,
+        'classes_with_subjects': classes_with_subjects,  
     })
+
+
+
 
 
 @login_required

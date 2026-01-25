@@ -1,13 +1,32 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h2>Add New Subject</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Add Subject</button>
-    <a href="{% url 'academics:subject_list' %}" class="btn btn-secondary">Cancel</a>
-</form>
+<div class="container mt-4">
 
+    <h2>
+        {% if edit %}
+            Edit Subject
+        {% else %}
+            Add New Subject
+        {% endif %}
+    </h2>
 
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
 
+        <button type="submit" class="btn btn-primary">
+            {% if edit %}
+                Update Subject
+            {% else %}
+                Add Subject
+            {% endif %}
+        </button>
+
+        <a href="{% url 'academics:subject_list' %}" class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+
+</div>
 {% endblock %}

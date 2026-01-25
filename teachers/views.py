@@ -237,3 +237,30 @@ def assign_teacher_subject(request):
         'classes': classes,
         'subjects': subjects
     })
+
+@login_required
+@role_required('schooladmin')
+def assign_subjects_to_class(request):
+    school = request.user.school  # assuming schooladmin has a school
+
+    if request.method == 'POST':
+        form = TeacherSubjectAssignmentForm(request.POST, school=school)
+        if form.is_valid():
+            teacher = form.cleaned_data['teacher']
+            school_class = form.cleaned_data['school_class']
+            subjects = form.cleaned_data['subject']
+
+            # save assignments
+            for subject in subjects:
+                TeacherSubjectAssignment.objects.get_or_create(
+                    teacher=teacher,
+                    school_class=school_class,
+                    subject=subject
+                )
+            messages.success(request, "Subjects assigned successfully!")
+            return redirect('teachers:assign_subjects')  # make sure this URL name exists in urls.py
+    else:
+        form = TeacherSubjectAssignmentForm(school=school)
+
+    # Correct template path (use slashes, not colon)
+    return render(request, 'teachers/assign_subjects.html', {'form': form})

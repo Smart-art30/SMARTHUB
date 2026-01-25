@@ -28,6 +28,9 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username
+
+
+        
 class TeacherClass(models.Model):
     teacher = models.ForeignKey(
         Teacher,
