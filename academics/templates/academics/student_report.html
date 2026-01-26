@@ -2,109 +2,170 @@
 {% block content %}
 
 <style>
-    /* A4 print-friendly styles */
-    @media print {
-        body {
-            font-size: 10pt;
-        }
-        .container {
-            width: 100%;
-            padding: 0;
-            margin: 0;
-        }
-        table {
-            font-size: 9pt;
-        }
-        .table th, .table td {
-            padding: 0.25rem;
-        }
-        h2, h4 {
-            margin: 0.2rem 0;
-        }
-        .d-flex {
-            flex-wrap: wrap;
-        }
-        .no-print {
-            display: none;
-        }
-        img {
-            max-height: 80px;
-        }
-    }
+body { font-family: "Calibri", "Verdana", Arial, sans-serif; margin: 0; padding: 10px; font-size: 0.8rem; }
+.student-photo { width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc; }
 
-    /* Screen styles remain readable */
-    .student-photo {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border: 1px solid #ccc;
-    }
+.table-sm td, .table-sm th { padding: 0.25rem; font-size: 0.75rem; }
+.table-bordered th, .table-bordered td { border: 1px solid #333 !important; }
+
+.trend-up { color: green; font-weight: bold; font-size: 1rem; }
+.trend-down { color: red; font-weight: bold; font-size: 1rem; }
+.trend-same { color: gray; font-weight: bold; font-size: 1rem; }
+
+.remark-exceeding { color: green; font-weight: bold; text-align: left; }
+.remark-meeting { color: blue; font-weight: bold; text-align: left; }
+.remark-approaching { color: orange; font-weight: bold; text-align: left; }
+.remark-below { color: red; font-weight: bold; text-align: left; }
+
+.header, .footer { text-align: center; font-size: 0.75rem; }
+.school-logo { height: 50px; object-fit: contain; margin-bottom: 2px; }
+
+.sign-space { border-top: 1px solid #000; width: 150px; text-align: center; margin-top: 5px; font-size: 0.7rem; }
+.feedback-box { border: 1px solid #000; padding: 2px; height: 50px; font-size: 0.7rem; margin-bottom: 2px; }
+
+.chart-container { width: 100%; max-width: 400px; height: 120px; margin: 5px auto; }
+
+@media print {
+    @page { size: A4; margin: 10mm; }
+    body { font-size: 9pt; }
+    .no-print { display: none; }
+    .table-sm td, .table-sm th { padding: 0.2rem; font-size: 0.7rem; }
+    .chart-container { height: 100px; }
+}
 </style>
 
-<div class="text-center mb-3">
+<!-- Header -->
+<div class="header mb-1">
     {% if student.school.logo %}
-        <img src="{{ student.school.logo.url }}" alt="{{ student.school.name }}" style="height:80px; object-fit:contain;">
+        <img src="{{ student.school.logo.url }}" alt="{{ student.school.name }}" class="school-logo">
     {% endif %}
-    <h2>{{ student.school.name }}</h2>
-    <h4>Report Card</h4>
+    <h3 style="margin:0;">{{ student.school.name }}</h3>
+    <p style="margin:0;"><em>{{ student.school.motto|default:"My Education, My Future" }}</em></p>
+    <p style="margin:0; font-size:0.7rem;">P.O BOX: 1298-00232 | Tel: 0722-267-382 | Email: annaluciaacademy10@gmail.com</p>
+    <h4 style="margin:2px 0;">Report Card</h4>
 </div>
 
-<div class="d-flex align-items-center mb-2">
+<!-- Student Info -->
+<div class="d-flex align-items-center mb-1" style="font-size:0.75rem;">
     {% if student.photo %}
-        <img src="{{ student.photo.url }}" alt="{{ student.user.get_full_name }}" class="rounded me-3 student-photo">
+        <img src="{{ student.photo.url }}" alt="{{ student.user.get_full_name }}" class="rounded me-2 student-photo">
     {% else %}
-        <div class="rounded bg-secondary text-white d-flex justify-content-center align-items-center me-3 student-photo">
+        <div class="rounded bg-secondary text-white d-flex justify-content-center align-items-center me-2 student-photo" style="font-size:0.6rem;">
             No Photo
         </div>
     {% endif %}
     <div>
-        <p><strong>Student:</strong> {{ student.user.get_full_name }}</p>
-        <p><strong>Class:</strong> {{ student.student_class.name }}{% if student.student_class.stream %} {{ student.student_class.stream }}{% endif %}</p>
+        <p style="margin:0;"><strong>Student:</strong> {{ student.user.get_full_name }}</p>
+        <p style="margin:0;"><strong>Class:</strong> {{ student.student_class.name }} {{ student.student_class.stream|default:"" }}</p>
+        <p style="margin:0;"><strong>Facilitator:</strong> {{ facilitator }}</p>
     </div>
 </div>
 
-{% for exam_report in report_data %}
-<div class="mb-3">
-    <div class="table-responsive">
-        <table class="table table-bordered table-sm">
-            <thead class="table-light">
-                <tr>
-                    <th>Subject</th>
-                    <th>Score</th>
-                    <th>Rubric</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for m in exam_report.marks %}
-                <tr>
-                    <td>{{ m.subject.name }}</td>
-                    <td>{{ m.score|default:0 }}</td>
+<!-- Marks Table -->
+<div class="table-responsive mb-1">
+    <table class="table table-bordered table-sm text-center">
+        <thead class="table-light">
+            <tr>
+                <th class="text-start">Subject</th>
+                {% for exam in exams %}
+                    <th>{{ exam.name }}<br>({{ exam.term }})</th>
+                {% endfor %}
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in report_rows_with_trends %}
+            <tr>
+                <td class="text-start">{{ row.subject }}</td>
+                {% for mark in row.marks %}
                     <td>
-                        {% if m.score >= 80 %}
-                            E.E
-                        {% elif m.score >= 60 %}
-                            M.E
-                        {% elif m.score >= 40 %}
-                            A.E
+                        {{ mark.mark }}
+                        {% if mark.trend == 'up' %}
+                            <span class="trend-up">↑</span>
+                        {% elif mark.trend == 'down' %}
+                            <span class="trend-down">↓</span>
                         {% else %}
-                            B.E
+                            <span class="trend-same">→</span>
                         {% endif %}
                     </td>
-                </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div class="d-flex justify-content-between mt-1">
-        <p><strong>Total:</strong> {{ exam_report.total }}</p>
-        <p><strong>Average:</strong> {{ exam_report.average|floatformat:2 }}</p>
-    </div>
+                <td>
+                    {% if row.remarks == 'Exceeding Expectation' %}
+                        <span class="remark-exceeding">{{ row.remarks }}</span>
+                    {% elif row.remarks == 'Meeting Expectation' %}
+                        <span class="remark-meeting">{{ row.remarks }}</span>
+                    {% elif row.remarks == 'Approaching Expectation' %}
+                        <span class="remark-approaching">{{ row.remarks }}</span>
+                    {% else %}
+                        <span class="remark-below">{{ row.remarks }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot class="table-info">
+            <tr>
+                <td>Total</td>
+                {% for total in exam_totals %}<td>{{ total }}</td>{% endfor %}
+                <td></td>
+            </tr>
+            <tr>
+                <td>Average</td>
+                {% for avg in exam_averages %}<td>{{ avg }}</td>{% endfor %}
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
 </div>
-{% endfor %}
 
-<div class="text-center no-print">
-    <button onclick="window.print();" class="btn btn-primary">Print Report</button>
+<!-- Trend Graph -->
+<div class="chart-container mb-1">
+    <canvas id="totalTrendChart"></canvas>
 </div>
+
+<!-- Feedback Box -->
+<div style="font-size:0.75rem;">
+    <p style="margin:0;"><strong>Core Competence Achieved & Facilitator's Feedback:</strong></p>
+    <div class="feedback-box"></div>
+    <p style="margin:0;"><strong>Closing Date:</strong> __________ &nbsp;&nbsp; <strong>Opening Date:</strong> __________</p>
+</div>
+
+<!-- Signatures -->
+<div class="d-flex justify-content-between mt-1" style="font-size:0.75rem;">
+    <div class="text-center"><div class="sign-space">Headteacher's Signature</div></div>
+    <div class="text-center"><div class="sign-space">Facilitator's Signature</div></div>
+</div>
+
+<!-- Print Button -->
+<div class="text-center no-print mt-1">
+    <button onclick="window.print();" class="btn btn-primary btn-sm">Print Report</button>
+</div>
+
+<!-- Chart.js for total marks trend -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('totalTrendChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for exam in exams %}'{{ exam.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Total Marks',
+            data: [{% for total in exam_totals %}{{ total }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+            borderColor: 'rgba(54,162,235,1)',
+            backgroundColor: 'rgba(54,162,235,0.2)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(54,162,235,1)',
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+</script>
 
 {% endblock %}
