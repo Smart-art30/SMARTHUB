@@ -9,22 +9,21 @@
     </p>
 
     {% if students %}
+    <!-- Class list -->
     <form method="post">
         {% csrf_token %}
         <div class="table-responsive">
             <table id="marks-table" class="table table-bordered table-striped table-hover table-sm">
                 <thead class="table-dark">
                     <tr>
-                        <th style="font-size:0.7rem;">Rank</th>
-                        <th style="font-size:0.7rem;">Student</th>
+                        <th>Rank</th>
+                        <th>Student</th>
                         {% for subject in subjects %}
-                            <th style="font-size:0.7rem;" data-subject-id="{{ subject.id }}">
-                                {{ subject.short_name|default:subject.code|default:subject.name }}
-                            </th>
-                            <th style="font-size:0.7rem;">Rubric</th>
+                            <th data-subject-id="{{ subject.id }}">{{ subject.short_name|default:subject.name }}</th>
+                            <th>Rubric</th>
                         {% endfor %}
-                        <th style="font-size:0.7rem;">Total</th>
-                        <th style="font-size:0.7rem;">Average</th>
+                        <th>Total</th>
+                        <th>Average</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,12 +34,12 @@
                         {% for item in student.marks_list %}
                             <td>
                                 <input type="number"
-                                       name="marks_{{ student.id }}_{{ item.subject.id }}"
-                                       class="form-control form-control-sm mark-input"
-                                       value="{{ item.mark }}"
-                                       max="{{ exam.max_mark }}"
+                                       step="0.1"
                                        min="0"
-                                       step="0.1">
+                                       max="{{ exam.max_mark }}"
+                                       class="form-control form-control-sm mark-input"
+                                       name="marks_{{ student.id }}_{{ item.subject.id }}"
+                                       value="{{ item.mark }}">
                             </td>
                             <td class="rubric-cell text-center"></td>
                         {% endfor %}
@@ -51,7 +50,7 @@
                 </tbody>
                 <tfoot class="table-dark">
                     <tr>
-                        <th colspan="2" style="font-size:0.7rem;">Subject Total</th>
+                        <th colspan="2">Subject Total</th>
                         {% for subject in subjects %}
                             <th class="subject-total" data-subject-id="{{ subject.id }}"></th>
                             <th></th>
@@ -60,7 +59,7 @@
                         <th></th>
                     </tr>
                     <tr>
-                        <th colspan="2" style="font-size:0.7rem;">Subject Mean</th>
+                        <th colspan="2">Subject Mean</th>
                         {% for subject in subjects %}
                             <th class="subject-mean" data-subject-id="{{ subject.id }}"></th>
                             <th></th>
@@ -72,36 +71,25 @@
             </table>
         </div>
         <button type="submit" class="btn btn-success mt-2">Save Marks</button>
+        <button type="button" class="btn btn-primary mt-2" onclick="downloadClassList()">Download Class List</button>
+        <button type="button" class="btn btn-secondary mt-2" onclick="window.print();">Print Class List & Summary</button>
     </form>
 
-    <!-- Exam Summary -->
-    <h4 class="mt-4">Exam Summary (Subjects Ranked by Mean)</h4>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover table-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th style="font-size:0.7rem;">Rank</th>
-                    <th style="font-size:0.7rem;">Subject</th>
-                    <th style="font-size:0.7rem;">Mean Score</th>
-                </tr>
-            </thead>
-            <tbody id="exam-summary-body">
-                <!-- Populated by JS -->
-            </tbody>
-        </table>
+    <!-- Subject summary below class list -->
+    <h4 class="mt-4">Exam Summary (Subjects by Mean)</h4>
+    <div class="chart-container">
+        <canvas id="subject-summary-chart"></canvas>
     </div>
 
     {% else %}
-    <div class="alert alert-warning">
-        No students found in this class.
-    </div>
+    <div class="alert alert-warning">No students found in this class.</div>
     {% endif %}
 </div>
 
 <style>
-.table td, .table th { padding: 0.1rem !important; font-size: 0.7rem; }
-input.mark-input { width: 50px; max-width: 100%; height: calc(1rem + 2px); font-size: 0.65rem; }
-.rubric-cell { font-weight:bold; text-align:center; font-size:0.7rem; }
+.table td, .table th { padding: 0.1rem; font-size: 0.7rem; }
+input.mark-input { width: 50px; height: calc(1rem + 2px); font-size: 0.65rem; }
+.rubric-cell { font-weight:bold; text-align:center; }
 
 /* Rubrics */
 .rubric-ee { background-color: #28a745; color: #fff; }
@@ -114,40 +102,45 @@ input.mark-input { width: 50px; max-width: 100%; height: calc(1rem + 2px); font-
 .rank-2 { background-color: silver !important; font-weight: bold; }
 .rank-3 { background-color: #cd7f32 !important; font-weight: bold; }
 
-/* Landscape print */
+/* Chart */
+.chart-container { position: relative; width: 100%; height: 300px; }
+@media (max-width:576px) { .chart-container { height: 200px; } }
+
+/* Print */
 @media print {
     body { font-size: 8pt; }
-    table { page-break-inside: auto; width: 100%; font-size: 8pt; }
-    tr { page-break-inside: avoid; page-break-after: auto; }
-    thead { display: table-header-group; }
-    tfoot { display: table-footer-group; }
-    button { display: none; }
-    input { border: none; font-size: 8pt; width: 40px; }
+    table, canvas { width: 100% !important; page-break-inside: avoid; }
+    .chart-container { height: 180mm; width: 260mm; }
+    button, input { display: none; }
     @page { size: A4 landscape; margin: 5mm; }
 }
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-
     const table = document.getElementById('marks-table');
 
     function getRubric(mark){
-        mark = parseFloat(mark);
-        if(isNaN(mark)) return '';
-        if(mark >= 80) return 'E.E';
-        if(mark >= 60) return 'M.E';
-        if(mark >= 40) return 'A.E';
+        if (mark >= 80) return 'E.E';
+        if (mark >= 60) return 'M.E';
+        if (mark >= 40) return 'A.E';
         return 'B.E';
     }
 
     function getRubricClass(mark){
-        mark = parseFloat(mark);
-        if(isNaN(mark)) return '';
-        if(mark >= 80) return 'rubric-ee';
-        if(mark >= 60) return 'rubric-me';
-        if(mark >= 40) return 'rubric-ae';
+        if (mark >= 80) return 'rubric-ee';
+        if (mark >= 60) return 'rubric-me';
+        if (mark >= 40) return 'rubric-ae';
         return 'rubric-be';
+    }
+
+    function debounce(func, delay) {
+        let timer;
+        return function(...args){
+            clearTimeout(timer);
+            timer = setTimeout(() => func.apply(this, args), delay);
+        }
     }
 
     function updateMarks(){
@@ -155,83 +148,116 @@ document.addEventListener('DOMContentLoaded', () => {
         const subjectSums = {};
         const subjectCounts = {};
 
-        table.querySelectorAll('.mark-input').forEach(input=>{
+        table.querySelectorAll('.mark-input').forEach(input => {
             const subjId = input.name.split('_')[2];
-            subjectSums[subjId] = 0;
-            subjectCounts[subjId] = 0;
+            if (!subjectSums[subjId]) subjectSums[subjId] = 0;
+            if (!subjectCounts[subjId]) subjectCounts[subjId] = 0;
         });
 
-        // Student totals & rubrics
-        rows.forEach(row=>{
+        rows.forEach(row => {
             let total = 0;
-            row.querySelectorAll('.mark-input').forEach(input=>{
-                const val = parseFloat(input.value);
+            const inputs = row.querySelectorAll('.mark-input');
+            inputs.forEach(input => {
+                let val = parseFloat(input.value);
+                if (isNaN(val)) val = 0;
+
                 const subjId = input.name.split('_')[2];
-                if(!isNaN(val)){
-                    total += val;
-                    subjectSums[subjId] += val;
-                    subjectCounts[subjId] += 1;
-                }
+                total += val;
+                subjectSums[subjId] += val;
+                subjectCounts[subjId] += 1;
+
                 const rubricCell = input.parentElement.nextElementSibling;
                 rubricCell.textContent = getRubric(val);
                 rubricCell.className = 'rubric-cell ' + getRubricClass(val);
             });
+
             row.querySelector('.total-cell').textContent = total.toFixed(1);
-            row.querySelector('.average-cell').textContent = (total / row.querySelectorAll('.mark-input').length).toFixed(2);
+            row.querySelector('.average-cell').textContent = (total/inputs.length).toFixed(2);
             row.dataset.total = total;
         });
 
-        // Rank students (left column)
-        rows.sort((a,b)=>parseFloat(b.dataset.total) - parseFloat(a.dataset.total));
-        rows.forEach((row,index)=>{
-            row.querySelector('.rank-cell').textContent = index + 1;
+        // Rank students
+        rows.sort((a,b)=>parseFloat(b.dataset.total)-parseFloat(a.dataset.total));
+        rows.forEach((row,i)=>{
+            row.querySelector('.rank-cell').textContent = i+1;
             row.classList.remove('rank-1','rank-2','rank-3');
-            if(index===0) row.classList.add('rank-1');
-            if(index===1) row.classList.add('rank-2');
-            if(index===2) row.classList.add('rank-3');
+            if(i===0) row.classList.add('rank-1');
+            if(i===1) row.classList.add('rank-2');
+            if(i===2) row.classList.add('rank-3');
             row.parentElement.appendChild(row);
         });
 
         // Subject totals & means
-        table.querySelectorAll('.subject-total').forEach(th=>{
+        table.querySelectorAll('.subject-total').forEach(th => {
             const subjId = th.dataset.subjectId;
             th.textContent = subjectSums[subjId].toFixed(1);
         });
-        table.querySelectorAll('.subject-mean').forEach(th=>{
+        table.querySelectorAll('.subject-mean').forEach(th => {
             const subjId = th.dataset.subjectId;
             th.textContent = (subjectSums[subjId]/subjectCounts[subjId]).toFixed(2);
         });
 
-        // Exam summary: subjects ranked by mean
-        const summaryBody = document.getElementById('exam-summary-body');
-        if(summaryBody){
-            summaryBody.innerHTML = '';
-            const subjectData = [];
-            table.querySelectorAll('th[data-subject-id]').forEach(th=>{
-                const subjId = th.dataset.subjectId;
-                const meanTh = table.querySelector(`.subject-mean[data-subject-id="${subjId}"]`);
-                if(meanTh){
-                    const mean = parseFloat(meanTh.textContent);
-                    const subjName = th.textContent; // guaranteed short_name/code/name
-                    subjectData.push({id: subjId, name: subjName, mean: mean});
-                }
-            });
-            subjectData.sort((a,b)=>b.mean - a.mean);
-            subjectData.forEach((subj,index)=>{
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td style="font-size:0.7rem;">${index+1}</td>
-                                <td style="font-size:0.7rem;">${subj.name}</td>
-                                <td style="font-size:0.7rem;">${subj.mean.toFixed(2)}</td>`;
-                summaryBody.appendChild(tr);
-            });
-        }
+        // Subject summary chart
+        const subjectData = [];
+        table.querySelectorAll('th[data-subject-id]').forEach(th=>{
+            const subjId = th.dataset.subjectId;
+            const meanTh = table.querySelector(`.subject-mean[data-subject-id="${subjId}"]`);
+            if(meanTh){
+                const mean = parseFloat(meanTh.textContent);
+                subjectData.push({name: th.textContent.trim(), mean});
+            }
+        });
+        subjectData.sort((a,b)=>b.mean-a.mean);
+        renderSubjectChart(subjectData);
     }
 
-    table.querySelectorAll('.mark-input').forEach(input=>{
-        input.addEventListener('input', updateMarks);
-    });
+    function renderSubjectChart(subjectData){
+        const ctx = document.getElementById('subject-summary-chart').getContext('2d');
+        if(window.subjectChart) window.subjectChart.destroy();
+        window.subjectChart = new Chart(ctx,{
+            type:'bar',
+            data:{
+                labels: subjectData.map(s=>s.name),
+                datasets:[{
+                    label:'Mean Score',
+                    data: subjectData.map(s=>s.mean),
+                    backgroundColor:'rgba(54,162,235,0.7)',
+                    borderColor:'rgba(54,162,235,1)',
+                    borderWidth:1
+                }]
+            },
+            options:{
+                responsive:true,
+                maintainAspectRatio:false,
+                scales:{
+                    y:{beginAtZero:true, max:{{ exam.max_mark }}},
+                    x:{ticks:{autoSkip:false}}
+                },
+                plugins:{legend:{display:false}}
+            }
+        });
+    }
+
+    const debouncedUpdate = debounce(updateMarks,300);
+    table.querySelectorAll('.mark-input').forEach(input => input.addEventListener('input', debouncedUpdate));
 
     updateMarks();
+
+    // Download CSV
+    window.downloadClassList = function(){
+        const rows = Array.from(document.querySelectorAll('#marks-table tr'));
+        const csv = rows.map(row=>{
+            const cells = Array.from(row.querySelectorAll('th, td'));
+            return cells.map(cell=>`"${cell.textContent.trim()}"`).join(',');
+        }).join('\n');
+        const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `ClassList_{{ exam.school_class.name }}_{{ exam.name }}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 });
 </script>
 {% endblock %}

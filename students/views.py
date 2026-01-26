@@ -8,6 +8,9 @@ from .forms import StudentAddForm
 import secrets
 from django.contrib import messages
 from django.db import IntegrityError
+import csv
+from django.http import HttpResponse
+from .models import SchoolClass
 
 
 
@@ -90,6 +93,40 @@ def student_add(request):
     return render(request, 'students/student_add.html', {'classes': classes})
 
 
+
+def student_update(request, pk):
+    student = get_object_or_404(Student, pk=pk)
+
+    if request.method == 'POST':
+        form = StudentAddForm(request.POST, request.FILES, instance=student)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Student updated successfully.')
+            return redirect('students:student_detail', pk=student.pk)
+    else:
+        form = StudentAddForm(instance=student)
+
+    return render(request, 'students/student_form.html', {
+        'form': form,
+        'student': student,
+        'title': 'Edit Student'
+    })
+
+
+def student_delete(request, pk):
+    student = get_object_or_404(Student, pk=pk)
+
+    if request.method == 'POST':
+        student.delete()
+        messages.success(request, 'Student deleted successfully.')
+        return redirect('students:student_list')
+
+    return render(request, 'students/student_confirm_delete.html', {
+        'student': student
+    })
+
+
+
 @login_required
 def student_detail(request, pk):
     student= get_object_or_404(Student, pk=pk)
@@ -158,3 +195,30 @@ def add_parent(request):
     return render(request, 'students/add_parent.html', {
         'students': students 
     })
+
+
+
+
+def class_download(request, class_id):
+    school_class = SchoolClass.objects.get(pk=class_id)
+    students = school_class.student_set.all()
+
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={'Content-Disposition': f'attachment; filename="{school_class.name}_students.csv"'},
+    )
+
+    writer = csv.writer(response)
+    writer.writerow(['No', 'First Name', 'Last Name', 'Admission', 'DOB', 'Gender'])
+
+    for i, s in enumerate(students, start=1):
+        writer.writerow([
+            i,
+            s.user.first_name,
+            s.user.last_name,
+            s.admission_number,
+            s.date_of_birth,
+            s.gender
+        ])
+
+    return response

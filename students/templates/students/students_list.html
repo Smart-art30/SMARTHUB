@@ -5,24 +5,38 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3>Students – {{ request.user.school.name }}</h3>
-        <a href="{% url 'students:student_add' %}" class="btn btn-primary">Add Learner</a>
+        <div>
+            <a href="{% url 'students:student_add' %}" class="btn btn-primary">Add Learner</a>
+            <button class="btn btn-secondary" onclick="printAllClasses()">
+                <i class="bi bi-printer"></i> Print All Classes
+            </button>
+        </div>
     </div>
 
     {% for class in classes %}
-        <div class="card mb-4 shadow-sm">
+        <div class="card mb-4 shadow-sm class-card" id="class-{{ class.id }}">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <strong>{{ class.name }}</strong>
-                <span class="badge bg-light text-dark">
-                    {{ class.student_set.count }} Students
-                </span>
+                <div>
+                    <!-- Print single class -->
+                    <button class="btn btn-sm btn-secondary" onclick="printClass('{{ class.id }}')">
+                        <i class="bi bi-printer"></i> Print
+                    </button>
+                    <!-- Download CSV -->
+                    <a href="{% url 'students:class_download' class.id %}" class="btn btn-sm btn-success">
+                        <i class="bi bi-download"></i> Download
+                    </a>
+                </div>
             </div>
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover align-middle mb-0">
                     <thead class="table-secondary text-center">
                         <tr>
+                            <th>#</th>
                             <th>Photo</th>
-                            <th>Name</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
                             <th>Admission</th>
                             <th>Class</th>
                             <th>School</th>
@@ -34,6 +48,7 @@
                     <tbody>
                         {% for s in class.student_set.all %}
                         <tr>
+                            <td class="text-center fw-bold">{{ forloop.counter }}</td>
                             <td class="text-center">
                                 {% if s.photo %}
                                     <img src="{{ s.photo.url }}" width="50" height="50" class="rounded-circle">
@@ -41,7 +56,8 @@
                                     N/A
                                 {% endif %}
                             </td>
-                            <td>{{ s.user.get_full_name }}</td>
+                            <td>{{ s.user.first_name }}</td>
+                            <td>{{ s.user.last_name }}</td>
                             <td>{{ s.admission_number }}</td>
                             <td>{{ s.student_class.name }}</td>
                             <td>{{ s.school.name }}</td>
@@ -55,14 +71,12 @@
                             </td>
                             <td class="text-center">
                                 <a href="{% url 'students:student_detail' s.id %}"
-                                   class="btn btn-sm btn-primary">
-                                   View
-                                </a>
+                                   class="btn btn-sm btn-primary">View</a>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="8" class="text-center">
+                            <td colspan="10" class="text-center">
                                 No students in this class.
                             </td>
                         </tr>
@@ -76,4 +90,28 @@
     {% endfor %}
 
 </div>
+
+<!-- Print Scripts -->
+<script>
+function printClass(classId) {
+    const printContents = document.getElementById('class-' + classId).innerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    location.reload();
+}
+
+function printAllClasses() {
+    const allClasses = document.querySelectorAll('.class-card');
+    let printContents = '';
+    allClasses.forEach(c => printContents += c.innerHTML);
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    location.reload();
+}
+</script>
+
 {% endblock %}

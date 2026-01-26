@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-warning text-center">
+        <h4>No Exam Found</h4>
+        <p>
+            There is no exam assigned for
+            <strong>{{ school_class }}</strong>
+            in
+            <strong>{{ subject.name }}</strong>.
+        </p>
+        <a href="javascript:history.back()" class="btn btn-primary mt-3">
+            Go Back
+        </a>
+    </div>
+</div>
+{% endblock %}

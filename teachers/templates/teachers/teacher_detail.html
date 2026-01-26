@@ -22,7 +22,20 @@
                     <p class="card-text"><strong>Specialization:</strong> {{ teacher.specialization }}</p>
                     <p class="card-text"><strong>Date of Birth:</strong> {{ teacher.date_of_birth }}</p>
                     <p class="card-text"><strong>Gender:</strong> {{ teacher.gender }}</p>
-                    <a href="{% url 'teachers:teacher_list' %}" class="btn btn-secondary mt-2">Back to List</a>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-3">
+                        <!-- Edit button -->
+                        <a href="{% url 'teachers:teacher_edit' teacher.pk %}" class="btn btn-primary">Edit</a>
+
+                        <!-- Delete button (redirects to confirmation page) -->
+                        <a href="{% url 'teachers:teacher_delete' teacher.pk %}" class="btn btn-danger">
+                            Delete
+                        </a>
+
+                        <!-- Back button -->
+                        <a href="{% url 'teachers:teacher_list' %}" class="btn btn-secondary">Back to List</a>
+                    </div>
                 </div>
             </div>
         </div>

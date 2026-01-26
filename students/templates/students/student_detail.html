@@ -3,17 +3,48 @@
 {% block content %}
 <div class="card mt-3" style="max-width: 600px;">
     <div class="card-body text-center">
+
         {% if student.photo %}
-            <img src="{{ student.photo.url }}" width="150" height="150" class="rounded-circle mb-3">
+            <img src="{{ student.photo.url }}"
+                 width="150" height="150"
+                 class="rounded-circle mb-3">
         {% endif %}
+
         <h4 class="card-title">{{ student.user.get_full_name }}</h4>
+
         <p><strong>Admission Number:</strong> {{ student.admission_number }}</p>
         <p><strong>Class:</strong> {{ student.student_class.name }}</p>
         <p><strong>School:</strong> {{ student.school.name }}</p>
-        <p><strong>Date of Birth:</strong> {{ student.date_of_birth|date:"d M Y" }}</p>
-        <p><strong>Gender:</strong> {{ student.gender|title }}</p>
+        <p><strong>Date of Birth:</strong> {{ student.date_of_birth|date:"d M Y"|default:"N/A" }}</p>
+        <p><strong>Gender:</strong> {{ student.gender|title|default:"N/A" }}</p>
         <p><strong>Created At:</strong> {{ student.created_at|date:"d M Y H:i" }}</p>
-        <a href="{% url 'students:student_list' %}" class="btn btn-secondary mt-2">Back to List</a>
+
+        <div class="mt-3 d-flex justify-content-center gap-2">
+
+            <!-- EDIT -->
+            <a href="{% url 'students:student_update' student.id %}"
+               class="btn btn-warning">
+                Edit
+            </a>
+
+            <!-- DELETE -->
+            <form method="post"
+                  action="{% url 'students:student_delete' student.id %}">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to delete this student?');">
+                    Delete
+                </button>
+            </form>
+
+            <!-- BACK -->
+            <a href="{% url 'students:student_list' %}"
+               class="btn btn-secondary">
+                Back to List
+            </a>
+        </div>
+
     </div>
 </div>
 {% endblock %}

@@ -7,7 +7,7 @@ class Subject(models.Model):
     school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=20, blank=True, null=True)
-    short_name = models.CharField(max_length=10, blank=True)  # NEW: abbreviation
+    short_name = models.CharField(max_length=10, blank=True) 
     assigned_teacher = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='subjects',
@@ -19,14 +19,13 @@ class Subject(models.Model):
         unique_together = ('school', 'code')
 
     def save(self, *args, **kwargs):
-        # Auto-generate short name if not provided
         if not self.short_name:
-            # Use first letters of words, max 5 letters
-            self.short_name = ''.join(word[0] for word in self.name.split())[:5].upper()
+            self.short_name = self.name[:4].upper()
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.name} ({self.school.name})'
+
 
 
 

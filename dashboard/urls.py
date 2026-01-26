@@ -2,9 +2,8 @@ from django.urls import path
 from . import views
 from students.views import student_list, student_add
 from academics.views import student_report
-from academics import views as academics_views
 
-app_name = 'dashboard'
+app_name = 'dashboard'  # Important for namespacing
 
 urlpatterns = [
     # Redirect based on role
@@ -17,21 +16,17 @@ urlpatterns = [
     path('student/', views.student_dashboard, name='student_dashboard'),
     path('parent/', views.parent_dashboard, name='parent_dashboard'),
 
-    # Teacher
+    # Teacher profile
     path('teacher/profile/edit/', views.teacher_profile_edit, name='teacher_profile_edit'),
 
     # Students
     path('students/', student_list, name='student_list'),
     path('students/add/', student_add, name='student_add'),
 
-    # Reports
+    # Student reports
     path(
         'students/reports/<int:student_id>/<int:exam_id>/',
         student_report,
         name='student_report'
     ),
-
-   
-   
-
 ]

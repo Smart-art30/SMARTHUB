@@ -13,6 +13,8 @@ from teachers.models import TeacherSubjectAssignment
 from schools.models import SchoolClass
 from teachers.models import TeacherClass
 from django.urls import reverse
+from django.http import Http404
+
 
 
 @login_required
@@ -239,77 +241,61 @@ def class_overview(request, class_id):
 
 
 
-@login_required
-@role_required('teacher')
 def select_exam(request, class_id, subject_id):
-    teacher = get_object_or_404(Teacher, user=request.user)
-
-    school_class = get_object_or_404(
-        SchoolClass,
-        id=class_id,
-        school=teacher.school
-    )
-
+    school_class = get_object_or_404(SchoolClass, id=class_id)
     subject = get_object_or_404(Subject, id=subject_id)
-
-    # --- Fetch ExamSubjects safely ---
-    exam_subjects = ExamSubject.objects.filter(
+    
+    exam_subject = ExamSubject.objects.filter(
         school_class=school_class,
         subject=subject
-    )
-
-    if not exam_subjects.exists():
-        raise Http404("No exam found for this class and subject")
+    ).first()  
+    
+    if not exam_subject:
+        return render(request, 'academics/no_exam.html', {
+            'school_class': school_class,
+            'subject': subject
+        })
 
    
-    exam_subject = exam_subjects.first()
-
-    # --- Fetch related exams ---
-    exams = Exam.objects.filter(
-        school=teacher.school,
-        school_class=school_class,
-        examsubject=exam_subject
-    )
-
-    return render(request, 'academics/select_exam.html', {
-        'school_class': school_class,
-        'subject': subject,
-        'exams': exams
-    })
-
-
+    return redirect('academics:enter_marks', class_id=class_id, exam_id=exam_subject.exam.id)
 
 @login_required
 @role_required('teacher')
-def enter_marks(request, exam_id):
+def enter_marks(request, class_id, exam_id):
+    """
+    View for teachers to enter or update marks for students in a specific class and exam.
+    Parameters:
+        class_id: ID of the class
+        exam_id: ID of the exam
+    """
+
     teacher = request.user.teacher
     teacher_school = teacher.school
 
-    # Fetch the exam safely
     exam = get_object_or_404(
         Exam,
         id=exam_id,
+        school_class__id=class_id,
         school_class__school=teacher_school
     )
 
-    # Fetch students in the class
     students = Student.objects.filter(
-        student_class=exam.school_class
+        student_class__id=class_id
     ).order_by('user__last_name', 'user__first_name')
 
-    # Subjects assigned to this teacher for the class
+   
     subjects = Subject.objects.filter(
         teachersubjectassignment__teacher=teacher,
-        teachersubjectassignment__school_class=exam.school_class
+        teachersubjectassignment__school_class__id=class_id
     ).distinct()
 
-    # Get existing marks as a dict: student_id -> {subject_id: mark}
+ 
     existing_marks = {}
     marks_qs = StudentMark.objects.filter(exam=exam)
     for m in marks_qs:
         existing_marks.setdefault(m.student_id, {})[m.subject_id] = m.marks
 
-    # Prepare marks list per student
+   
     for student in students:
         student.marks_list = []
         total = 0
@@ -321,7 +307,6 @@ def enter_marks(request, exam_id):
         student.total = total
         student.average = total / len(subjects) if subjects else 0
 
-    # Save marks
     if request.method == 'POST':
         for student in students:
             for subject in subjects:
@@ -332,22 +317,24 @@ def enter_marks(request, exam_id):
                     except ValueError:
                         mark_float = 0
 
-                    # Safe update_or_create
+                   
                     StudentMark.objects.update_or_create(
                         student=student,
                         exam=exam,
-                        subject=subject,  # include subject to satisfy NOT NULL
+                        subject=subject,
                         defaults={'marks': mark_float}
                     )
 
         messages.success(request, "Marks saved successfully.")
-        return redirect('academics:class_overview', class_id=exam.school_class.id)
+        return redirect('academics:class_overview', class_id=class_id)
 
     return render(request, 'academics/enter_marks.html', {
         'exam': exam,
         'students': students,
         'subjects': subjects,
     })
+
+
 
 @login_required
 def student_report(request, student_id):

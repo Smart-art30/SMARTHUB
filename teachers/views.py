@@ -10,7 +10,7 @@ import string, secrets
 from django.contrib import messages
 from django.db import IntegrityError
 from django.core.mail import send_mail
-from .forms import TeacherSubjectAssignmentForm
+from .forms import TeacherSubjectAssignmentForm,TeacherAdminForm
 from .models import TeacherSubjectAssignment
 from schools.models import SchoolClass
 from academics.models import Subject
@@ -20,9 +20,7 @@ from academics.models import Subject
 
 
 User = get_user_model()
-# -----------------------------
-# List all teachers
-# -----------------------------
+
 @login_required
 @role_required('schooladmin')
 def teacher_list(request):
@@ -30,12 +28,12 @@ def teacher_list(request):
     return render(request, 'teachers/teacher_list.html', {'teachers': teachers})
 
 
-# Generate random password
+
 def generate_random_password(length=10):
     alphabet = string.ascii_letters + string.digits + string.punctuation
     return ''.join(secrets.choice(alphabet) for _ in range(length))
 
-# Generate unique username
+
 def generate_unique_username(email):
     base_username = email.split('@')[0]
     username = base_username
@@ -46,17 +44,13 @@ def generate_unique_username(email):
     return username
 
 
-# -----------------------------
-# Generate random password
-# -----------------------------
+
 def generate_random_password(length=10):
     alphabet = string.ascii_letters + string.digits + string.punctuation
     return ''.join(secrets.choice(alphabet) for _ in range(length))
 
 
-# -----------------------------
-# Generate unique username
-# -----------------------------
+
 def generate_unique_username(email):
     base_username = email.split('@')[0]
     username = base_username
@@ -152,27 +146,28 @@ def teacher_detail(request, pk):
     teacher = get_object_or_404(Teacher, pk=pk)
     return render(request, 'teachers/teacher_detail.html', {'teacher': teacher})
 
-    
+
 @login_required
 @role_required('teacher')
 def teacher_profile_edit(request):
     teacher = request.user.teacher
 
     if request.method == 'POST':
-        form = TeacherProfileForm(
-            request.POST,
-            request.FILES,
-            instance=teacher
-        )
+        form = TeacherProfileForm(request.POST, request.FILES, instance=teacher)
         if form.is_valid():
             form.save()
-            return redirect('teacher_dashboard')
+            # Redirect to teacher dashboard
+            return redirect('dashboard:teacher_dashboard')
     else:
         form = TeacherProfileForm(instance=teacher)
 
-    return render(request, 'dashboard/teacher_profile_edit.html', {
-        'form': form
+    return render(request, 'teachers/teacher_profile_edit.html', {
+        'form': form,
+        'teacher': teacher
     })
+
+
+
 
 
 def add_teacher_subject(request):
@@ -241,7 +236,7 @@ def assign_teacher_subject(request):
 @login_required
 @role_required('schooladmin')
 def assign_subjects_to_class(request):
-    school = request.user.school  # assuming schooladmin has a school
+    school = request.user.school  
 
     if request.method == 'POST':
         form = TeacherSubjectAssignmentForm(request.POST, school=school)
@@ -250,7 +245,7 @@ def assign_subjects_to_class(request):
             school_class = form.cleaned_data['school_class']
             subjects = form.cleaned_data['subject']
 
-            # save assignments
+           
             for subject in subjects:
                 TeacherSubjectAssignment.objects.get_or_create(
                     teacher=teacher,
@@ -258,9 +253,43 @@ def assign_subjects_to_class(request):
                     subject=subject
                 )
             messages.success(request, "Subjects assigned successfully!")
-            return redirect('teachers:assign_subjects')  # make sure this URL name exists in urls.py
+            return redirect('teachers:assign_subjects')  
     else:
         form = TeacherSubjectAssignmentForm(school=school)
 
-    # Correct template path (use slashes, not colon)
+    
     return render(request, 'teachers/assign_subjects.html', {'form': form})
+
+
+
+@login_required
+@role_required('schooladmin')
+def teacher_edit(request, pk):
+    teacher = get_object_or_404(Teacher, pk=pk)
+
+    if request.method == 'POST':
+        form = TeacherAdminForm(request.POST, request.FILES, instance=teacher)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Teacher updated successfully!')
+            return redirect('teachers:teacher_detail', pk=teacher.pk)
+    else:
+        form = TeacherAdminForm(instance=teacher)
+
+    return render(request, 'teachers/teacher_edit.html', {'form': form, 'teacher': teacher})
+
+
+@login_required
+@role_required('schooladmin')
+def teacher_delete(request, pk):
+    teacher = get_object_or_404(Teacher, pk=pk)
+    if request.method == 'POST':
+        # Optionally delete the related user too
+        user = teacher.user
+        teacher.delete()
+        user.delete()
+        messages.success(request, 'Teacher deleted successfully!')
+        return redirect('teachers:teacher_list')
+
+    # Render confirmation page
+    return render(request, 'teachers/teacher_confirm_delete.html', {'teacher': teacher})
