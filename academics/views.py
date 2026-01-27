@@ -1,20 +1,35 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
-from accounts.decorators import role_required
-from schools.models import SchoolClass
-from students.models import Student
-from .models import Subject, Exam, StudentMark
-from .forms import SubjectForm
-from teachers.models import Teacher
-from .models import Exam, ExamSubject, SchoolClass, Subject
-from teachers.models import TeacherSubjectAssignment
-from schools.models import SchoolClass
-from teachers.models import TeacherClass
 from django.urls import reverse
 from django.http import Http404
 from django.db import transaction
+
+from accounts.decorators import role_required
+
+from teachers.models import (
+    Teacher,
+    TeacherClass,
+    TeacherSubjectAssignment,
+)
+
+from schools.models import SchoolClass
+from students.models import Student
+
+from .models import (
+    Subject,
+    Exam,
+    ExamSubject,
+    StudentMark,
+)
+
+from .forms import SubjectForm
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+import json
 
 
 
@@ -268,38 +283,31 @@ def select_exam(request, class_id, subject_id):
         'exam_subjects': exam_subjects
     })
 
-
 @login_required
 @role_required('teacher')
 def enter_marks(request, class_id, exam_id):
-    """
-    View for teachers to enter or update marks for students in a specific class and exam.
-    """
     teacher = request.user
     exam = get_object_or_404(
         Exam,
         id=exam_id,
         school_class__id=class_id,
-        school_class__school=teacher.teacher.school  # assumes teacher has .school
+        school_class__school=teacher.teacher.school
     )
 
     students = Student.objects.filter(
         student_class__id=class_id
     ).order_by('user__last_name', 'user__first_name')
 
-    # Get subjects for this exam and class
     subjects = Subject.objects.filter(
         examsubject__exam=exam,
         examsubject__school_class=exam.school_class
     ).distinct()
 
-    # Fetch existing marks
     existing_marks = {}
     marks_qs = StudentMark.objects.filter(exam=exam)
     for m in marks_qs:
         existing_marks.setdefault(m.student_id, {})[m.subject_id] = m.marks
 
-    # Prepare student marks list with grade and totals
     for student in students:
         student.marks_list = []
         total = 0
@@ -307,7 +315,6 @@ def enter_marks(request, class_id, exam_id):
             mark_val = existing_marks.get(student.id, {}).get(subject.id, '')
             grade = ''
             if mark_val != '':
-                # Compute grade
                 temp_mark = StudentMark(student=student, exam=exam, subject=subject, marks=mark_val)
                 grade = temp_mark.grade()
                 total += float(mark_val)
@@ -319,7 +326,6 @@ def enter_marks(request, class_id, exam_id):
         student.total = total
         student.average = round(total / len(subjects), 2) if subjects else 0
 
-    # Save/update marks on POST
     if request.method == 'POST':
         with transaction.atomic():
             for student in students:
@@ -328,7 +334,6 @@ def enter_marks(request, class_id, exam_id):
                     if mark_value:
                         try:
                             mark_float = float(mark_value)
-                            # Clamp between 0 and exam.max_mark
                             mark_float = max(0, min(mark_float, exam.max_mark))
                         except ValueError:
                             mark_float = 0
@@ -339,78 +344,126 @@ def enter_marks(request, class_id, exam_id):
                             subject=subject,
                             defaults={'marks': mark_float}
                         )
-
         messages.success(request, "Marks saved successfully.")
         return redirect('academics:class_overview', class_id=class_id)
+
+   
+    school_logo_url = teacher.teacher.school.logo.url if teacher.teacher.school.logo else None
 
     return render(request, 'academics/enter_marks.html', {
         'exam': exam,
         'students': students,
         'subjects': subjects,
+        'school_logo_url': school_logo_url,  
     })
 
 
 
-from teachers.models import TeacherSubjectAssignment 
-from teachers.models import TeacherSubjectAssignment
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render
+@login_required
+@role_required('teacher')
+@csrf_exempt  
+def save_mark_ajax(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            student_id = int(data.get('student_id'))
+            subject_id = int(data.get('subject_id'))
+            exam_id = int(data.get('exam_id'))
+            mark_value = data.get('mark', '').strip()
+
+           
+            if mark_value == '':
+                mark_float = None
+            else:
+                try:
+                    mark_float = float(mark_value)
+                except ValueError:
+                    return JsonResponse({'status':'error','message':'Invalid mark'})
+
+            
+            from academics.models import Student, Subject, Exam, StudentMark
+            student = Student.objects.get(id=student_id)
+            subject = Subject.objects.get(id=subject_id)
+            exam = Exam.objects.get(id=exam_id)
+
+            
+            if mark_float is not None:
+                mark_float = max(0, min(mark_float, exam.max_mark))
+
+           
+            with transaction.atomic():
+                if mark_float is None:
+                    
+                    StudentMark.objects.filter(student=student, subject=subject, exam=exam).delete()
+                else:
+                    StudentMark.objects.update_or_create(
+                        student=student,
+                        subject=subject,
+                        exam=exam,
+                        defaults={'marks': mark_float}
+                    )
+
+            return JsonResponse({'status':'ok'})
+
+        except Exception as e:
+            return JsonResponse({'status':'error', 'message': str(e)})
+    
+    return JsonResponse({'status':'error', 'message':'Invalid request method'})
+
 
 @login_required
 def student_report(request, student_id):
     student = get_object_or_404(Student, id=student_id)
 
-    # Get subjects for this student
+    # Subjects assigned to this class
     subjects = Subject.objects.filter(
         teachersubjectassignment__school_class=student.student_class
     ).distinct().order_by('name')
 
-    # Get all exams for this student's class
+    # Exams in class, ordered by term
     all_exams = list(Exam.objects.filter(school_class=student.student_class))
-
-    # Force column order: Opener -> Mid-term -> End-term
     exam_order = ['Opener', 'Mid-term', 'End-term']
     exams = sorted(all_exams, key=lambda x: exam_order.index(x.term) if x.term in exam_order else 99)
 
+    # Build report rows
     report_rows_with_trends = []
     exam_totals = [0] * len(exams)
     exam_counts = [0] * len(exams)
+
+    # Collect facilitators per subject (from marks)
+    subject_facilitators = {}
 
     for subject in subjects:
         marks_with_trends = []
         total_marks = 0
         count_marks = 0
 
-        # Get marks for this subject in all exams
         marks_list = []
         for exam in exams:
             mark_obj = StudentMark.objects.filter(student=student, subject=subject, exam=exam).first()
             marks_list.append(mark_obj.marks if mark_obj else 0)
 
-        # Calculate trend arrows (Opener → Mid-term → End-term)
+            # Save facilitator for this subject if available
+            if mark_obj and mark_obj.facilitator:
+                subject_facilitators[subject.name] = mark_obj.facilitator.get_full_name()
+
         for idx, mark in enumerate(marks_list):
             if idx == 0:
-                trend = 'same'  # first exam, no trend
+                trend = 'same'
             else:
                 prev_mark = marks_list[idx - 1]
-                if mark > prev_mark:
-                    trend = 'up'
-                elif mark < prev_mark:
-                    trend = 'down'
-                else:
-                    trend = 'same'
+                trend = 'up' if mark > prev_mark else 'down' if mark < prev_mark else 'same'
             marks_with_trends.append({'mark': mark, 'trend': trend})
 
             total_marks += mark
             if mark != 0:
                 count_marks += 1
 
-            # Update exam totals
             exam_totals[idx] += mark
             if mark != 0:
                 exam_counts[idx] += 1
 
-        # Remarks based on average
+        # Subject remark
         avg_subject = total_marks / count_marks if count_marks else 0
         if avg_subject >= 80:
             remark = 'Exceeding Expectation'
@@ -427,22 +480,29 @@ def student_report(request, student_id):
             'remarks': remark
         })
 
-    # Compute average per exam
-    exam_averages = []
-    for idx in range(len(exams)):
-        avg = round(exam_totals[idx] / exam_counts[idx], 2) if exam_counts[idx] else 0
-        exam_averages.append(avg)
+    # Exam averages
+    exam_averages = [round(exam_totals[i] / exam_counts[i], 2) if exam_counts[i] else 0 for i in range(len(exams))]
 
-    # Get facilitator assigned to this class (via TeacherSubjectAssignment)
-    facilitator_assignment = TeacherSubjectAssignment.objects.filter(
-        school_class=student.student_class
-    ).first()
-    if facilitator_assignment:
-        teacher = facilitator_assignment.teacher
-        # Adjust field names according to your Teacher model
-        facilitator = f"{getattr(teacher, 'first_name', '')} {getattr(teacher, 'last_name', '')}".strip()
-    else:
-        facilitator = "N/A"
+    # Facilitator – pull the first available from marks, fallback to N/A
+    first_facilitator = StudentMark.objects.filter(student=student, facilitator__isnull=False).first()
+    facilitator = first_facilitator.facilitator.get_full_name() if first_facilitator else "N/A"
+
+    # Class ranks
+    class_students = Student.objects.filter(student_class=student.student_class)
+    student_totals = []
+    for s in class_students:
+        total = sum(
+            StudentMark.objects.filter(student=s, subject=subject, exam=exam).first().marks
+            if StudentMark.objects.filter(student=s, subject=subject, exam=exam).exists() else 0
+            for subject in subjects for exam in exams
+        )
+        student_totals.append({'student': s, 'total': total})
+
+    sorted_totals = sorted(student_totals, key=lambda x: x['total'], reverse=True)
+    for idx, entry in enumerate(sorted_totals, start=1):
+        entry['rank'] = idx
+
+    student_rank = next((entry['rank'] for entry in sorted_totals if entry['student'] == student), None)
 
     return render(request, 'academics/student_report.html', {
         'student': student,
@@ -450,7 +510,9 @@ def student_report(request, student_id):
         'report_rows_with_trends': report_rows_with_trends,
         'exam_totals': exam_totals,
         'exam_averages': exam_averages,
-        'facilitator': facilitator,
+        'facilitator': facilitator, 
+        'subject_facilitators': subject_facilitators,  # Optional per-subject
+        'student_rank': student_rank,
     })
 
 

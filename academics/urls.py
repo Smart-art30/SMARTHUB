@@ -33,4 +33,5 @@ urlpatterns = [
 
     # ----- Teachers -----
     path('assign-teacher/', views.assign_teacher, name='assign_teacher'),
+    path('ajax/save-mark/', views.save_mark_ajax, name='save_mark_ajax'),
 ]

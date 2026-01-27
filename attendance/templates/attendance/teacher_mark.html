@@ -1,36 +1,93 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Mark Attendance - {{ student_class.name }} {{ student_class.stream }}</h3>
+<div class="container mt-4">
+    <h3 class="mb-4">Mark Attendance - {{ student_class.name }} {{ student_class.stream }}</h3>
 
-<form method="post">
-    {% csrf_token %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Student</th>
-                <th>Status</th>
-                <th>Remarks</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for student in students %}
-            <tr>
-                <td>{{ student.user.get_full_name }}</td>
-                <td>
-                    <select name="status_{{ student.id }}" class="form-select">
-                        {% for key, value in status_choices %}
-                        <option value="{{ key }}">{{ value }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-                <td>
-                    <input type="text" name="remarks_{{ student.id }}" class="form-control">
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <button type="submit" class="btn btn-primary">Save Attendance</button>
-</form>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Student</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr id="student-row-{{ student.id }}" 
+                    class="{% if student.status == 'Absent' %}table-danger{% endif %}">
+                    <td>{{ student.user.get_full_name }}</td>
+                    <td class="text-center">
+                        <select class="form-select attendance-select" data-student-id="{{ student.id }}">
+                            <option value="Present" {% if student.status == 'Present' %}selected{% endif %}>Present</option>
+                            <option value="Absent" {% if student.status == 'Absent' %}selected{% endif %}>Absent</option>
+                            <option value="Late" {% if student.status == 'Late' %}selected{% endif %}>Late</option>
+                            <option value="Excused" {% if student.status == 'Excused' %}selected{% endif %}>Excused</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control remarks-input" 
+                               data-student-id="{{ student.id }}" 
+                               value="{{ student.remarks }}" placeholder="Enter remarks">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JavaScript for Auto-Save -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const csrftoken = '{{ csrf_token }}';
+
+    function saveAttendance(studentId, status, remarks) {
+        fetch("{% url 'attendance:mark_attendance_ajax' student_class.id %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken,
+            },
+            body: JSON.stringify({
+                student_id: studentId,
+                status: status,
+                remarks: remarks
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const row = document.getElementById(`student-row-${studentId}`);
+            // Highlight if absent
+            if (data.status === "Absent") {
+                row.classList.add('table-danger');
+            } else {
+                row.classList.remove('table-danger');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Listen to dropdown changes
+    document.querySelectorAll('.attendance-select').forEach(select => {
+        select.addEventListener('change', function() {
+            const studentId = this.dataset.studentId;
+            const status = this.value;
+            const remarks = document.querySelector(`.remarks-input[data-student-id="${studentId}"]`).value;
+            saveAttendance(studentId, status, remarks);
+        });
+    });
+
+    // Listen to remarks changes
+    document.querySelectorAll('.remarks-input').forEach(input => {
+        input.addEventListener('blur', function() {
+            const studentId = this.dataset.studentId;
+            const status = document.querySelector(`.attendance-select[data-student-id="${studentId}"]`).value;
+            const remarks = this.value;
+            saveAttendance(studentId, status, remarks);
+        });
+    });
+});
+</script>
 {% endblock %}

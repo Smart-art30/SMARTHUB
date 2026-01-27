@@ -1,263 +1,288 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h3>Enter Marks - Class {{ exam.school_class.name }}</h3>
-    <p>
-        <strong>Exam:</strong> {{ exam.name }} ({{ exam.term }} {{ exam.year }})<br>
-        <strong>Max Marks:</strong> {{ exam.max_mark }}
-    </p>
+<div class="container-fluid mt-3 watermark-container">
 
-    {% if students %}
-    <!-- Class list -->
-    <form method="post">
-        {% csrf_token %}
-        <div class="table-responsive">
-            <table id="marks-table" class="table table-bordered table-striped table-hover table-sm">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Rank</th>
-                        <th>Student</th>
-                        {% for subject in subjects %}
-                            <th data-subject-id="{{ subject.id }}">{{ subject.short_name|default:subject.name }}</th>
-                            <th>Rubric</th>
-                        {% endfor %}
-                        <th>Total</th>
-                        <th>Average</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for student in students %}
-                    <tr>
-                        <td class="rank-cell"></td>
-                        <td>{{ student.user.get_full_name }}</td>
-                        {% for item in student.marks_list %}
-                            <td>
-                                <input type="number"
-                                       step="0.1"
-                                       min="0"
-                                       max="{{ exam.max_mark }}"
-                                       class="form-control form-control-sm mark-input"
-                                       name="marks_{{ student.id }}_{{ item.subject.id }}"
-                                       value="{{ item.mark }}">
-                            </td>
-                            <td class="rubric-cell text-center"></td>
-                        {% endfor %}
-                        <td class="total-cell"></td>
-                        <td class="average-cell"></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot class="table-dark">
-                    <tr>
-                        <th colspan="2">Subject Total</th>
-                        {% for subject in subjects %}
-                            <th class="subject-total" data-subject-id="{{ subject.id }}"></th>
-                            <th></th>
-                        {% endfor %}
-                        <th></th>
-                        <th></th>
-                    </tr>
-                    <tr>
-                        <th colspan="2">Subject Mean</th>
-                        {% for subject in subjects %}
-                            <th class="subject-mean" data-subject-id="{{ subject.id }}"></th>
-                            <th></th>
-                        {% endfor %}
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </tfoot>
-            </table>
+    <!-- SCHOOL LOGO HEADER -->
+    <div class="d-flex align-items-center mb-3">
+        <img src="{% if school_logo_url %}{{ school_logo_url }}{% else %}{% static 'images/school_logo.png' %}{% endif %}" 
+             style="height:60px; margin-right:15px;">
+
+        <div>
+            <h5 class="mb-0">Marks Entry – {{ exam.name }}</h5>
+            <small>Class: {{ exam.school_class }} | Max Mark: {{ exam.max_mark }}</small>
+            <p>Facilitator (Class Teacher): {{ user.get_full_name }}</p>
         </div>
-        <button type="submit" class="btn btn-success mt-2">Save Marks</button>
-        <button type="button" class="btn btn-primary mt-2" onclick="downloadClassList()">Download Class List</button>
-        <button type="button" class="btn btn-secondary mt-2" onclick="window.print();">Print Class List & Summary</button>
-    </form>
-
-    <!-- Subject summary below class list -->
-    <h4 class="mt-4">Exam Summary (Subjects by Mean)</h4>
-    <div class="chart-container">
-        <canvas id="subject-summary-chart"></canvas>
+        <div class="ms-auto">
+            <button onclick="window.print()" class="btn btn-sm btn-outline-dark">🖨 Print</button>
+            <button onclick="downloadPDF()" class="btn btn-sm btn-outline-primary">⬇ Download</button>
+        </div>
     </div>
 
-    {% else %}
-    <div class="alert alert-warning">No students found in this class.</div>
-    {% endif %}
+    <!-- WATERMARKS -->
+    <img src="{% static 'images/school_logo.png' %}" class="watermark diagonal-1">
+    <img src="{% static 'images/school_logo.png' %}" class="watermark diagonal-2">
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+        <table id="marks-table" class="table table-sm table-bordered marks-table">
+            <thead>
+                <tr class="table-primary">
+                    <th>#</th>
+                    <th class="text-start">Student</th>
+                    {% for subject in subjects %}
+                        <th class="subject-header"> {{ subject.short_name|default:subject.name }} </th>
+                        <th class="rubric-header">R</th>
+                    {% endfor %}
+                    <th class="total-col">Total</th>
+                    <th class="avg-col">Avg</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td class="rank-cell"></td>
+                    <td class="student-name">{{ student.user.get_full_name }}</td>
+
+                    {% for item in student.marks_list %}
+                    <td>
+                        <input type="number"
+                               inputmode="numeric"
+                               step="1"
+                               min="0"
+                               max="{{ exam.max_mark }}"
+                               class="mark-input"
+                               name="mark_{{ student.id }}_{{ item.subject.id }}"
+                               value="{{ item.mark|default_if_none:'' }}"
+                               placeholder="">
+                    </td>
+                    <td class="rubric-cell" title="Rubric"></td>
+                    {% endfor %}
+
+                    <td class="total-cell"></td>
+                    <td class="avg-cell"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="table-secondary">
+                    <th colspan="2">Class Total</th>
+                    {% for subject in subjects %}
+                        <th class="subject-total" data-subject-id="{{ subject.id }}"></th>
+                        <th></th>
+                    {% endfor %}
+                    <th class="class-total"></th>
+                    <th class="class-avg"></th>
+                </tr>
+                <tr class="table-secondary">
+                    <th colspan="2">Class Mean</th>
+                    {% for subject in subjects %}
+                        <th class="subject-mean" data-subject-id="{{ subject.id }}"></th>
+                        <th></th>
+                    {% endfor %}
+                    <th class="class-total-mean"></th>
+                    <th class="class-avg-mean"></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- SUMMARY GRAPH -->
+    <div class="mt-3" style="width: 35%; margin:auto;">
+        <canvas id="summaryChart" height="60"></canvas>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="mt-3 text-center">
+        <p><strong>School Motto:</strong> Excellence and Integrity</p>
+        <p>Teacher Signature: ____________________</p>
+    </div>
+
 </div>
 
 <style>
-.table td, .table th { padding: 0.1rem; font-size: 0.7rem; }
-input.mark-input { width: 50px; height: calc(1rem + 2px); font-size: 0.65rem; }
-.rubric-cell { font-weight:bold; text-align:center; }
+/* ===== WATERMARKS ===== */
+.watermark-container { position: relative; }
+.watermark {
+    position: absolute;
+    width: 250px;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+}
+.diagonal-1 { top: 30%; left: 20%; transform: rotate(-30deg); }
+.diagonal-2 { top: 60%; left: 60%; transform: rotate(30deg); }
 
-/* Rubrics */
-.rubric-ee { background-color: #28a745; color: #fff; }
-.rubric-me { background-color: #ffc107; color: #212529; }
-.rubric-ae { background-color: #fd7e14; color: #fff; }
-.rubric-be { background-color: #dc3545; color: #fff; }
+/* ===== TABLE STYLING ===== */
+.marks-table th, .marks-table td {
+    padding: 2px;
+    vertical-align: middle;
+    border: 1px solid #999;
+}
 
-/* Top 3 ranks */
-.rank-1 { background-color: gold !important; font-weight: bold; }
-.rank-2 { background-color: silver !important; font-weight: bold; }
-.rank-3 { background-color: #cd7f32 !important; font-weight: bold; }
+.student-name { text-align: left; padding-left:5px; }
 
-/* Chart */
-.chart-container { position: relative; width: 100%; height: 300px; }
-@media (max-width:576px) { .chart-container { height: 200px; } }
+/* ===== INPUT FLAT & CENTERED ===== */
+.mark-input {
+    width: 35px;
+    height: 25px;
+    text-align: center;
+    border: none;
+    font-weight: bold;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+}
+.mark-input::-webkit-inner-spin-button,
+.mark-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+.mark-input { -moz-appearance:textfield; }
+.mark-input.invalid { background:#f8d7da; border-color:#dc3545; }
 
-/* Print */
+.rubric-cell { font-size:10px; font-weight:bold; text-align:center; }
+.subject-header, .rubric-header { background:#e9ecef; font-weight:bold; text-align:center; }
+
+.total-cell, .avg-cell, .subject-total, .subject-mean,
+.class-total, .class-avg, .class-total-mean, .class-avg-mean {
+    font-weight:bold; text-align:center;
+}
+
+/* RANK HIGHLIGHT */
+.rank-1 { background:#c6efce; }
+.rank-2 { background:#ffeb9c; }
+.rank-3 { background:#ffc7ce; }
+
+/* PRINT */
 @media print {
-    body { font-size: 8pt; }
-    table, canvas { width: 100% !important; page-break-inside: avoid; }
-    .chart-container { height: 180mm; width: 260mm; }
-    button, input { display: none; }
-    @page { size: A4 landscape; margin: 5mm; }
+    body { font-size: 10px; }
+    button { display: none; }
+    canvas { page-break-before: always; }
 }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+
     const table = document.getElementById('marks-table');
+    const inputs = [...document.querySelectorAll('.mark-input')];
+    const maxMark = {{ exam.max_mark }};
+    const subjectTotals = {};
 
-    function getRubric(mark){
-        if (mark >= 80) return 'E.E';
-        if (mark >= 60) return 'M.E';
-        if (mark >= 40) return 'A.E';
-        return 'B.E';
-    }
-
-    function getRubricClass(mark){
-        if (mark >= 80) return 'rubric-ee';
-        if (mark >= 60) return 'rubric-me';
-        if (mark >= 40) return 'rubric-ae';
-        return 'rubric-be';
-    }
-
-    function debounce(func, delay) {
-        let timer;
-        return function(...args){
-            clearTimeout(timer);
-            timer = setTimeout(() => func.apply(this, args), delay);
-        }
-    }
-
-    function updateMarks(){
-        const rows = Array.from(table.querySelectorAll('tbody tr'));
-        const subjectSums = {};
-        const subjectCounts = {};
-
-        table.querySelectorAll('.mark-input').forEach(input => {
-            const subjId = input.name.split('_')[2];
-            if (!subjectSums[subjId]) subjectSums[subjId] = 0;
-            if (!subjectCounts[subjId]) subjectCounts[subjId] = 0;
+    /* ENTER → NEXT CELL */
+    inputs.forEach((input,i)=>{
+        input.addEventListener('keydown',e=>{
+            if(e.key==='Enter'){ e.preventDefault(); inputs[i+1]?.focus(); inputs[i+1]?.select(); }
         });
+    });
 
-        rows.forEach(row => {
-            let total = 0;
-            const inputs = row.querySelectorAll('.mark-input');
-            inputs.forEach(input => {
-                let val = parseFloat(input.value);
-                if (isNaN(val)) val = 0;
+    function rubric(mark){
+        if(mark>=80) return 'EE';
+        if(mark>=60) return 'ME';
+        if(mark>=40) return 'AE';
+        return 'BE';
+    }
 
-                const subjId = input.name.split('_')[2];
+    function calculate(){
+        let classTotal=0;
+        // Reset subject totals
+        Object.keys(subjectTotals).forEach(k => subjectTotals[k]=0);
+
+        [...table.tBodies[0].rows].forEach(row=>{
+            let total=0;
+            const rowInputs=row.querySelectorAll('.mark-input');
+            rowInputs.forEach(input=>{
+                let val = input.value ? Math.round(parseFloat(input.value)) : 0;
                 total += val;
-                subjectSums[subjId] += val;
-                subjectCounts[subjId] += 1;
 
-                const rubricCell = input.parentElement.nextElementSibling;
-                rubricCell.textContent = getRubric(val);
-                rubricCell.className = 'rubric-cell ' + getRubricClass(val);
+                input.parentElement.nextElementSibling.textContent = input.value ? rubric(val) : '';
+                input.parentElement.nextElementSibling.title = input.value ? `Rubric for ${val} marks` : '';
+
+                if(val>maxMark) input.classList.add('invalid'); else input.classList.remove('invalid');
+
+                const subject = input.name.split('_').pop();
+                subjectTotals[subject] = (subjectTotals[subject] || 0) + val;
             });
-
-            row.querySelector('.total-cell').textContent = total.toFixed(1);
-            row.querySelector('.average-cell').textContent = (total/inputs.length).toFixed(2);
+            row.querySelector('.total-cell').textContent = total;
+            row.querySelector('.avg-cell').textContent = Math.round(total / rowInputs.length);
             row.dataset.total = total;
+            classTotal += total;
         });
 
-        // Rank students
-        rows.sort((a,b)=>parseFloat(b.dataset.total)-parseFloat(a.dataset.total));
+        // Subject totals & mean
+        table.querySelectorAll('.subject-total').forEach(th=>{
+            const subjId = th.dataset.subjectId;
+            th.textContent = subjectTotals[subjId] || '';
+        });
+        table.querySelectorAll('.subject-mean').forEach(th=>{
+            const subjId = th.dataset.subjectId;
+            th.textContent = subjectTotals[subjId] ? Math.round(subjectTotals[subjId]/{{ students|length }}) : '';
+        });
+
+        // Class totals
+        table.querySelector('.class-total').textContent = classTotal;
+        table.querySelector('.class-avg').textContent = Math.round(classTotal/{{ students|length }});
+    }
+
+    function rank(){
+        const rows = [...table.tBodies[0].rows];
+        rows.sort((a,b) => b.dataset.total - a.dataset.total);
         rows.forEach((row,i)=>{
             row.querySelector('.rank-cell').textContent = i+1;
             row.classList.remove('rank-1','rank-2','rank-3');
             if(i===0) row.classList.add('rank-1');
             if(i===1) row.classList.add('rank-2');
             if(i===2) row.classList.add('rank-3');
-            row.parentElement.appendChild(row);
+            table.tBodies[0].appendChild(row);
         });
-
-        // Subject totals & means
-        table.querySelectorAll('.subject-total').forEach(th => {
-            const subjId = th.dataset.subjectId;
-            th.textContent = subjectSums[subjId].toFixed(1);
-        });
-        table.querySelectorAll('.subject-mean').forEach(th => {
-            const subjId = th.dataset.subjectId;
-            th.textContent = (subjectSums[subjId]/subjectCounts[subjId]).toFixed(2);
-        });
-
-        // Subject summary chart
-        const subjectData = [];
-        table.querySelectorAll('th[data-subject-id]').forEach(th=>{
-            const subjId = th.dataset.subjectId;
-            const meanTh = table.querySelector(`.subject-mean[data-subject-id="${subjId}"]`);
-            if(meanTh){
-                const mean = parseFloat(meanTh.textContent);
-                subjectData.push({name: th.textContent.trim(), mean});
-            }
-        });
-        subjectData.sort((a,b)=>b.mean-a.mean);
-        renderSubjectChart(subjectData);
     }
 
-    function renderSubjectChart(subjectData){
-        const ctx = document.getElementById('subject-summary-chart').getContext('2d');
-        if(window.subjectChart) window.subjectChart.destroy();
-        window.subjectChart = new Chart(ctx,{
+    function drawChart(){
+        const labels = [{% for subject in subjects %}'{{ subject.short_name|default:subject.name }}',{% endfor %}];
+        const data = [{% for subject in subjects %} subjectTotals['{{ subject.id }}'] || 0 ,{% endfor %}];
+
+        if(window.summaryChartObj) window.summaryChartObj.destroy();
+        window.summaryChartObj = new Chart(document.getElementById('summaryChart'), {
             type:'bar',
-            data:{
-                labels: subjectData.map(s=>s.name),
-                datasets:[{
-                    label:'Mean Score',
-                    data: subjectData.map(s=>s.mean),
-                    backgroundColor:'rgba(54,162,235,0.7)',
-                    borderColor:'rgba(54,162,235,1)',
-                    borderWidth:1
-                }]
-            },
-            options:{
-                responsive:true,
-                maintainAspectRatio:false,
-                scales:{
-                    y:{beginAtZero:true, max:{{ exam.max_mark }}},
-                    x:{ticks:{autoSkip:false}}
-                },
-                plugins:{legend:{display:false}}
-            }
+            data:{ labels, datasets:[{ data, backgroundColor:'rgba(54,162,235,0.7)'}]},
+            options:{ plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, max:maxMark}}}
         });
     }
 
-    const debouncedUpdate = debounce(updateMarks,300);
-    table.querySelectorAll('.mark-input').forEach(input => input.addEventListener('input', debouncedUpdate));
+    // ===== Auto-save via AJAX =====
+    inputs.forEach(input=>{
+        input.addEventListener('input', e=>{
+            calculate();
+            clearTimeout(timer);
+            timer=setTimeout(()=>{ rank(); drawChart(); },600);
 
-    updateMarks();
+            // Auto-save
+            const [_, studentId, subjectId] = input.name.split('_');
+            const markValue = input.value;
+            fetch("{% url 'academics:save_mark_ajax' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    subject_id: subjectId,
+                    exam_id: {{ exam.id }},
+                    mark: markValue
+                })
+            }).then(res=>res.json()).then(data=>{
+                if(data.status !== 'ok'){
+                    console.error('Mark save failed', data);
+                }
+            });
+        });
+    });
 
-    // Download CSV
-    window.downloadClassList = function(){
-        const rows = Array.from(document.querySelectorAll('#marks-table tr'));
-        const csv = rows.map(row=>{
-            const cells = Array.from(row.querySelectorAll('th, td'));
-            return cells.map(cell=>`"${cell.textContent.trim()}"`).join(',');
-        }).join('\n');
-        const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `ClassList_{{ exam.school_class.name }}_{{ exam.name }}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
+    let timer=null;
+    calculate(); rank(); drawChart();
 });
+
+function downloadPDF(){ window.print(); }
 </script>
 {% endblock %}
