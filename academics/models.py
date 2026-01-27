@@ -3,6 +3,7 @@ from schools.models import School, SchoolClass
 from students.models import Student
 from django.conf import settings
 
+
 class Subject(models.Model):
     school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
@@ -46,11 +47,18 @@ class Exam(models.Model):
     def __str__(self):
         return f'{self.name} - {self.term} ({self.year})'
 
+
 class StudentMark(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)  # <- Add this
+    student = models.ForeignKey(Student, on_delete=models.CASCADE) 
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
-    subject = models.ForeignKey('academics.Subject', on_delete=models.CASCADE)  # only one subject
+    subject = models.ForeignKey('academics.Subject', on_delete=models.CASCADE)  
     marks = models.FloatField()
+    facilitator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Use this instead of User
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         unique_together = ('student', 'exam', 'subject')
@@ -69,8 +77,6 @@ class StudentMark(models.Model):
 
     def __str__(self):
         return f'{self.student} - {self.exam} - {self.subject} - {self.marks}'
-
-
 
 class ExamSubject(models.Model):
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)

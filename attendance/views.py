@@ -6,6 +6,9 @@ from  .models import StudentAttendance
 from students.models import Student
 from schools.models import SchoolClass
 from accounts.decorators import role_required
+import json
+from django.views.decorators.csrf import csrf_exempt
+
 
 
 @login_required
@@ -267,3 +270,28 @@ def class_attendance_report(request, class_id):
         "attendance/class_report.html",
         context
     )
+
+
+
+@csrf_exempt
+def mark_attendance_ajax(request, class_id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        student_id = data.get("student_id")
+        status = data.get("status", "Present")  
+        remarks = data.get("remarks", "")
+
+        student = get_object_or_404(Student, id=student_id)
+        
+        
+        attendance, created = Attendance.objects.get_or_create(
+            student=student,
+            date=timezone.now().date()
+        )
+        attendance.status = status   
+        attendance.remarks = remarks
+        attendance.save()
+
+        return JsonResponse({"success": True, "status": status})
+
+    return JsonResponse({"success": False}, status=400)

@@ -57,7 +57,11 @@ body { font-family: "Calibri", "Verdana", Arial, sans-serif; margin: 0; padding:
     <div>
         <p style="margin:0;"><strong>Student:</strong> {{ student.user.get_full_name }}</p>
         <p style="margin:0;"><strong>Class:</strong> {{ student.student_class.name }} {{ student.student_class.stream|default:"" }}</p>
+        <p style="margin:0;"><strong>Position in Class:</strong> {{ student_rank }}</p>
+
         <p style="margin:0;"><strong>Facilitator:</strong> {{ facilitator }}</p>
+
+
     </div>
 </div>
 

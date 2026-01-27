@@ -233,6 +233,8 @@ def assign_teacher_subject(request):
         'subjects': subjects
     })
 
+
+
 @login_required
 @role_required('schooladmin')
 def assign_subjects_to_class(request):
