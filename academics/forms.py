@@ -1,5 +1,7 @@
 from django import forms
 from .models import Subject
+from schools.models import SchoolClass
+from .models import Exam
 
 class SubjectForm(forms.ModelForm):
     class Meta:
@@ -22,3 +24,10 @@ class SubjectForm(forms.ModelForm):
             )
 
         return code
+
+
+
+class AssignSubjectsToExamForm(forms.Form):
+    exam = forms.ModelChoiceField(queryset=Exam.objects.all(), required=True)
+    school_class = forms.ModelChoiceField(queryset=SchoolClass.objects.all(), required=True)
+    subjects = forms.ModelMultipleChoiceField(queryset=Subject.objects.all(), widget=forms.CheckboxSelectMultiple)

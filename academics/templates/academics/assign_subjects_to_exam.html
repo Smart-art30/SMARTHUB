@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Assign Subjects to Exam</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.exam.label_tag }}<br>
+            {{ form.exam }}
+        </div>
+        <div class="mb-3">
+            {{ form.school_class.label_tag }}<br>
+            {{ form.school_class }}
+        </div>
+        <div class="mb-3">
+            {{ form.subjects.label_tag }}<br>
+            {{ form.subjects }}
+        </div>
+        <button type="submit" class="btn btn-primary">Assign Subjects</button>
+    </form>
+</div>
+{% endblock %}
+

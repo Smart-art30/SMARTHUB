@@ -19,10 +19,19 @@ urlpatterns = [
     path('exams/<str:name>/<str:term>/<int:year>/delete/', views.exam_delete_group, name='exam_delete_group'),
 
     # ----- Marks -----
-    path('marks/classes/', views.select_class, name='select_classes'),  # choose class first
+    # 1. List all classes for the teacher to select
+    path('marks/classes/', views.select_classes, name='select_classes'),
+
+    # 2. View selected class overview
     path('marks/classes/<int:class_id>/', views.class_overview, name='class_overview'),
+
+    # 3. Select a subject in the class
     path('marks/classes/<int:class_id>/subject/<int:subject_id>/', views.select_exam, name='select_exam'),
-    path('marks/classes/<int:class_id>/exam/<int:exam_id>/', views.enter_marks, name='enter_marks'),  # fixed
+
+    # 4. Enter marks for a specific exam
+    path('marks/classes/<int:class_id>/exam/<int:exam_id>/', views.enter_marks, name='enter_marks'),
+
+    # 5. Enter marks for multiple classes (optional)
     path('marks/exam/multi/', views.enter_marks_multi, name='enter_marks_multi'),
 
     # ----- Reports -----
@@ -34,4 +43,6 @@ urlpatterns = [
     # ----- Teachers -----
     path('assign-teacher/', views.assign_teacher, name='assign_teacher'),
     path('ajax/save-mark/', views.save_mark_ajax, name='save_mark_ajax'),
+    path('exams/assign-subjects/', views.assign_subjects_to_exam, name='assign_subjects_to_exam'),
+
 ]

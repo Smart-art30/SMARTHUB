@@ -30,14 +30,19 @@ class Subject(models.Model):
 
 
 
-
 class Exam(models.Model):
     school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    term = models.CharField(max_length=20)
-    year = models.IntegerField()
     school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
-   
+    name = models.CharField(max_length=100)
+
+    TERM_CHOICES = [
+        ('Opener', 'Opener'),
+        ('Mid-term', 'Mid-term'),
+        ('End-term', 'End-term'),
+    ]
+    term = models.CharField(max_length=20, choices=TERM_CHOICES)
+
+    year = models.IntegerField()
     max_mark = models.PositiveIntegerField(default=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -45,38 +50,40 @@ class Exam(models.Model):
         unique_together = ('school', 'school_class', 'term', 'year', 'name')
 
     def __str__(self):
-        return f'{self.name} - {self.term} ({self.year})'
+        return f'{self.name} - {self.school_class} - {self.term} ({self.year})'
 
 
 class StudentMark(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE) 
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
-    subject = models.ForeignKey('academics.Subject', on_delete=models.CASCADE)  
+
+    school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
+    term = models.CharField(max_length=20)
+
     marks = models.FloatField()
+
     facilitator = models.ForeignKey(
-        settings.AUTH_USER_MODEL,  # Use this instead of User
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
+        related_name='facilitated_marks'
     )
 
     class Meta:
-        unique_together = ('student', 'exam', 'subject')
+        unique_together = ('student', 'subject', 'exam')
 
     def grade(self):
         if self.marks >= 80:
             return 'A'
-        elif self.marks >= 70:
-            return 'B'
         elif self.marks >= 60:
+            return 'B'
+        elif self.marks >= 40:
             return 'C'
-        elif self.marks >= 50:
-            return 'D'
         else:
-            return 'E'
+            return 'D'
 
-    def __str__(self):
-        return f'{self.student} - {self.exam} - {self.subject} - {self.marks}'
 
 class ExamSubject(models.Model):
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)

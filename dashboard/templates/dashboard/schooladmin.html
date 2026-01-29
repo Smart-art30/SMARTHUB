@@ -8,7 +8,6 @@
     <title>School Admin Dashboard</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
@@ -25,15 +24,14 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Welcome, {{ request.user.username }}</a>
                     </li>
-                   <li class="nav-item">
-    <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-link nav-link text-warning p-0" style="border:none; background:none;">
-            Logout
-        </button>
-    </form>
-</li>
-
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link nav-link text-warning p-0" style="border:none; background:none;">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -47,7 +45,6 @@
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link active" href="{% url 'dashboard:schooladmin_dashboard' %}">Dashboard</a>
-
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'dashboard:student_list' %}">Students</a>
@@ -55,32 +52,26 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'teachers:teacher_list' %}">Teachers</a>
                     </li>
-                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'academics:assign_teacher' %}"> Assign Teacher</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'academics:assign_teacher' %}">Assign Teacher</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'teachers:assign_subjects' %}">Assign Subjects/Class</a>
                     </li>
-                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'teachers:assign_subjects' %}"> Asg subs/class</a>
-                    </li>
-
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'finance:invoice_list' %}">Invoices</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'finance:payment_list' %}">Payments</a>
                     </li>
-                  
-
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'students:parent_list' %}">Parents</a>
-
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'finance:fee_list' %}">Fee Structure</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'attendance:attendance_list' %}">Attendance</a>
-
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'teachers:add_teacher_subject' %}">Assign Subject</a>                       
@@ -91,82 +82,75 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'academics:exam_list' %}">Exams</a>
                     </li>
-
-                      <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'academics:report_list' %}">Report List</a>
                     </li>
-
-
                 </ul>
             </div>
 
             <!-- Main Content -->
             <div class="col-md-10 p-4">
                 <h2 class="mb-4">Dashboard</h2>
-                        <!-- School Information -->
-<div class="card mb-4 shadow-sm">
-    <div class="card-header bg-secondary text-white">
-        <h5 class="mb-0">
-            <i class="bi bi-building me-2"></i> School Information
-        </h5>
-    </div>
-    <div class="card-body">
-        <div class="row align-items-center">
-            <!-- Logo -->
-            <div class="col-md-3 text-center">
-                {% if school.logo %}
-                    <img src="{{ school.logo.url }}" class="img-fluid rounded mb-2"
-                         style="max-height:120px;" alt="School Logo">
-                {% else %}
-                    <i class="bi bi-image text-muted" style="font-size:80px;"></i>
-                    <p class="text-muted">No logo</p>
-                {% endif %}
-            </div>
 
-            <!-- Details -->
-            <div class="col-md-9">
-                <table class="table table-borderless mb-0">
-                    <tr>
-                        <th>Name:</th>
-                        <td>{{ school.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Code:</th>
-                        <td>{{ school.code }}</td>
-                    </tr>
-                    <tr>
-                        <th>Address:</th>
-                        <td>{{ school.address }}</td>
-                    </tr>
-                    <tr>
-                        <th>Phone:</th>
-                        <td>{{ school.phone }}</td>
-                    </tr>
-                    <tr>
-                        <th>Email:</th>
-                        <td>{{ school.email }}</td>
-                    </tr>
-                    <tr>
-                        <th>Subscription:</th>
-                        <td>
-                            {% if school.subscription and school.subscription.is_active %}
-                                <span class="badge bg-success">
-                                    Active
-                                </span>
-                            {% else %}
-                                <span class="badge bg-danger">
-                                    Inactive
-                                </span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+                <!-- School Information -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-building me-2"></i> School Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <!-- Logo -->
+                            <div class="col-md-3 text-center">
+                                {% if school.logo %}
+                                    <img src="{{ school.logo.url }}" class="img-fluid rounded mb-2" style="max-height:120px;" alt="School Logo">
+                                {% else %}
+                                    <i class="bi bi-image text-muted" style="font-size:80px;"></i>
+                                    <p class="text-muted">No logo</p>
+                                {% endif %}
+                            </div>
 
-                <!-- Cards -->
+                            <!-- Details -->
+                            <div class="col-md-9">
+                                <table class="table table-borderless mb-0">
+                                    <tr>
+                                        <th>Name:</th>
+                                        <td>{{ school.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Code:</th>
+                                        <td>{{ school.code }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address:</th>
+                                        <td>{{ school.address }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone:</th>
+                                        <td>{{ school.phone }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email:</th>
+                                        <td>{{ school.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Subscription:</th>
+                                        <td>
+                                            {% if school.subscription and school.subscription.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Cards -->
                 <div class="row g-4 mb-5">
                     <div class="col-md-3">
                         <div class="card text-white bg-primary h-100">
@@ -201,23 +185,30 @@
                         </div>
                     </div>
                 </div>
-                                                        <!-- Subjects Widget -->
-                <div class="row g-4 mb-5">
-                    <!-- Other cards... -->
 
+                <!-- Subjects & Assign Subjects to Exams Cards -->
+                <div class="row g-4 mb-5">
                     <div class="col-md-3">
                         <div class="card text-white bg-info h-100">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Subjects</h5>
                                 <p class="card-text display-6">{{ subject_count }}</p>
                                 <div class="d-flex justify-content-center gap-2 mt-3">
-                                    <a href="{% url 'academics:subject_list' %}" class="btn btn-light btn-sm">
-                                        Manage Subjects
-                                    </a>
-                                    <a href="{% url 'academics:subject_add' %}" class="btn btn-light btn-sm">
-                                        <i class="bi bi-plus-circle me-1"></i> Add
-                                    </a>
+                                    <a href="{% url 'academics:subject_list' %}" class="btn btn-light btn-sm">Manage Subjects</a>
+                                    <a href="{% url 'academics:subject_add' %}" class="btn btn-light btn-sm"><i class="bi bi-plus-circle me-1"></i> Add</a>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card text-white bg-secondary h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Assign Subjects to Exams</h5>
+                                <p class="card-text">Link subjects to exams and classes for teachers to enter marks.</p>
+                                <a href="{% url 'academics:assign_subjects_to_exam' %}" class="btn btn-light btn-sm">
+                                    <i class="bi bi-pencil-square me-1"></i> Assign
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -274,13 +265,10 @@
                     </div>
                 </div>
 
-
-                <!-- Your Classes Section -->
+                <!-- Classes Section -->
                 <div class="row mb-5">
                     <div class="col-12">
-                        <h5 class="mt-4">
-                            <i class="bi bi-mortarboard-fill me-2"></i> Your Classes
-                        </h5>
+                        <h5 class="mt-4"><i class="bi bi-mortarboard-fill me-2"></i> Your Classes</h5>
 
                         {% if classes %}
                         <div class="table-responsive">
@@ -302,12 +290,8 @@
                                         <td>{{ cls.section|default:"-" }}</td>
                                         <td>{{ cls.created_at|date:"d M Y H:i" }}</td>
                                         <td class="text-center">
-                                            <a href="{% url 'schools:edit_class' cls.id %}" class="btn btn-sm btn-warning me-1" title="Edit Class">
-                                                <i class="bi bi-pencil-fill"></i>
-                                            </a>
-                                            <a href="{% url 'schools:delete_class' cls.id %}" class="btn btn-sm btn-danger" title="Delete Class">
-                                                <i class="bi bi-trash-fill"></i>
-                                            </a>
+                                            <a href="{% url 'schools:edit_class' cls.id %}" class="btn btn-sm btn-warning me-1"><i class="bi bi-pencil-fill"></i></a>
+                                            <a href="{% url 'schools:delete_class' cls.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></a>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -318,18 +302,16 @@
                             <p>No classes found. <a href="{% url 'schools:add_class' %}">Add your first class</a>.</p>
                         {% endif %}
 
-                        <a href="{% url 'schools:add_class' %}" class="btn btn-primary mt-3">
-                            <i class="bi bi-plus-circle me-1"></i> Add New Class
-                        </a>
+                        <a href="{% url 'schools:add_class' %}" class="btn btn-primary mt-3"><i class="bi bi-plus-circle me-1"></i> Add New Class</a>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
