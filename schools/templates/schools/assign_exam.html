@@ -1,0 +1,6 @@
+<h2>Assign Exam to Classes</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Assign Exam</button>
+</form>

@@ -7,6 +7,10 @@ from accounts.decorators import role_required
 from .forms import SchoolClassForm
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
+from django.shortcuts import render, redirect
+from .forms import AssignExamForm
+from academics.models import ExamSubject
+
 
 
 
@@ -89,3 +93,26 @@ def delete_class(request, class_id):
         return redirect('schools:class_list')
 
     return render(request, 'schools/confirm_delete.html', {'object': cls})
+
+
+
+
+
+def assign_exam_view(request):
+    if request.method == 'POST':
+        form = AssignExamForm(request.POST, user=request.user)
+        if form.is_valid():
+            exam = form.cleaned_data['exam']
+            classes = form.cleaned_data['classes']
+            for school_class in classes:
+                for subject in school_class.subjects.all():
+                   
+                    ExamSubject.objects.get_or_create(
+                        exam=exam,
+                        school_class=school_class,
+                        subject=subject
+                    )
+            return redirect('exam_list') 
+    else:
+        form = AssignExamForm(user=request.user)
+    return render(request, 'exams/assign_exam.html', {'form': form})

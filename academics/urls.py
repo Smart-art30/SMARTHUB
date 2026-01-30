@@ -9,15 +9,13 @@ urlpatterns = [
     path('subject/add/', views.subject_add, name='subject_add'),
     path('subject/<int:pk>/edit/', views.subject_edit, name='subject_edit'),
     path('subject/<int:pk>/delete/', views.subject_delete, name='subject_delete'),
+    
 
     # ----- Exams -----
     path('exams/', views.exam_list, name='exam_list'),
     path('exams/add/', views.exam_add, name='exam_add'),
     path('exams/<int:exam_id>/assign-subjects/', views.exam_subject_add, name='exam_subject_add'),
-    path('exams/<str:name>/<str:term>/<int:year>/marks/', views.enter_marks_group, name='enter_marks_group'),
-    path('exams/<str:name>/<str:term>/<int:year>/edit/', views.exam_update_group, name='exam_update_group'),
-    path('exams/<str:name>/<str:term>/<int:year>/delete/', views.exam_delete_group, name='exam_delete_group'),
-
+   
     # ----- Marks -----
     # 1. List all classes for the teacher to select
     path('marks/classes/', views.select_classes, name='select_classes'),
@@ -32,17 +30,34 @@ urlpatterns = [
     path('marks/classes/<int:class_id>/exam/<int:exam_id>/', views.enter_marks, name='enter_marks'),
 
     # 5. Enter marks for multiple classes (optional)
-    path('marks/exam/multi/', views.enter_marks_multi, name='enter_marks_multi'),
+    #path('marks/exam/multi/', views.enter_marks_multi, name='enter_marks_multi'),
 
     # ----- Reports -----
     path('reports/<int:student_id>/', views.student_report, name='student_report'),
     path('dashboard/reports/', views.report_list, name='report_list'),
     path('dashboard/reports/<int:student_id>/<int:exam_id>/', views.student_report, name='student_exam_report'),
-    path('consolidated-report/', views.consolidated_student_report, name='consolidated_report'),
+    #path('consolidated-report/', views.consolidated_student_report, name='consolidated_report'),
 
     # ----- Teachers -----
     path('assign-teacher/', views.assign_teacher, name='assign_teacher'),
     path('ajax/save-mark/', views.save_mark_ajax, name='save_mark_ajax'),
     path('exams/assign-subjects/', views.assign_subjects_to_exam, name='assign_subjects_to_exam'),
+
+    # Exams
+    path('exams/', views.exam_list, name='exam_list'),
+    path('exams/add/', views.exam_add, name='exam_add'),
+    path('exams/assign-subjects/', views.assign_subjects_to_exam, name='assign_subjects_to_exam'),
+
+    # Marks
+    path('marks/classes/<int:class_id>/exam/<int:exam_id>/', views.enter_marks, name='enter_marks'),
+
+    # Reports
+    path('reports/<int:student_id>/', views.student_report, name='student_report'),
+    path('dashboard/reports/<int:student_id>/<int:exam_id>/', views.student_report, name='student_exam_report'),
+    # urls.py
+    path('exam/<int:pk>/edit/', views.exam_edit, name='exam_edit'),
+    path('exam/<int:pk>/delete/', views.exam_delete, name='exam_delete'),
+
+
 
 ]

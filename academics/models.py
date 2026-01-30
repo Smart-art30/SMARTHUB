@@ -28,11 +28,8 @@ class Subject(models.Model):
         return f'{self.name} ({self.school.name})'
 
 
-
-
 class Exam(models.Model):
     school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
-    school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
     TERM_CHOICES = [
@@ -47,10 +44,10 @@ class Exam(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('school', 'school_class', 'term', 'year', 'name')
+        unique_together = ('school', 'term', 'year', 'name')
 
     def __str__(self):
-        return f'{self.name} - {self.school_class} - {self.term} ({self.year})'
+        return f'{self.name} ({self.term} {self.year})'
 
 
 class StudentMark(models.Model):
