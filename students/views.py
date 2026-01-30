@@ -31,6 +31,79 @@ def student_list(request):
     )
 
 
+
+@login_required
+@role_required('schooladmin')
+def class_list(request):
+    classes = SchoolClass.objects.filter(
+        school=request.user.school
+    )
+
+    return render(
+        request,
+        'students/class_list.html',
+        {'classes': classes}
+    )
+
+@login_required
+@role_required('schooladmin')
+def class_detail(request, pk):
+    school_class = get_object_or_404(
+        SchoolClass,
+        pk=pk,
+        school=request.user.school
+    )
+
+    students = Student.objects.filter(
+        student_class=school_class,
+        school=request.user.school
+    ).select_related('user')
+
+    return render(
+        request,
+        'students/class_detail.html',
+        {
+            'class': school_class,
+            'students': students
+        }
+    )
+
+
+@login_required
+@role_required('schooladmin')
+def class_download(request, class_id):
+    school_class = get_object_or_404(
+        SchoolClass,
+        pk=class_id,
+        school=request.user.school
+    )
+
+    students = school_class.student_set.select_related('user')
+
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={
+            'Content-Disposition':
+            f'attachment; filename="{school_class.name}_students.csv"'
+        },
+    )
+
+    writer = csv.writer(response)
+    writer.writerow(['No', 'First Name', 'Last Name', 'Admission', 'DOB', 'Gender'])
+
+    for i, s in enumerate(students, start=1):
+        writer.writerow([
+            i,
+            s.user.first_name,
+            s.user.last_name,
+            s.admission_number,
+            s.date_of_birth,
+            s.gender
+        ])
+
+    return response
+
+#===========================================================================#
 @login_required
 @role_required('schooladmin')
 def student_add(request):

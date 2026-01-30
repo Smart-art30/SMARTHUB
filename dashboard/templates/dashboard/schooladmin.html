@@ -47,7 +47,10 @@
                         <a class="nav-link active" href="{% url 'dashboard:schooladmin_dashboard' %}">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard:student_list' %}">Students</a>
+                        <a class="nav-link" href="{% url 'students:student_list' %}">Students</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'students:class_list' %}">ClassList</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'teachers:teacher_list' %}">Teachers</a>

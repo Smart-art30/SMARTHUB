@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Classes – {{ request.user.school.name }}</h3>
+        <a href="{% url 'students:student_add' %}" class="btn btn-primary">
+            Add Learner
+        </a>
+    </div>
+
+    <div class="row">
+        {% for class in classes %}
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ class.name }}</h5>
+
+                        <a href="{% url 'students:class_detail' class.id %}"
+                           class="btn btn-primary btn-sm mt-2">
+                            View Students
+                        </a>
+
+                        <a href="{% url 'students:class_download' class.id %}"
+                           class="btn btn-success btn-sm mt-2">
+                            Download CSV
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center">No classes found.</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

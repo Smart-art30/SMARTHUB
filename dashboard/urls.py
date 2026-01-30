@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from students.views import student_list, student_add
+from students.views import  student_add, class_list
 from academics.views import student_report
 
 app_name = 'dashboard'  # Important for namespacing
@@ -20,7 +20,7 @@ urlpatterns = [
     path('teacher/profile/edit/', views.teacher_profile_edit, name='teacher_profile_edit'),
 
     # Students
-    path('students/', student_list, name='student_list'),
+   # path('students/', student_list, name='student_list'),
     path('students/add/', student_add, name='student_add'),
 
     # Student reports

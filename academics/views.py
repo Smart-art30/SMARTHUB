@@ -30,6 +30,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 import json
+from django.db import models
 
 
 
