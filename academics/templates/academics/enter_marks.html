@@ -6,12 +6,13 @@
 
     <!-- SCHOOL LOGO HEADER -->
     <div class="d-flex align-items-center mb-3">
+        
         <img src="{% if school_logo_url %}{{ school_logo_url }}{% else %}{% static 'images/school_logo.png' %}{% endif %}" 
              style="height:60px; margin-right:15px;">
 
         <div>
             <h5 class="mb-0">Marks Entry – {{ exam.name }}</h5>
-            <small>Class: {{ exam.school_class }} | Max Mark: {{ exam.max_mark }}</small>
+            <small>Class: {{ school_class }} | Max Mark: {{ exam.max_mark }}</small>
             <p>Facilitator (Class Teacher): {{ user.get_full_name }}</p>
         </div>
         <div class="ms-auto">

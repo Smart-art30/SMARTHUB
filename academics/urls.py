@@ -57,6 +57,12 @@ urlpatterns = [
     # urls.py
     path('exam/<int:pk>/edit/', views.exam_edit, name='exam_edit'),
     path('exam/<int:pk>/delete/', views.exam_delete, name='exam_delete'),
+    path(
+    "exam-subjects/<int:pk>/remove/",
+    views.remove_exam_subject,
+    name="remove_exam_subject",
+)
+
 
 
 

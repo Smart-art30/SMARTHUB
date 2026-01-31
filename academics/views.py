@@ -338,7 +338,6 @@ def select_exam(request, class_id, subject_id):
         'exam_subjects': exam_subjects
     })
 
-
 @login_required
 @role_required('teacher')
 def enter_marks(request, class_id, exam_id):
@@ -445,12 +444,18 @@ def enter_marks(request, class_id, exam_id):
         messages.success(request, "Marks saved successfully.")
         return redirect('academics:class_overview', class_id=class_id)
 
+    # ✅ ADD: school logo for template
+    school = teacher.teacher.school
+    school_logo_url = school.logo.url if school.logo else None
+
     return render(request, 'academics/enter_marks.html', {
         'exam': exam,
         'school_class': school_class,
         'students': students,
         'subjects': subjects,
+        'school_logo_url': school_logo_url,  # ✅ added
     })
+
 
 
 
@@ -752,34 +757,72 @@ def select_classes(request):
         'classes': classes
     })
 
-
-
-
 @login_required
-@role_required('schooladmin')
+@role_required("schooladmin")
 def assign_subjects_to_exam(request):
-    if request.method == 'POST':
+    assigned_subjects = ExamSubject.objects.none()
+    exam = None
+    school_class = None
+
+    if request.method == "POST":
         form = AssignSubjectsToExamForm(request.POST)
+
         if form.is_valid():
-            exam = form.cleaned_data['exam']
-            school_class = form.cleaned_data['school_class']
-            subjects = form.cleaned_data['subjects']
+            exam = form.cleaned_data["exam"]
+            school_class = form.cleaned_data["school_class"]
+            subjects = form.cleaned_data["subjects"]
 
             for subject in subjects:
-                obj, created = ExamSubject.objects.get_or_create(
+                ExamSubject.objects.get_or_create(
                     exam=exam,
                     school_class=school_class,
-                    subject=subject
+                    subject=subject,
                 )
-                if created:
-                    messages.success(request, f"{subject.name} assigned to {school_class.name} for {exam.name}.")
-                else:
-                    messages.warning(request, f"{subject.name} is already assigned.")
 
-            return redirect('academics:exam_list')
+            messages.success(request, "Subjects assigned successfully.")
+
+            # 🔥 REDIRECT WITH CONTEXT
+            return redirect(
+                f"{request.path}?exam={exam.id}&class={school_class.id}"
+            )
+
     else:
         form = AssignSubjectsToExamForm()
+        exam_id = request.GET.get("exam")
+        class_id = request.GET.get("class")
 
-    return render(request, 'academics/assign_subjects_to_exam.html', {'form': form})
+        if exam_id and class_id:
+            exam = get_object_or_404(Exam, id=exam_id)
+            school_class = get_object_or_404(SchoolClass, id=class_id)
 
+            assigned_subjects = ExamSubject.objects.filter(
+                exam=exam,
+                school_class=school_class,
+            )
 
+    return render(
+        request,
+        "academics/assign_subjects_to_exam.html",
+        {
+            "form": form,
+            "assigned_subjects": assigned_subjects,
+            "exam": exam,
+            "school_class": school_class,
+        },
+    )
+
+@login_required
+@role_required("schooladmin")
+def remove_exam_subject(request, pk):
+    exam_subject = get_object_or_404(ExamSubject, pk=pk)
+
+    exam_id = exam_subject.exam.id
+    class_id = exam_subject.school_class.id
+
+    if request.method == "POST":
+        exam_subject.delete()
+        messages.success(request, "Subject removed successfully.")
+
+    return redirect(
+        f"/academics/exams/assign-subjects/?exam={exam_id}&class={class_id}"
+    )

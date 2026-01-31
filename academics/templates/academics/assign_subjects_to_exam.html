@@ -1,24 +1,61 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block content %}
+
 <div class="container mt-4">
     <h3>Assign Subjects to Exam</h3>
+
     <form method="post">
         {% csrf_token %}
         <div class="mb-3">
-            {{ form.exam.label_tag }}<br>
+            {{ form.exam.label_tag }}
             {{ form.exam }}
         </div>
+
         <div class="mb-3">
-            {{ form.school_class.label_tag }}<br>
+            {{ form.school_class.label_tag }}
             {{ form.school_class }}
         </div>
+
         <div class="mb-3">
-            {{ form.subjects.label_tag }}<br>
+            {{ form.subjects.label_tag }}
             {{ form.subjects }}
         </div>
-        <button type="submit" class="btn btn-primary">Assign Subjects</button>
-    </form>
-</div>
-{% endblock %}
 
+        <button type="submit" class="btn btn-primary">
+            Assign Subjects
+        </button>
+    </form>
+
+    {% if assigned_subjects %}
+        <hr>
+        <h4>Assigned Subjects</h4>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam_subject in assigned_subjects %}
+                    <tr>
+                        <td>{{ exam_subject.subject.name }}</td>
+                        <td>
+                            <form method="post"
+                                  action="{% url 'academics:remove_exam_subject' exam_subject.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Remove this subject from exam?');">
+                                    Remove
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+
+{% endblock %}
