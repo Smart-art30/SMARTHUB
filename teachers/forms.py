@@ -64,11 +64,17 @@ class TeacherProfileForm(forms.ModelForm):
         ]
 
 class TeacherSubjectAssignmentForm(forms.Form):
-    teacher = forms.ModelChoiceField(queryset=Teacher.objects.none())
-    school_class = forms.ModelChoiceField(queryset=SchoolClass.objects.none())
+    teacher = forms.ModelChoiceField(
+        queryset=Teacher.objects.none(),
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    school_class = forms.ModelChoiceField(
+        queryset=SchoolClass.objects.none(),
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
     subject = forms.ModelMultipleChoiceField(
         queryset=Subject.objects.none(),
-        widget=forms.CheckboxSelectMultiple  # or SelectMultiple
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'})
     )
 
     def __init__(self, *args, **kwargs):

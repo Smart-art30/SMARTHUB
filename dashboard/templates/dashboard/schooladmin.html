@@ -56,11 +56,9 @@
                         <a class="nav-link" href="{% url 'teachers:teacher_list' %}">Teachers</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'academics:assign_teacher' %}">Assign Teacher</a>
+                        <a class="nav-link" href="{% url 'teachers:assign_teacher_subjects' %}">Assign Teacher</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'teachers:assign_subjects' %}">Assign Subjects/Class</a>
-                    </li>
+                   
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'finance:invoice_list' %}">Invoices</a>
                     </li>
@@ -76,9 +74,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'attendance:attendance_list' %}">Attendance</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'teachers:add_teacher_subject' %}">Assign Subject</a>                       
-                    </li>
+                   
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'academics:subject_list' %}">Subjects</a>
                     </li>
@@ -88,6 +84,22 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'academics:report_list' %}">Report List</a>
                     </li>
+                    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+        Class Reports
+    </a>
+    <ul class="dropdown-menu">
+        {% for class in classes %}
+            <li>
+                <a class="dropdown-item" href="{% url 'academics:class_report' class.id %}">
+                    {{ class.name }}
+                </a>
+            </li>
+        {% empty %}
+            <li class="dropdown-item text-muted">No classes found</li>
+        {% endfor %}
+    </ul>
+</li>
                 </ul>
             </div>
 

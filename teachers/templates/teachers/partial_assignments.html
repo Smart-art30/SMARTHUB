@@ -1,0 +1,22 @@
+{% if teacher_data %}
+    {% for teacher, class_list in teacher_data.items %}
+        <div class="card mb-3">
+            <div class="card-header bg-secondary text-white">
+                <strong>{{ teacher.user.get_full_name }}</strong> ({{ teacher.employee_id }})
+            </div>
+            <div class="card-body">
+                {% for item in class_list %}
+                    <div class="mb-2">
+                        <strong>Class:</strong> {{ item.class.name }}<br>
+                        <strong>Subjects:</strong>
+                        {% for subject in item.subjects %}
+                            {{ subject.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No assignments yet.</p>
+{% endif %}

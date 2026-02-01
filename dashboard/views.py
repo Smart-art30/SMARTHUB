@@ -26,15 +26,14 @@ from django.db.models import Count
 def dashboard_redirect(request):
     user = request.user
 
-    # 🔹 Django superuser (admin panel or dashboard)
+  
     if user.is_superuser or user.role == 'superadmin':
         return redirect('dashboard:superadmin_dashboard')
 
-    # 🔹 School Admin
     if user.role == 'schooladmin':
         return redirect('dashboard:schooladmin_dashboard')
 
-    # 🔹 Teacher (NO approval check)
+   
     if user.role == 'teacher':
         if hasattr(user, 'teacher'):
             return redirect('dashboard:teacher_dashboard')
@@ -45,7 +44,6 @@ def dashboard_redirect(request):
             {'message': 'Teacher profile not created. Contact admin.'}
         )
 
-    # 🔹 Student
     if user.role == 'student':
         if hasattr(user, 'student'):
             return redirect('dashboard:student_dashboard')
@@ -56,7 +54,7 @@ def dashboard_redirect(request):
             {'message': 'Student profile not created.'}
         )
 
-    # 🔹 Parent
+    
     if user.role == 'parent':
         if hasattr(user, 'parent'):
             return redirect('dashboard:parent_dashboard')
@@ -67,7 +65,7 @@ def dashboard_redirect(request):
             {'message': 'Parent profile not created.'}
         )
 
-    # 🔻 Fallback
+   
     return redirect('login')
 
 

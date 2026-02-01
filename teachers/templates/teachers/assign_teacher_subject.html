@@ -1,36 +1,166 @@
 {% extends 'base.html' %}
 {% block content %}
-<h3>Assign Teacher to Class and Subject</h3>
 
-<form method="post">
-    {% csrf_token %}
-    <div class="mb-2">
-        <label>Teacher</label>
-        <select name="teacher" class="form-control" required>
-            {% for t in teachers %}
-            <option value="{{ t.id }}">{{ t.user.get_full_name }}</option>
-            {% endfor %}
-        </select>
+<div class="container mt-5">
+    <h3 class="mb-4">Assign Teacher to Class and Subjects</h3>
+
+    <!-- GET form to select teacher & class -->
+    <form method="get" id="select-teacher-class-form" class="mb-4">
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <label for="teacher" class="form-label">Select Teacher</label>
+                <select name="teacher" id="teacher" class="form-select" required>
+                    <option value="">-- Select Teacher --</option>
+                    {% for teacher in teachers %}
+                        <option value="{{ teacher.id }}"
+                            {% if selected_teacher and teacher.id == selected_teacher.id %}selected{% endif %}>
+                            {{ teacher.user.get_full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 col-md-6">
+                <label for="school_class" class="form-label">Select Class</label>
+                <select name="school_class" id="school_class" class="form-select" required>
+                    <option value="">-- Select Class --</option>
+                    {% for class in classes %}
+                        <option value="{{ class.id }}"
+                            {% if selected_class and class.id == selected_class.id %}selected{% endif %}>
+                            {{ class.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </form>
+
+    {% if selected_teacher and selected_class %}
+    <!-- Subject Assignment Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Assign Subjects</h5>
+
+            <div class="d-flex flex-wrap gap-2 ms-2">
+                {% for subject in subjects %}
+                    <div class="form-check">
+                        <input class="form-check-input subject-checkbox" type="checkbox" 
+                               value="{{ subject.id }}" id="subject{{ subject.id }}"
+                               {% if subject.id in assigned_subject_ids %}checked{% endif %}>
+                        <label class="form-check-label" for="subject{{ subject.id }}">
+                            {{ subject.name }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+            <small class="text-muted d-block mt-2">Changes are saved automatically.</small>
+
+            <div class="mt-3">
+                <a href="{% url 'teachers:remove_teacher_subjects' selected_teacher.id selected_class.id %}"
+                   class="btn btn-danger"
+                   onclick="return confirm('Remove all subjects for this teacher/class?');">
+                    Remove All Subjects
+                </a>
+            </div>
+        </div>
     </div>
+    {% endif %}
 
-    <div class="mb-2">
-        <label>Class</label>
-        <select name="school_class" class="form-control" required>
-            {% for c in classes %}
-            <option value="{{ c.id }}">{{ c.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
+    <!-- Grouped Assignments by Teacher -->
+    <!-- Grouped Assignments by Teacher -->
+<h5 class="mt-5">Existing Assignments by Teacher</h5>
+<div id="assignments-container">
+{% if teacher_data %}
+    {% for teacher, class_list in teacher_data.items %}
+        <div class="card mb-3">
+            <div class="card-header bg-secondary text-white">
+                <strong>{{ teacher.user.get_full_name }}</strong> ({{ teacher.employee_id }})
+            </div>
+            <div class="card-body">
+                {% for item in class_list %}
+                    <div class="mb-2">
+                        <strong>Class:</strong> {{ item.class.name }}<br>
+                        <strong>Subjects:</strong>
+                        {% for subject in item.subjects %}
+                            {{ subject.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No assignments yet.</p>
+{% endif %}
+</div>
 
-    <div class="mb-2">
-        <label>Subject</label>
-        <select name="subject" class="form-control" required>
-            {% for s in subjects %}
-            <option value="{{ s.id }}">{{ s.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
 
-    <button class="btn btn-success">Assign</button>
-</form>
+
+<!-- JS: Auto-submit GET form and auto-save subjects -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const teacherSelect = document.getElementById('teacher');
+    const classSelect = document.getElementById('school_class');
+    const form = document.getElementById('select-teacher-class-form');
+    const assignmentsContainer = document.getElementById('assignments-container');
+// Auto-submit GET form only when BOTH teacher and class are selected
+function submitIfBothSelected() {
+    if (teacherSelect.value && classSelect.value) {
+        form.submit();
+    }
+}
+
+teacherSelect.addEventListener('change', () => {
+    // Reset class selection when teacher changes
+    classSelect.value = "";
+    // Only submit if both selected (won’t happen yet)
+    submitIfBothSelected();
+});
+
+classSelect.addEventListener('change', submitIfBothSelected);
+
+
+    // Auto-save subject assignments via AJAX
+    const saveAssignments = () => {
+        const teacherId = "{{ selected_teacher.id|default:'' }}";
+        const classId = "{{ selected_class.id|default:'' }}";
+
+        if (!teacherId || !classId) return;
+
+        const checkboxes = document.querySelectorAll('.subject-checkbox');
+        const selectedSubjects = Array.from(checkboxes)
+            .filter(c => c.checked)
+            .map(c => c.value);
+
+        const params = new URLSearchParams();
+        params.append('teacher', teacherId);
+        params.append('school_class', classId);
+        selectedSubjects.forEach(sub => params.append('subjects[]', sub));
+
+        fetch("{% url 'teachers:ajax_assign_subjects' %}", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: params
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === "success") {
+                // Update assignments dynamically
+                assignmentsContainer.innerHTML = data.html_assignments;
+            } else {
+                console.error("Error:", data.message);
+            }
+        });
+    };
+
+    // Attach change listeners to checkboxes
+    document.querySelectorAll('.subject-checkbox').forEach(cb => {
+        cb.addEventListener('change', saveAssignments);
+    });
+});
+
+</script>
+
 {% endblock %}
