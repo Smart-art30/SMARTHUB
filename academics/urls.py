@@ -9,6 +9,7 @@ urlpatterns = [
     path('subject/add/', views.subject_add, name='subject_add'),
     path('subject/<int:pk>/edit/', views.subject_edit, name='subject_edit'),
     path('subject/<int:pk>/delete/', views.subject_delete, name='subject_delete'),
+    path('reports/class/<int:class_id>/', views.class_report, name='class_report'),
     
 
     # ----- Exams -----

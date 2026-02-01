@@ -14,6 +14,10 @@ from .forms import TeacherSubjectAssignmentForm,TeacherAdminForm
 from .models import TeacherSubjectAssignment
 from schools.models import SchoolClass
 from academics.models import Subject
+from collections import defaultdict 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import render_to_string
 
 
 
@@ -156,7 +160,7 @@ def teacher_profile_edit(request):
         form = TeacherProfileForm(request.POST, request.FILES, instance=teacher)
         if form.is_valid():
             form.save()
-            # Redirect to teacher dashboard
+           
             return redirect('dashboard:teacher_dashboard')
     else:
         form = TeacherProfileForm(instance=teacher)
@@ -167,102 +171,156 @@ def teacher_profile_edit(request):
     })
 
 
-
-
-
-def add_teacher_subject(request):
-    school = request.user.school  
-    if request.method == 'POST':
-        form = TeacherSubjectAssignmentForm(request.POST, school=school)
-        if form.is_valid():
-            teacher = form.cleaned_data['teacher']
-            school_class = form.cleaned_data['school_class']
-            subjects = form.cleaned_data['subject']
-
-            for subject in subjects:
-                assignment, created = TeacherSubjectAssignment.objects.get_or_create(
-                    teacher=teacher,
-                    school_class=school_class,
-                    subject=subject
-                )
-                if created:
-                    messages.success(request, f'Subject {subject.name} assigned successfully.')
-                else:
-                    messages.warning(request, f'Subject {subject.name} was already assigned.')
-
-            return redirect('teachers:add_teacher_subject')  
-    else:
-        form = TeacherSubjectAssignmentForm(school=school)
-
-    return render(request, 'teachers/add_teacher_subject.html', {'form': form})
-
-
-
 @login_required
 @role_required('schooladmin')
-def assign_teacher_subject(request):
-    if request.method == 'POST':
-        teacher_id = request.POST.get('teacher')
-        class_id = request.POST.get('school_class')
-        subject_id = request.POST.get('subject')
 
-        teacher = get_object_or_404(Teacher, id=teacher_id)
-        school_class = get_object_or_404(SchoolClass, id=class_id)
-        subject = get_object_or_404(Subject, id=subject_id)
-
-        assignment, created = TeacherSubjectAssignment.objects.get_or_create(
-            teacher=teacher,
-            school_class=school_class,
-            subject=subject
-        )
-
-        if created:
-            messages.success(request, "Teacher assigned successfully!")
-        else:
-            messages.warning(request, "This teacher is already assigned to this subject in this class.")
-
-        return redirect('teachers:assign_teacher_subject')
-
-    teachers = Teacher.objects.all()
+def assign_teacher_subjects(request):
+    teachers = Teacher.objects.select_related('user').all()
     classes = SchoolClass.objects.all()
     subjects = Subject.objects.all()
 
-    return render(request, 'teachers/assign_teacher_subject.html', {
+    selected_teacher = None
+    selected_class = None
+    assigned_subject_ids = []
+
+    teacher_id = request.POST.get('teacher') or request.GET.get('teacher')
+    class_id = request.POST.get('school_class') or request.GET.get('school_class')
+
+    if teacher_id and class_id:
+        selected_teacher = get_object_or_404(Teacher, id=teacher_id)
+        selected_class = get_object_or_404(SchoolClass, id=class_id)
+
+        assigned_subject_ids = list(
+            TeacherSubjectAssignment.objects.filter(
+                teacher=selected_teacher,
+                school_class=selected_class
+            ).values_list('subject_id', flat=True)
+        )
+
+    # Handle POST
+    if request.method == 'POST' and selected_teacher and selected_class:
+        subject_ids = request.POST.getlist('subjects')
+        selected_subjects = Subject.objects.filter(id__in=subject_ids)
+
+        # Remove unchecked
+        TeacherSubjectAssignment.objects.filter(
+            teacher=selected_teacher,
+            school_class=selected_class
+        ).exclude(subject__in=selected_subjects).delete()
+
+        # Add new
+        for subject in selected_subjects:
+            TeacherSubjectAssignment.objects.get_or_create(
+                teacher=selected_teacher,
+                school_class=selected_class,
+                subject=subject
+            )
+
+        return redirect(f"{request.path}?teacher={selected_teacher.id}&school_class={selected_class.id}")
+
+    # Group assignments by teacher -> class -> subjects
+    teacher_data = defaultdict(list)  # key=teacher, value=list of dicts {class, subjects}
+    all_assignments = TeacherSubjectAssignment.objects.select_related(
+        'teacher', 'school_class', 'subject'
+    ).order_by('teacher__user__first_name', 'school_class__name')
+
+    for assign in all_assignments:
+        # Check if this class already exists in teacher_data
+        existing = next((x for x in teacher_data[assign.teacher] if x['class'] == assign.school_class), None)
+        if existing:
+            existing['subjects'].append(assign.subject)
+        else:
+            teacher_data[assign.teacher].append({
+                'class': assign.school_class,
+                'subjects': [assign.subject]
+            })
+
+    context = {
         'teachers': teachers,
         'classes': classes,
-        'subjects': subjects
-    })
+        'subjects': subjects,
+        'selected_teacher': selected_teacher,
+        'selected_class': selected_class,
+        'assigned_subject_ids': assigned_subject_ids,
+        'teacher_data': dict(teacher_data),
+    }
+
+    return render(request, 'teachers/assign_teacher_subject.html', context)
+
+def remove_teacher_subjects(request, teacher_id, class_id):
+    teacher = get_object_or_404(Teacher, id=teacher_id)
+    school_class = get_object_or_404(SchoolClass, id=class_id)
+
+    TeacherSubjectAssignment.objects.filter(
+        teacher=teacher,
+        school_class=school_class
+    ).delete()
+
+    return redirect(f"/teachers/assign/?teacher={teacher.id}&school_class={school_class.id}")
 
 
+# Remove a single assignment
+def remove_single_assignment(request, assignment_id):
+    assignment = get_object_or_404(TeacherSubjectAssignment, id=assignment_id)
+    teacher = assignment.teacher
+    school_class = assignment.school_class
+    assignment.delete()
+    return redirect(f"/teachers/assign/?teacher={teacher.id}&school_class={school_class.id}")
 
-@login_required
-@role_required('schooladmin')
-def assign_subjects_to_class(request):
-    school = request.user.school  
 
+@csrf_exempt  # Use only for AJAX POST; or use proper CSRF token in headers
+
+def ajax_assign_subjects(request):
     if request.method == 'POST':
-        form = TeacherSubjectAssignmentForm(request.POST, school=school)
-        if form.is_valid():
-            teacher = form.cleaned_data['teacher']
-            school_class = form.cleaned_data['school_class']
-            subjects = form.cleaned_data['subject']
+        teacher_id = request.POST.get('teacher')
+        class_id = request.POST.get('school_class')
+        subject_ids = request.POST.getlist('subjects[]')
 
-           
-            for subject in subjects:
-                TeacherSubjectAssignment.objects.get_or_create(
-                    teacher=teacher,
-                    school_class=school_class,
-                    subject=subject
-                )
-            messages.success(request, "Subjects assigned successfully!")
-            return redirect('teachers:assign_subjects')  
-    else:
-        form = TeacherSubjectAssignmentForm(school=school)
+        teacher = get_object_or_404(Teacher, id=teacher_id)
+        school_class = get_object_or_404(SchoolClass, id=class_id)
+        subjects = Subject.objects.filter(id__in=subject_ids)
 
-    
-    return render(request, 'teachers/assign_subjects.html', {'form': form})
+        # Remove unchecked assignments
+        TeacherSubjectAssignment.objects.filter(
+            teacher=teacher,
+            school_class=school_class
+        ).exclude(subject__in=subjects).delete()
 
+        # Add new assignments
+        for subject in subjects:
+            TeacherSubjectAssignment.objects.get_or_create(
+                teacher=teacher,
+                school_class=school_class,
+                subject=subject
+            )
 
+        # Rebuild teacher_data for updated assignments
+        teacher_data = {}  # same structure as in your main view
+        assignments = TeacherSubjectAssignment.objects.select_related(
+            'teacher', 'school_class', 'subject'
+        ).all()
+
+        from collections import defaultdict
+        grouped = defaultdict(lambda: defaultdict(list))
+        for a in assignments:
+            grouped[a.teacher][a.school_class].append(a.subject)
+
+        # Convert to list for template
+        teacher_data = {}
+        for teacher_obj, classes in grouped.items():
+            class_list = []
+            for class_obj, subjects in classes.items():
+                class_list.append({'class': class_obj, 'subjects': subjects})
+            teacher_data[teacher_obj] = class_list
+
+        html_assignments = render_to_string(
+            'teachers/partial_assignments.html',
+            {'teacher_data': teacher_data}
+        )
+
+        return JsonResponse({'status': 'success', 'html_assignments': html_assignments})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
 @login_required
 @role_required('schooladmin')
@@ -286,12 +344,12 @@ def teacher_edit(request, pk):
 def teacher_delete(request, pk):
     teacher = get_object_or_404(Teacher, pk=pk)
     if request.method == 'POST':
-        # Optionally delete the related user too
+        
         user = teacher.user
         teacher.delete()
         user.delete()
         messages.success(request, 'Teacher deleted successfully!')
         return redirect('teachers:teacher_list')
 
-    # Render confirmation page
+  
     return render(request, 'teachers/teacher_confirm_delete.html', {'teacher': teacher})
