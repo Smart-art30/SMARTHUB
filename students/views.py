@@ -206,23 +206,23 @@ def student_detail(request, pk):
 
     return render(request, 'students/student_detail.html', {'student':student})
 
+
+
 @login_required
 @role_required('schooladmin')
-
 def parent_list(request):
     school = request.user.school
-    parents  = Parent.objects.filter(school=school)
+    parents = Parent.objects.filter(school=school)
 
-    return render(request, 'students/parent_list.html', {
+    return render(request, 'students:parent_list.html', {   
         'parents': parents
     })
-
 
 @login_required
 @role_required('schooladmin')
 def add_parent(request):
     school = request.user.school
-    students = Student.objects.filter(school=school)  
+    students = Student.objects.filter(school=school)
 
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -232,7 +232,6 @@ def add_parent(request):
         address = request.POST.get('address')
         student_ids = request.POST.getlist('students')
 
-       
         if User.objects.filter(username=email).exists():
             messages.error(request, f'A user with this email: "{email}" already exists.')
             return redirect('students:add_parent')  
@@ -257,17 +256,19 @@ def add_parent(request):
             address=address
         )
 
-     
         if student_ids:
             parent.students.set(student_ids)
 
         messages.success(request, f'Parent added successfully. Temporary password: {password}')
-        return redirect('students/parent_list')
+        return redirect('students:parent_list') 
+        
 
-    
     return render(request, 'students/add_parent.html', {
-        'students': students 
+        'students': students
     })
+
+
+
 
 
 
