@@ -7,7 +7,10 @@ from students.models import Student
 from schools.models import SchoolClass
 from accounts.decorators import role_required
 import json
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count
+
 
 
 
@@ -179,57 +182,52 @@ def class_attendance_report(request, class_id):
         'student_class': student_class,
         'records': records
     })
-            
+
 @login_required
 @role_required('teacher')
 def teacher_mark(request, class_id):
-    """
-    Allows a teacher to mark attendance for a class.
-    Ensures that the class belongs to the same school as the teacher.
-    """
-    # Get the teacher object linked to the logged-in user
-    teacher = getattr(request.user, "teacher", None)
-    if not teacher:
-        messages.error(request, "You are not registered as a teacher.")
-        return redirect("dashboard:teacher_dashboard")
+    teacher = request.user.teacher
+    today = timezone.now().date()
 
-    teacher_school = teacher.school
-
-    try:
-        # Try to get the class for the teacher's school
-        student_class = SchoolClass.objects.get(id=class_id)
-    except SchoolClass.DoesNotExist:
-        messages.error(request, "The selected class does not exist.")
-        return redirect("dashboard:teacher_dashboard")
+    student_class = get_object_or_404(
+        SchoolClass,
+        id=class_id,
+        school=teacher.school
+    )
 
    
-    if student_class.school != teacher_school:
-        messages.error(request, f"You cannot mark attendance for '{student_class}' because it belongs to another school.")
+    if StudentAttendance.objects.filter(
+        student_class=student_class,
+        date=today
+    ).exists():
+        messages.warning(
+            request,
+            "Attendance for this class has already been marked today."
+        )
         return redirect("dashboard:teacher_dashboard")
 
-    
-    students = Student.objects.filter(student_class=student_class, school=teacher_school)
+    students = Student.objects.filter(
+        student_class=student_class,
+        school=teacher.school
+    )
 
     if request.method == "POST":
-        today = timezone.now().date()
         for student in students:
             status = request.POST.get(f"status_{student.id}")
             remarks = request.POST.get(f"remarks_{student.id}", "")
 
             if status:
-                StudentAttendance.objects.update_or_create(
+                StudentAttendance.objects.create(
                     student=student,
+                    student_class=student_class,
+                    school=teacher.school,
                     date=today,
-                    defaults={
-                        "school": teacher_school,
-                        "student_class": student_class,
-                        "status": status,
-                        "remarks": remarks,
-                        "marked_by": teacher,
-                    }
+                    status=status,
+                    remarks=remarks,
+                    marked_by=teacher,
                 )
 
-        messages.success(request, "Attendance saved successfully.")
+        messages.success(request, "Attendance marked successfully.")
         return redirect("dashboard:teacher_dashboard")
 
     return render(request, "attendance/teacher_mark.html", {
@@ -278,20 +276,68 @@ def mark_attendance_ajax(request, class_id):
     if request.method == "POST":
         data = json.loads(request.body)
         student_id = data.get("student_id")
-        status = data.get("status", "Present")  
+        status = data.get("status", "present") 
         remarks = data.get("remarks", "")
 
         student = get_object_or_404(Student, id=student_id)
-        
-        
-        attendance, created = Attendance.objects.get_or_create(
+
+       
+        school = student.school  
+        student_class = student.student_class 
+
+       
+        attendance, created = StudentAttendance.objects.get_or_create(
             student=student,
-            date=timezone.now().date()
+            date=timezone.now().date(),
+            defaults={
+                'status': status,
+                'remarks': remarks,
+                'school': school,
+                'student_class': student_class,
+            }
         )
-        attendance.status = status   
-        attendance.remarks = remarks
-        attendance.save()
+
+        if not created:
+         
+            attendance.status = status
+            attendance.remarks = remarks
+            attendance.save()
 
         return JsonResponse({"success": True, "status": status})
 
     return JsonResponse({"success": False}, status=400)
+
+
+@login_required
+@role_required('schooladmin')
+def attendance_dashboard(request):
+    school = request.user.school
+    classes = SchoolClass.objects.filter(school=school)
+
+    selected_class_id = request.GET.get('class')
+    selected_date = request.GET.get('date')
+
+    records = StudentAttendance.objects.filter(
+        school=school
+    ).select_related('student', 'student_class')
+
+    if selected_class_id:
+        records = records.filter(student_class__id=selected_class_id)
+
+    if selected_date:
+        records = records.filter(date=selected_date)
+
+    total_students = records.values('student').distinct().count()
+
+    status_summary = records.values('status').annotate(total=Count('id'))
+
+    context = {
+        'classes': classes,
+        'records': records.order_by('student_class', 'student', '-date'),
+        'selected_class_id': selected_class_id,
+        'selected_date': selected_date,
+        'total_students': total_students,
+        'status_summary': status_summary,
+    }
+
+    return render(request, 'attendance/attendance_dashboard.html', context)

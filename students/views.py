@@ -214,9 +214,10 @@ def parent_list(request):
     school = request.user.school
     parents = Parent.objects.filter(school=school)
 
-    return render(request, 'students:parent_list.html', {   
+    return render(request, 'students/parent_list.html', {   
         'parents': parents
     })
+
 
 @login_required
 @role_required('schooladmin')

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Attendance Dashboard</h2>
+
+    <!-- Filter form -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label for="class" class="form-label">Select Class</label>
+            <select name="class" id="class" class="form-select">
+                <option value="">All Classes</option>
+                {% for cls in classes %}
+                    <option value="{{ cls.id }}" {% if cls.id|stringformat:"s" == selected_class_id %}selected{% endif %}>
+                        {{ cls.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="date" class="form-label">Select Date</label>
+            <input type="date" name="date" id="date" value="{{ selected_date }}" class="form-control">
+        </div>
+        <div class="col-md-4 align-self-end">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </form>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white text-center">
+                <div class="card-body">
+                    <h6>Total Students</h6>
+                    <h3>{{ total_students }}</h3>
+                </div>
+            </div>
+        </div>
+
+        {% for item in status_summary %}
+        <div class="col-md-3">
+            <div class="card text-center text-white
+                {% if item.status|lower == 'present' %}bg-success
+                {% elif item.status|lower == 'absent' %}bg-danger
+                {% elif item.status|lower == 'late' %}bg-warning text-dark
+                {% elif item.status|lower == 'excused' %}bg-info text-dark
+                {% else %}bg-secondary{% endif %}">
+                <div class="card-body">
+                    <h6>{{ item.status|capfirst }}</h6>
+                    <h3>{{ item.total }}</h3>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Attendance Table -->
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Class</th>
+                <th>Student</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Remarks</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.student_class.name }}</td>
+                <td>{{ record.student }}</td>
+                <td>{{ record.date|date:"M d, Y" }}</td>
+                <td>
+                    {% with record.status|lower as status_lower %}
+                        {% if status_lower == 'present' %}
+                            <span class="badge bg-success">Present</span>
+                        {% elif status_lower == 'absent' %}
+                            <span class="badge bg-danger">Absent</span>
+                        {% elif status_lower == 'late' %}
+                            <span class="badge bg-warning text-dark">Late</span>
+                        {% elif status_lower == 'excused' %}
+                            <span class="badge bg-info text-dark">Excused</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ record.status }}</span>
+                        {% endif %}
+                    {% endwith %}
+                </td>
+                <td>{{ record.remarks }}</td>
+                <td>
+                    <a href="{% url 'attendance:attendance_detail' record.pk %}" class="btn btn-sm btn-primary">
+                        View
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">No attendance records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

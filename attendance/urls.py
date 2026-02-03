@@ -14,6 +14,8 @@ urlpatterns = [
     path('teacher/mark/<int:class_id>/', views.teacher_mark, name='teacher_mark'),
     path('teacher/mark/ajax/<int:class_id>/',
         views.mark_attendance_ajax, name='mark_attendance_ajax' ),
+    path('dashboard/', views.attendance_dashboard, name='attendance_dashboard'),
+
 
 
 

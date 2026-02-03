@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Attendance Detail</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">Student: {{ attendance.student }}</h5>
+            <p class="card-text"><strong>Date:</strong> {{ attendance.date }}</p>
+            <p class="card-text"><strong>Status:</strong> {{ attendance.status }}</p>
+            
+            {% if attendance.note %}
+            <p class="card-text"><strong>Note:</strong> {{ attendance.note }}</p>
+            {% endif %}
+            
+            <a href="{% url 'attendance:attendance_edit' attendance.pk %}" class="btn btn-primary">Edit</a>
+            <a href="{% url 'attendance:attendance_delete' attendance.pk %}" class="btn btn-danger">Delete</a>
+            <a href="{% url 'attendance:attendance_list' %}" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

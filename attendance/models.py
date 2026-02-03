@@ -31,11 +31,17 @@ class StudentAttendance(models.Model):
     remarks = models.TextField(blank=True)
 
     class Meta:
-        unique_together = ('student', 'date')
         ordering = ['-date']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['student', 'date'],
+                name='unique_student_attendance_per_day'
+            ),
+        ]
 
     def __str__(self):
         return f"{self.student} | {self.date} | {self.status}"
+
 
         
 
