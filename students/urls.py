@@ -35,6 +35,7 @@ urlpatterns=[
     path('classes/', views.class_list, name='class_list'),
     path('classes/<int:pk>/', views.class_detail, name='class_detail'),
     path('classes/<int:pk>/download/', views.class_download, name='class_download'),
+    path("class/<int:class_id>/pdf/", views.class_pdf, name="class_pdf"),
 
     path('add/', views.student_add, name='student_add'),
     path('<int:pk>/', views.student_detail, name='student_detail'),

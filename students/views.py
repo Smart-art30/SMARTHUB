@@ -11,6 +11,8 @@ from django.db import IntegrityError
 import csv
 from django.http import HttpResponse
 from .models import SchoolClass
+from reportlab.pdfgen import canvas
+from schools.models import SchoolClass
 
 
 
@@ -166,24 +168,34 @@ def student_add(request):
     return render(request, 'students/student_add.html', {'classes': classes})
 
 
-
+@login_required
+@role_required('schooladmin')
 def student_update(request, pk):
-    student = get_object_or_404(Student, pk=pk)
+    student = get_object_or_404(
+        Student,
+        pk=pk,
+        school=request.user.school
+    )
 
     if request.method == 'POST':
         form = StudentAddForm(request.POST, request.FILES, instance=student)
         if form.is_valid():
             form.save()
             messages.success(request, 'Student updated successfully.')
-            return redirect('students:student_detail', pk=student.pk)
+
+            return redirect(
+                'students:class_detail',
+                pk=student.student_class.id
+            )
     else:
         form = StudentAddForm(instance=student)
 
     return render(request, 'students/student_form.html', {
         'form': form,
         'student': student,
-        'title': 'Edit Student'
+        'title': f'Edit {student.user.get_full_name()}'
     })
+
 
 
 def student_delete(request, pk):
@@ -296,4 +308,32 @@ def class_download(request, class_id):
             s.gender
         ])
 
+    return response
+
+
+
+def class_pdf(request, class_id):
+    student_class = get_object_or_404(SchoolClass, id=class_id)
+    students = student_class.student_set.all()
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="{student_class.name}.pdf"'
+
+    p = canvas.Canvas(response)
+    p.setFont("Helvetica", 10)
+
+    y = 800
+    p.drawString(50, y, f"Class: {student_class.name}")
+    y -= 30
+
+    for i, s in enumerate(students, start=1):
+        line = f"{i}. {s.user.first_name} {s.user.last_name} - {s.admission_number}"
+        p.drawString(50, y, line)
+        y -= 20
+        if y < 50:
+            p.showPage()
+            y = 800
+
+    p.showPage()
+    p.save()
     return response
