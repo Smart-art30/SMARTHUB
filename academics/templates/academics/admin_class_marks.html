@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Class Marks - {{ school_class.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    {% for table in exam_tables %}
+        <!-- Print button for this exam -->
+        <button onclick="printExam('exam-{{ table.exam.id }}')" class="btn btn-secondary mb-2">
+            Print This Exam
+        </button>
+
+        <!-- Exam printable wrapper -->
+        <div class="exam-printable" id="exam-{{ table.exam.id }}">
+            <!-- Header: school logo, school name, exam name, class, facilitator -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 print-header">
+                <div class="d-flex flex-column flex-md-row align-items-center mb-2 mb-md-0">
+                    {% if table.school.logo %}
+                        <img src="{{ table.school.logo.url }}" alt="School Logo" height="50" class="me-2 mb-1 mb-md-0">
+                    {% endif %}
+                    <div class="ms-md-2">
+                        <h5 class="mb-1" style="font-size: 0.85rem;">{{ table.school.name }}</h5>
+                        <p class="mb-0" style="font-size: 0.75rem;"><strong>Exam:</strong> {{ table.exam.name }} ({{ table.exam.term }})</p>
+                        <p class="mb-0" style="font-size: 0.75rem;"><strong>Class:</strong> {{ school_class.name }}</p>
+                        <p class="mb-0" style="font-size: 0.75rem;"><strong>Facilitator:</strong> {{facilitator}}
+                            {% for teacher in table.teachers %}
+                                {{ teacher }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                N/A
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam table -->
+            <table class="table table-bordered table-striped mb-3 text-center align-middle table-sm" style="max-width:95%; margin-left:auto; margin-right:auto;">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 3%;">Rank</th>
+                        <th class="text-start" style="width: 15%;">Student</th>
+                        {% for subject in table.subjects %}
+                            <th style="width: 7%;">{{ subject.short_name }}</th>
+                            <th style="width: 5%;">R</th>
+                        {% endfor %}
+                        <th style="width: 7%;">Total</th>
+                        <th style="width: 7%;">Average</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in table.rows %}
+                        <tr>
+                            <td><strong>{{ row.rank }}</strong></td>
+                            <td class="text-start">{{ row.student.user.get_full_name }}</td>
+                            {% for mark in row.marks %}
+                                <td>{{ mark.mark|default:"-" }}</td>
+                                <td>
+                                    {% if mark.rubric %}
+                                        <span class="badge
+                                            {% if mark.rubric == 'EE' %}bg-success
+                                            {% elif mark.rubric == 'M.E' %}bg-primary
+                                            {% elif mark.rubric == 'A.E' %}bg-warning text-dark
+                                            {% else %}bg-danger{% endif %}">
+                                            {{ mark.rubric }}
+                                        </span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                            <td><strong>{{ row.total }}</strong></td>
+                            <td>{{ row.average }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-secondary">
+                    <tr>
+                        <td colspan="2" class="text-start"><strong>Subject Total</strong></td>
+                        {% for subj_total in table.subject_totals %}
+                            <td><strong>{{ subj_total.total }}</strong></td>
+                            <td></td>
+                        {% endfor %}
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text-start"><strong>Subject Mean</strong></td>
+                        {% for subj_total in table.subject_totals %}
+                            <td>{{ subj_total.mean }}</td>
+                            <td></td>
+                        {% endfor %}
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    {% empty %}
+        <p class="text-muted">No exams found for this class.</p>
+    {% endfor %}
+</div>
+
+<script>
+function printExam(divId) {
+    const printableContent = document.getElementById(divId).outerHTML;
+    const originalContent = document.body.innerHTML;
+    document.body.innerHTML = printableContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+}
+</script>
+
+<style>
+.table-sm th, .table-sm td {
+    padding: 0.25rem;
+    font-size: 0.75rem;
+}
+
+@media print {
+    nav, footer, .btn { display: none !important; }
+    body { -webkit-print-color-adjust: exact; }
+
+    .exam-printable {
+        page-break-before: always;
+        page-break-after: always;
+        width: 100%;
+    }
+
+    @page {
+        margin: 10mm;
+    }
+
+    table {
+        font-size: 9pt;
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+
+    th, td { padding: 3px; }
+
+    .print-header {
+        display: flex !important;
+        justify-content: flex-start;
+        margin-bottom: 5px;
+        align-items: center;
+    }
+}
+</style>
+{% endblock %}

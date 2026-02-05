@@ -22,7 +22,7 @@ urlpatterns = [
     # Students
    # path('students/', student_list, name='student_list'),
     path('students/add/', student_add, name='student_add'),
-
+    
     # Student reports
     path(
         'students/reports/<int:student_id>/<int:exam_id>/',

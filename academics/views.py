@@ -34,7 +34,9 @@ from django.db import models
 from schools.forms import AssignExamForm
 from .forms import AssignSubjectsToExamForm
 
+from django.contrib.auth import get_user_model
 
+User = get_user_model() 
 
 
 @login_required
@@ -936,3 +938,107 @@ def remove_exam_subject(request, pk):
     return redirect(
         f"/academics/exams/assign-subjects/?exam={exam_id}&class={class_id}"
     )
+
+
+###trial####
+
+def get_rubric(mark):
+    """Return rubric string based on marks."""
+    if mark >= 80:
+        return "EE"
+    elif mark >= 60:
+        return "M.E"
+    elif mark >= 40:
+        return "A.E"
+    else:
+        return "B.E"
+
+
+@login_required
+@role_required('schooladmin')
+def admin_class_marks(request, class_id):
+    # Get class and students
+    school_class = get_object_or_404(SchoolClass, id=class_id, school=request.user.school)
+    students = Student.objects.filter(student_class=school_class)
+
+    # Subjects for this class
+    subjects = Subject.objects.filter(
+        teachersubjectassignment__school_class=school_class
+    ).distinct().order_by('name')
+
+    # Exams that have these subjects
+    exams = Exam.objects.filter(
+        examsubject__subject__in=subjects
+    ).distinct().order_by('year', 'term')
+
+    # Fetch marks
+    marks_qs = StudentMark.objects.filter(
+        student__in=students,
+        subject__in=subjects,
+        exam__in=exams
+    )
+    marks_map = {(m.student_id, m.subject_id, m.exam_id): m.marks for m in marks_qs}
+
+    # Get teacher(s) assigned to this class
+    assigned_teachers_qs = TeacherClass.objects.filter(
+        school_class=school_class
+    ).select_related('teacher', 'teacher__user')
+    assigned_teachers = [t.teacher.user.get_full_name() for t in assigned_teachers_qs]
+
+    exam_tables = []
+
+    for exam in exams:
+        rows = []
+        subject_totals = [{"subject": subj, "total": 0, "count": 0} for subj in subjects]
+
+        for student in students:
+            student_total = 0
+            student_marks = []
+            for i, subject in enumerate(subjects):
+                mark = marks_map.get((student.id, subject.id, exam.id), 0)
+                student_marks.append({"mark": mark, "rubric": get_rubric(mark)})
+                student_total += mark
+                subject_totals[i]["total"] += mark
+                subject_totals[i]["count"] += 1
+
+            student_avg = student_total / len(subjects) if subjects else 0
+            rows.append({
+                "student": student,
+                "marks": student_marks,
+                "total": student_total,
+                "average": round(student_avg, 2)
+            })
+
+        # Ranking
+        rows.sort(key=lambda x: x['total'], reverse=True)
+        for idx, row in enumerate(rows):
+            row['rank'] = idx + 1
+
+        # Subject means
+        for subj_total in subject_totals:
+            subj_total["mean"] = round(subj_total["total"] / subj_total["count"], 2) if subj_total["count"] else 0
+
+        max_total = len(subjects) * exam.max_mark if subjects else 0
+
+        exam_tables.append({
+            "exam": exam,
+            "subjects": subjects,
+            "rows": rows,
+            "subject_totals": subject_totals,
+            "teachers": assigned_teachers, 
+            "school": school_class.school,
+            "max_total": max_total,
+        })
+
+    return render(request, "academics/admin_class_marks.html", {
+        "school_class": school_class,
+        "exam_tables": exam_tables
+    })
+@login_required
+@role_required('schooladmin')
+def admin_class_list(request):
+    """
+    Admin sees all classes for their school.
+    """
+    classes = SchoolClass.objects.filter(school=request.user.school)
+    return render(request, 'academics/admin_class_list.html', {'classes': classes})
