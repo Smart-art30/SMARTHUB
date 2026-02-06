@@ -353,3 +353,43 @@ def teacher_delete(request, pk):
 
   
     return render(request, 'teachers/teacher_confirm_delete.html', {'teacher': teacher})
+
+
+@login_required
+@role_required('schooladmin')
+def assign_class_teacher(request, teacher_id):
+    teacher = get_object_or_404(
+        Teacher,
+        id=teacher_id,
+        school=request.user.school
+    )
+
+    classes = SchoolClass.objects.filter(
+        school=request.user.school
+    )
+
+    if request.method == "POST":
+        class_id = request.POST.get("school_class")
+        school_class = get_object_or_404(
+            SchoolClass,
+            id=class_id,
+            school=request.user.school
+        )
+
+        school_class.class_teacher = teacher
+        school_class.save()
+
+        messages.success(
+            request,
+            f"{teacher} is now the class teacher for {school_class}"
+        )
+        return redirect("teachers:teacher_list")
+
+    return render(
+        request,
+        "teachers/assign_class_teacher.html",
+        {
+            "teacher": teacher,
+            "classes": classes
+        }
+    )

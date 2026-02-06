@@ -11,6 +11,8 @@ class SubscriptionPlan(models.Model):
     def __str__(self):
         return self.name
 
+
+
 class School(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length= 50, unique = True)
@@ -30,12 +32,23 @@ class School(models.Model):
         return self.name
 
 
+
+
 class SchoolClass(models.Model):
     school = models.ForeignKey('School', on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     stream = models.CharField(max_length=100)
     section = models.CharField(max_length=10, blank=True, null=True)
-    subjects = models.ManyToManyField('academics.Subject', blank=True)  
+
+    class_teacher = models.ForeignKey(
+        'teachers.Teacher',
+        on_delete=models.PROTECT,
+        related_name='class_teacher_for',
+        null=True,
+        blank=True
+    )
+
+    subjects = models.ManyToManyField('academics.Subject', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

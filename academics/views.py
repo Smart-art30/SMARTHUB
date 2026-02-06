@@ -336,6 +336,8 @@ def select_exam(request, class_id, subject_id):
         'exam_subjects': exam_subjects
     })
 
+
+
 @login_required
 @role_required('teacher')
 def enter_marks(request, class_id, exam_id):

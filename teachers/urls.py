@@ -25,6 +25,10 @@ urlpatterns= [
     path('assign/remove/<int:assignment_id>/', views.remove_single_assignment, name='remove_single_assignment'),
     path('teachers/ajax-assign-subjects/', views.ajax_assign_subjects, name='ajax_assign_subjects'),
 
+    
+    path('<int:teacher_id>/assign-class/', views.assign_class_teacher, name='assign_class_teacher'),
+
+
 
 ]
 
