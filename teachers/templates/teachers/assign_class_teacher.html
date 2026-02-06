@@ -1,0 +1,22 @@
+<h4>Assign Class Teacher</h4>
+
+<p><strong>Teacher:</strong> {{ teacher }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Select Class</label>
+    <select name="school_class" class="form-control" required>
+        {% for c in classes %}
+            <option value="{{ c.id }}">
+                {{ c }}
+                {% if c.class_teacher %}
+                    (Current: {{ c.class_teacher }})
+                {% endif %}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button class="btn btn-primary mt-3">
+        Assign
+    </button>
+</form>

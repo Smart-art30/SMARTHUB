@@ -19,17 +19,20 @@
                     {% if table.school.logo %}
                         <img src="{{ table.school.logo.url }}" alt="School Logo" height="50" class="me-2 mb-1 mb-md-0">
                     {% endif %}
-                    <div class="ms-md-2">
+                    <div class="ms-md-2 d-flex flex-column">
                         <h5 class="mb-1" style="font-size: 0.85rem;">{{ table.school.name }}</h5>
-                        <p class="mb-0" style="font-size: 0.75rem;"><strong>Exam:</strong> {{ table.exam.name }} ({{ table.exam.term }})</p>
-                        <p class="mb-0" style="font-size: 0.75rem;"><strong>Class:</strong> {{ school_class.name }}</p>
-                        <p class="mb-0" style="font-size: 0.75rem;"><strong>Facilitator:</strong> {{facilitator}}
-                            {% for teacher in table.teachers %}
-                                {{ teacher }}{% if not forloop.last %}, {% endif %}
-                            {% empty %}
+                        <div class="mb-0" style="font-size: 0.75rem;"><strong>Exam:</strong> {{ table.exam.name }} ({{ table.exam.term }})</div>
+                        <div class="mb-0" style="font-size: 0.75rem;"><strong>Class:</strong> {{ school_class.name }}</div>
+                        <div class="mb-0" style="font-size: 0.75rem;">
+                            <strong>Facilitator:</strong>
+                            {% if table.teachers %}
+                                {% for teacher in table.teachers %}
+                                    {{ teacher.user.get_full_name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
                                 N/A
-                            {% endfor %}
-                        </p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -144,6 +147,10 @@ function printExam(divId) {
         justify-content: flex-start;
         margin-bottom: 5px;
         align-items: center;
+    }
+
+    .print-header h5, .print-header div {
+        font-size: 0.8rem !important;
     }
 }
 </style>

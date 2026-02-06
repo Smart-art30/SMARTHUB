@@ -35,6 +35,9 @@
                     <td>{{ teacher.specialization }}</td>
                     <td>
                         <a href="{% url 'teachers:teacher_detail' teacher.pk %}" class="btn btn-sm btn-info">View</a>
+                        <a href="{% url 'teachers:assign_class_teacher' teacher.pk %}" class="btn btn-sm btn-success">
+                            Assign Class
+                        </a>
                     </td>
                 </tr>
                 {% empty %}

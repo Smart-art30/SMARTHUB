@@ -9,10 +9,12 @@
         <img src="{% if school_logo_url %}{{ school_logo_url }}{% else %}{% static 'images/school_logo.png' %}{% endif %}" 
              style="height:45px; margin-right:10px; flex-shrink: 0;">
 
-        <div class="flex-grow-1">
-            <h6 class="mb-0 exam-title">Marks Entry – {{ exam.name }}</h6>
-            <small class="exam-info">Class: {{ school_class }} | Max: {{ exam.max_mark }}</small>
-        </div>
+      <div class="flex-grow-1">
+    <h6 class="mb-0 exam-title">Marks Entry – {{ exam.name }}</h6>
+    <div class="exam-info">Class: {{ school_class }} | Max: {{ exam.max_mark }}</div>
+    <div class="exam-info">Facilitator: <strong>{{ request.user.get_full_name|default:"____________________" }}</strong></div>
+    </div>
+
         <div class="ms-auto no-print">
             <button onclick="window.print()" class="btn btn-sm btn-outline-dark me-1">🖨 Print</button>
             <button onclick="downloadPDF()" class="btn btn-sm btn-outline-primary">⬇ PDF</button>
