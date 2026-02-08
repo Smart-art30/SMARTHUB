@@ -9,11 +9,11 @@
         <img src="{% if school_logo_url %}{{ school_logo_url }}{% else %}{% static 'images/school_logo.png' %}{% endif %}" 
              style="height:45px; margin-right:10px; flex-shrink: 0;">
 
-      <div class="flex-grow-1">
-    <h6 class="mb-0 exam-title">Marks Entry – {{ exam.name }}</h6>
-    <div class="exam-info">Class: {{ school_class }} | Max: {{ exam.max_mark }}</div>
-    <div class="exam-info">Facilitator: <strong>{{ request.user.get_full_name|default:"____________________" }}</strong></div>
-    </div>
+        <div class="flex-grow-1">
+            <h6 class="mb-0 exam-title">Marks Entry – {{ exam.name }}</h6>
+            <div class="exam-info">Class: {{ school_class }} | Max: {{ exam.max_mark }}</div>
+            <div class="exam-info">Facilitator: <strong>{{ request.user.get_full_name|default:"____________________" }}</strong></div>
+        </div>
 
         <div class="ms-auto no-print">
             <button onclick="window.print()" class="btn btn-sm btn-outline-dark me-1">🖨 Print</button>
@@ -44,11 +44,11 @@
                 </thead>
                 <tbody>
                     {% for student in students %}
-                    <tr>
+                    <tr class="student-row">
                         <td class="rank-cell enlarged-rank"></td>
                         <td class="student-name text-truncate">{{ student.user.get_full_name }}</td>
                         {% for item in student.marks_list %}
-                        <td>
+                        <td class="mark-cell">
                             <input type="number"
                                    inputmode="numeric"
                                    step="1"
@@ -136,7 +136,7 @@
     margin: 0;
     font-weight: 700;
 }
-.print-header small.exam-info {
+.print-header .exam-info {
     font-size: 11px;
     opacity: 0.9;
 }
@@ -146,12 +146,51 @@
 .marks-table {
     font-size: 9px;
     margin: 0;
+    border-collapse: collapse;
 }
 .marks-table th, .marks-table td {
     padding: 1px 2px;
     vertical-align: middle;
-    border: 1px solid #999;
+    border: 1px solid #999 !important;
     height: 26px;
+}
+
+/* ===== **BRIGHT GREEN ROW HIGHLIGHT - VERY VISIBLE** ===== */
+.mark-cell:hover,
+.mark-input:focus,
+.mark-input:focus-within {
+    background-color: #d4edda !important; /* Bright green */
+    box-shadow: inset 0 0 0 2px #28a745 !important;
+}
+
+.mark-cell:hover ~ td,
+.mark-input:focus ~ td,
+.mark-input:focus-within ~ td,
+.student-row:has(.mark-input:focus) td,
+.student-row:has(.mark-cell:hover) td {
+    background-color: #d4edda !important; /* Very visible green */
+}
+
+/* **HIGHLIGHT WHEN HOVERING STUDENT NAME OR RANK** */
+.student-name:hover ~ td,
+.rank-cell:hover ~ td,
+.student-row:hover td {
+    background-color: #d4edda !important; /* Bright green */
+}
+
+/* **ENHANCED VISIBILITY** */
+.student-row:hover,
+.student-row:has(.mark-input:focus),
+.student-row:has(.mark-cell:hover) {
+    outline: 3px solid #28a745 !important;
+    outline-offset: -3px;
+}
+
+/* **ENSURE BORDERS STAY VISIBLE** */
+.student-row:hover td,
+.student-row:has(.mark-input:focus) td,
+.student-row:has(.mark-cell:hover) td {
+    border-color: #666 !important;
 }
 
 .student-name { 
@@ -159,12 +198,14 @@
     font-weight: 600;
     padding-left: 5px !important; 
     max-width: 150px; 
+    cursor: pointer;
 }
 
 .enlarged-rank {
     font-size: 13px !important;
     font-weight: 700 !important;
     min-width: 35px;
+    cursor: pointer;
 }
 
 .total-cell, .avg-cell, .subject-total, .subject-mean,
@@ -183,13 +224,37 @@
     font-size: 11px;
     margin: 0;
     padding: 0;
+    background: transparent;
 }
 .mark-input::-webkit-inner-spin-button,
 .mark-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
 .mark-input { -moz-appearance:textfield; }
-.mark-input.invalid { background:#f8d7da; }
+.mark-input.invalid { background:#f8d7da !important; }
 
-.rubric-cell { font-size:8px; font-weight:bold; text-align:center; padding: 0 !important; }
+/* ===== RUBRIC COLORS ===== */
+.rubric-cell.EE { 
+    background-color: #d4edda !important; 
+    color: #155724 !important; 
+}
+.rubric-cell.ME { 
+    background-color: #cce7ff !important; 
+    color: #004085 !important; 
+}
+.rubric-cell.AE { 
+    background-color: #fff3cd !important; 
+    color: #856404 !important; 
+}
+.rubric-cell.BE { 
+    background-color: #f8d7da !important; 
+    color: #721c24 !important; 
+}
+
+.rubric-cell { 
+    font-size:8px; 
+    font-weight:bold; 
+    text-align:center; 
+    padding: 0 !important; 
+}
 .subject-header, .rubric-header { 
     background:#e9ecef; 
     font-weight:bold; 
@@ -217,17 +282,26 @@
     width: 100% !important;
 }
 
-/* ===== PRINT - **FORCE NO SMARTHUB** ===== */
+/* ===== PRINT STYLES ===== */
 @media print {
     body { 
         font-size: 9px !important; 
         margin: 5mm; 
         font-family: Arial, sans-serif !important;
         line-height: 1.1;
-        -webkit-print-color-adjust: exact;
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
     }
     
-    /* **HIDE ALL POSSIBLE SMARTHUB ELEMENTS** */
+    .marks-table {
+        border-collapse: collapse !important;
+    }
+    .marks-table th, .marks-table td {
+        border: 1px solid #000 !important;
+        height: 24px !important;
+        padding: 1px 2px !important;
+    }
+    
     button, .no-print, 
     [class*="smarthub"], [id*="smarthub"],
     [class*="navbar"], [id*="navbar"],
@@ -239,7 +313,6 @@
         display: none !important; 
     }
     
-    /* VISIBLE SCHOOL LOGO WATERMARKS */
     .watermark {
         width: 260px !important;
         opacity: 0.12 !important;
@@ -262,18 +335,16 @@
         width: 300px !important;
     }
     
-    /* CLEAN HEADER - ONLY EXAM INFO */
     .print-header h6.exam-title {
         font-size: 15px !important;
         margin-bottom: 2px !important;
         color: black !important;
     }
-    .print-header small.exam-info {
+    .print-header .exam-info {
         font-size: 10px !important;
         color: black !important;
     }
     
-    /* PRESERVE ENLARGED SIZES */
     .student-name { font-size: 11px !important; font-weight: 600 !important; }
     .enlarged-rank { font-size: 12px !important; font-weight: 700 !important; }
     .total-cell, .avg-cell, .subject-total, .subject-mean,
@@ -289,9 +360,21 @@
         font-size: 10px !important;
     }
     
-    .marks-table th, .marks-table td {
-        height: 24px !important;
-        padding: 1px 2px !important;
+    .rubric-cell.EE { 
+        background-color: #d4edda !important; 
+        color: black !important; 
+    }
+    .rubric-cell.ME { 
+        background-color: #cce7ff !important; 
+        color: black !important; 
+    }
+    .rubric-cell.AE { 
+        background-color: #fff3cd !important; 
+        color: black !important; 
+    }
+    .rubric-cell.BE { 
+        background-color: #f8d7da !important; 
+        color: black !important; 
     }
     
     .chart-container { height: 200px !important; margin: 8px 0 !important; }
@@ -307,7 +390,6 @@
     }
 }
 
-/* MOBILE */
 @media (max-width: 768px) {
     .student-name { font-size: 11px !important; }
     .enlarged-rank { font-size: 12px !important; }
@@ -320,48 +402,95 @@
 <script>
 Chart.register(ChartDataLabels);
 
-// ... rest of JavaScript remains identical
 document.addEventListener('DOMContentLoaded', () => {
     const table = document.getElementById('marks-table');
     const inputs = [...document.querySelectorAll('.mark-input')];
     const maxMark = {{ exam.max_mark }};
     const numStudents = {{ students|length }};
+    const subjectsPerStudent = inputs.length / numStudents;
     const subjectTotals = {};
+    
+    let currentIndex = 0;
 
-    inputs.forEach((input,i)=>{
-        input.addEventListener('keydown',e=>{
-            if(e.key==='Enter'){ 
-                e.preventDefault(); 
-                inputs[i+1]?.focus(); 
-                inputs[i+1]?.select(); 
+    if (inputs[0]) {
+        inputs[0].focus();
+        inputs[0].select();
+    }
+
+    inputs.forEach((input, i) => {
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const nextRowIndex = i + subjectsPerStudent;
+                if (nextRowIndex < inputs.length) {
+                    currentIndex = nextRowIndex;
+                    inputs[currentIndex].focus();
+                    inputs[currentIndex].select();
+                }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    const prevColIndex = i - 1;
+                    if (prevColIndex >= 0) {
+                        currentIndex = prevColIndex;
+                        inputs[currentIndex].focus();
+                        inputs[currentIndex].select();
+                    }
+                } else {
+                    const nextColIndex = i + 1;
+                    if (nextColIndex < inputs.length) {
+                        currentIndex = nextColIndex;
+                        inputs[currentIndex].focus();
+                        inputs[currentIndex].select();
+                    }
+                }
             }
+        });
+
+        input.addEventListener('blur', e => {
+            setTimeout(() => {
+                if (document.activeElement !== input && currentIndex === i) {
+                    input.focus();
+                }
+            }, 10);
+        });
+
+        input.addEventListener('focus', () => {
+            currentIndex = i;
         });
     });
 
-    function rubric(mark){
-        if(mark>=80) return 'EE';
-        if(mark>=60) return 'ME';
-        if(mark>=40) return 'AE';
+    function rubric(mark) {
+        if (mark >= 80) return 'EE';
+        if (mark >= 60) return 'ME';
+        if (mark >= 40) return 'AE';
         return 'BE';
     }
 
-    function calculate(){
-        let classTotal=0;
-        Object.keys(subjectTotals).forEach(k => subjectTotals[k]=0);
+    function calculate() {
+        let classTotal = 0;
+        Object.keys(subjectTotals).forEach(k => subjectTotals[k] = 0);
 
-        [...table.tBodies[0].rows].forEach(row=>{
-            let total=0;
+        [...table.tBodies[0].rows].forEach(row => {
+            let total = 0;
             const rowInputs = row.querySelectorAll('.mark-input');
             
-            rowInputs.forEach(input=>{
+            rowInputs.forEach(input => {
                 let val = input.value ? Math.round(parseFloat(input.value)) : 0;
                 total += val;
 
                 const rubricEl = input.parentElement.nextElementSibling;
-                rubricEl.textContent = input.value ? rubric(val) : '';
-                rubricEl.title = input.value ? `Rubric for ${val} marks` : '';
+                if (input.value) {
+                    const grade = rubric(val);
+                    rubricEl.textContent = grade;
+                    rubricEl.title = `Rubric for ${val} marks`;
+                    rubricEl.className = `rubric-cell ${grade}`;
+                } else {
+                    rubricEl.textContent = '';
+                    rubricEl.className = 'rubric-cell';
+                }
 
-                if(val>maxMark) input.classList.add('invalid'); 
+                if (val > maxMark) input.classList.add('invalid'); 
                 else input.classList.remove('invalid');
 
                 const subject = input.name.split('_').pop();
@@ -374,11 +503,11 @@ document.addEventListener('DOMContentLoaded', () => {
             classTotal += total;
         });
 
-        table.querySelectorAll('.subject-total').forEach(th=>{
+        table.querySelectorAll('.subject-total').forEach(th => {
             const subjId = th.dataset.subjectId;
             th.textContent = subjectTotals[subjId] || '';
         });
-        table.querySelectorAll('.subject-mean').forEach(th=>{
+        table.querySelectorAll('.subject-mean').forEach(th => {
             const subjId = th.dataset.subjectId;
             th.textContent = subjectTotals[subjId] ? Math.round(subjectTotals[subjId]/numStudents) : '';
         });
@@ -386,24 +515,35 @@ document.addEventListener('DOMContentLoaded', () => {
         table.querySelector('.class-avg').textContent = numStudents ? Math.round(classTotal/numStudents) : 0;
     }
 
-    function rank(){
-        const rows = [...table.tBodies[0].rows];
-        rows.sort((a,b) => b.dataset.total - a.dataset.total);
-        rows.forEach((row,i)=>{
-            row.querySelector('.rank-cell').textContent = i+1;
-            row.classList.remove('rank-1','rank-2','rank-3');
-            if(i===0) row.classList.add('rank-1');
-            if(i===1) row.classList.add('rank-2');
-            if(i===2) row.classList.add('rank-3');
+    function rank() {
+        const rows = [...table.tBodies[0].rows].map((row, index) => ({
+            row,
+            total: parseFloat(row.dataset.total) || 0,
+            originalIndex: index
+        }));
+
+        rows.sort((a, b) => {
+            if (a.total === b.total) {
+                return a.originalIndex - b.originalIndex;
+            }
+            return b.total - a.total;
+        });
+
+        rows.forEach(({row}, i) => {
+            row.querySelector('.rank-cell').textContent = i + 1;
+            row.classList.remove('rank-1', 'rank-2', 'rank-3');
+            if (i === 0) row.classList.add('rank-1');
+            if (i === 1) row.classList.add('rank-2');
+            if (i === 2) row.classList.add('rank-3');
             table.tBodies[0].appendChild(row);
         });
     }
 
-    function drawChart(){
+    function drawChart() {
         const labels = [{% for subject in subjects %}'{{ subject.short_name|default:subject.name }}',{% endfor %}];
         const data = [{% for subject in subjects %} Math.round((subjectTotals['{{ subject.id }}'] || 0) / {{ students|length }}) ,{% endfor %}];
 
-        if(window.summaryChartObj) window.summaryChartObj.destroy();
+        if (window.summaryChartObj) window.summaryChartObj.destroy();
         window.summaryChartObj = new Chart(document.getElementById('summaryChart'), {
             type: 'bar',
             data: { 
@@ -447,11 +587,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    inputs.forEach(input=>{
-        input.addEventListener('input', e=>{
+    inputs.forEach(input => {
+        input.addEventListener('input', e => {
             calculate();
             clearTimeout(timer);
-            timer = setTimeout(()=>{ rank(); drawChart(); }, 250);
+            timer = setTimeout(() => { rank(); drawChart(); }, 250);
 
             const [_, studentId, subjectId] = input.name.split('_');
             fetch("{% url 'academics:save_mark_ajax' %}", {
@@ -466,8 +606,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     exam_id: {{ exam.id }},
                     mark: input.value
                 })
-            }).then(res=>res.json()).then(data=>{
-                if(data.status !== 'ok') console.error('Save failed', data);
+            }).then(res => res.json()).then(data => {
+                if (data.status !== 'ok') console.error('Save failed', data);
             }).catch(console.error);
         });
     });
@@ -476,6 +616,6 @@ document.addEventListener('DOMContentLoaded', () => {
     calculate(); rank(); drawChart();
 });
 
-function downloadPDF(){ window.print(); }
+function downloadPDF() { window.print(); }
 </script>
 {% endblock %}

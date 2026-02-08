@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'finance',
     'widget_tweaks',
     'notifications',
+    'django.contrib.humanize', 
 ]
 
 MIDDLEWARE = [

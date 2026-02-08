@@ -2,32 +2,47 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">Edit Teacher: {{ teacher.user.get_full_name }}</h3>
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient bg-primary text-white py-4">
+            <h2 class="mb-0 fw-bold">Edit Teacher</h2>
+            <p class="mb-0 opacity-90">{{ teacher.user.get_full_name }}</p>
         </div>
-        <div class="card-body">
+        <div class="card-body p-5">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-
-                <div class="row">
+                
+                <div class="row g-4">
                     {% for field in form %}
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.help_text %}
-                                <small class="form-text text-muted">{{ field.help_text }}</small>
-                            {% endif %}
-                            {% for error in field.errors %}
-                                <div class="text-danger">{{ error }}</div>
-                            {% endfor %}
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-4">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold text-dark mb-2">{{ field.label }}</label>
+                                <div class="position-relative">
+                                    {{ field }}
+                                </div>
+                                {% if field.help_text %}
+                                    <div class="form-text mt-1">{{ field.help_text }}</div>
+                                {% endif %}
+                                {% if field.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in field.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
                     {% endfor %}
                 </div>
 
-                <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" class="btn btn-success">Update</button>
-                    <a href="{% url 'teachers:teacher_detail' teacher.pk %}" class="btn btn-secondary">Cancel</a>
+                <hr class="my-5">
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <a href="{% url 'teachers:teacher_detail' teacher.pk %}" class="btn btn-outline-secondary btn-lg px-5 py-2">
+                        <i class="fas fa-arrow-left me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg px-5 py-2 shadow">
+                        <i class="fas fa-save me-2"></i>Update Teacher
+                    </button>
                 </div>
             </form>
         </div>

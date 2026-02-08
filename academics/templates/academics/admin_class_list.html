@@ -1,28 +1,222 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Class Mark Lists</h2>
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h1 mb-0 fw-bold text-primary-dark">Class Mark Lists</h2>
+    <div class="d-flex gap-2">
+      <!-- Add any additional actions here -->
+    </div>
+  </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Class</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for class in classes %}
-        <tr>
-            <td>{{ class.name }}</td>
-            <td>
-                <a href="{% url 'academics:admin_class_marks' class.id %}"
-                   class="btn btn-primary btn-sm">
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      {% if classes %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light sticky-top">
+              <tr>
+                <th scope="col" class="py-3 px-4 border-0 fw-semibold text-muted fs-5">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-building fs-4"></i>
+                    Class
+                  </div>
+                </th>
+                <th scope="col" class="py-3 px-4 border-0 fw-semibold text-muted fs-5 text-end">
+                  <div class="d-flex align-items-center justify-content-end gap-2">
+                    Action
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for class in classes %}
+              <tr class="border-bottom hover-row">
+                <td class="py-4 px-4">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="class-avatar bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-people-fill text-white"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0 fw-semibold text-primary-dark">{{ class.name }}</h6>
+                      <small class="text-muted">Class details</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4 px-4 text-end">
+                  <a href="{% url 'academics:admin_class_marks' class.id %}"
+                     class="btn btn-primary btn-lg px-4 py-2 shadow-sm hover-lift transition-all">
+                    <i class="bi bi-eye-fill me-2"></i>
                     View Marks
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                  </a>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="2" class="text-center py-8">
+                  <div class="d-flex flex-column align-items-center gap-3 py-5">
+                    <div class="empty-state-icon bg-muted rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-inbox fs-1 text-muted"></i>
+                    </div>
+                    <h5 class="text-muted fw-normal">No classes found</h5>
+                    <p class="text-muted mb-0">Get started by creating your first class.</p>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <!-- Empty state handled above -->
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+:root {
+  --primary-color: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --border-color: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --radius: 12px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #60a5fa;
+  --primary-dark: #3b82f6;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --bg-primary: #1f2937;
+  --bg-secondary: #111827;
+  --border-color: #374151;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 10px 10px -5px rgb(0 0 0 / 0.2);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--bg-primary);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+}
+
+.table {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+.hover-row {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-row:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  color: white !important;
+}
+
+.class-avatar {
+  width: 48px;
+  height: 48px;
+  font-size: 1.2rem;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+}
+
+.empty-state-icon {
+  width: 80px;
+  height: 80px;
+}
+
+.hover-lift {
+  transition: all 0.2s ease;
+}
+
+.transition-all {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fs-5 { font-size: 1rem !important; }
+.fs-1 { font-size: 2.5rem !important; }
+.py-8 { padding-top: 5rem !important; padding-bottom: 5rem !important; }
+.shadow-sm { box-shadow: var(--shadow-sm) !important; }
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .table-responsive {
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Auto-detect and apply theme
+  const savedTheme = localStorage.getItem('theme') || 
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  // Listen for theme changes
+  const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  themeMediaQuery.addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+      document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+    }
+  });
+});
+</script>
 
 {% endblock %}

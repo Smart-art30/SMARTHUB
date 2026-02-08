@@ -1,7 +1,9 @@
+{% load humanize %}
+
 <h2>All Invoices</h2>
 
-<table class="table table-bordered">
-    <thead>
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
         <tr>
             <th>Invoice ID</th>
             <th>Student</th>
@@ -15,26 +17,32 @@
     <tbody>
         {% for invoice in invoices %}
         <tr>
-            <td>{{ invoice.id }}</td>
+            <td>#{{ invoice.id }}</td>
             <td>{{ invoice.student.name }}</td>
             <td>{{ invoice.fee.name }}</td>
-            <td>{{ invoice.fee.amount }}</td>
-            <td>{{ invoice.total_paid }}</td>
-            <td>{{ invoice.balance }}</td>
+            <td>KES {{ invoice.fee.amount|intcomma }}</td>
+            <td>KES {{ invoice.total_paid|intcomma }}</td>
             <td>
-                <!-- ALWAYS visible -->
-               
-
-                {% if invoice.balance <= 0 %}
+                {% if invoice.balance > 0 %}
+                    <span class="text-danger">KES {{ invoice.balance|intcomma }}</span>
+                {% else %}
+                    <span class="text-success">0</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if invoice.balance > 0 %}
+                    <a href="{% url 'finance:payment_add' invoice.id %}" class="btn btn-sm btn-success">
+                        ➕ Add Payment
+                    </a>
+                {% else %}
                     <span class="badge bg-success">Paid</span>
                 {% endif %}
             </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="7">No invoices found.</td>
+            <td colspan="7" class="text-center text-muted">No invoices found.</td>
         </tr>
         {% endfor %}
     </tbody>
-    
 </table>

@@ -339,7 +339,8 @@ def select_exam(request, class_id, subject_id):
 
 
 @login_required
-@role_required('teacher')
+@role_required('teacher', 'schooladmin')
+
 def enter_marks(request, class_id, exam_id):
     teacher = request.user
 

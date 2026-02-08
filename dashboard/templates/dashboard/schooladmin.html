@@ -1,233 +1,328 @@
-<!-- templates/dashboard/schooladmin.html -->
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Admin Dashboard</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">School Admin</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Welcome, {{ request.user.username }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-link nav-link text-warning p-0" style="border:none; background:none;">
-                                Logout
-                            </button>
-                        </form>
-                    </li>
-                </ul>
+{% block title %}School Admin Dashboard - SmartHub{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+.sidebar {
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border-right: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .sidebar {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border-right-color: #334155;
+}
+
+.sidebar .nav-link {
+    border-radius: 12px;
+    margin: 4px 12px;
+    padding: 12px 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.sidebar .nav-link:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    color: #1e293b !important;
+}
+
+[data-theme="dark"] .sidebar .nav-link {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .sidebar .nav-link:hover {
+    background: #475569;
+    color: #f1f5f9 !important;
+}
+
+.sidebar .nav-link.active {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white !important;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+}
+
+.dashboard-stat {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.dashboard-stat:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+}
+
+.hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+}
+
+.fs-2rem { 
+    font-size: 0.875rem; 
+    font-weight: 500; 
+}
+
+.bg-outline-primary {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.3);
+    color: var(--bs-primary);
+}
+
+.chart-container {
+    height: 350px;
+    border-radius: 16px;
+    background: var(--bs-card-bg);
+    padding: 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(55, 65, 81, 0.5);
+}
+</style>
+
+<div class="container-fluid p-0">
+    <div class="row g-0">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar p-3">
+            <div class="text-center mb-4 pb-3 border-bottom">
+                <h4 class="mb-2 fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">SmartHub</h4>
+                <small class="text-muted">Admin Panel</small>
             </div>
-        </div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-2 bg-light vh-100 p-3">
-                <h5 class="text-center">Navigation</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'dashboard:schooladmin_dashboard' %}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'students:student_list' %}">Students</a>
-                    </li>
-                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'students:class_list' %}">ClassList</a>
-                    </li>
-                    <a class="nav-link"
-                        href="{% url 'academics:admin_class_list' %}">
-                        Class Mark Lists
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'dashboard:schooladmin_dashboard' %}">
+                        <i class="bi bi-house-door-fill me-2"></i>Dashboard
                     </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'students:student_list' %}">
+                        <i class="bi bi-people-fill me-2"></i>Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'students:class_list' %}">
+                        <i class="bi bi-mortarboard-fill me-2"></i>Classes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'academics:admin_class_list' %}">
+                        <i class="bi bi-clipboard-data-fill me-2"></i>Class Mark Lists
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'teachers:teacher_list' %}">
+                        <i class="bi bi-person-badge-fill me-2"></i>Teachers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'teachers:assign_teacher_subjects' %}">
+                        <i class="bi bi-arrow-right-circle-fill me-2"></i>Assign Teacher
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'finance:invoice_list' %}">
+                        <i class="bi bi-receipt-cutoff me-2"></i>Invoices
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'finance:payment_list' %}">
+                        <i class="bi bi-credit-card-fill me-2"></i>Payments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'students:parent_list' %}">
+                        <i class="bi bi-people-fill me-2"></i>Parents
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'finance:fee_list' %}">
+                        <i class="bi bi-currency-dollar me-2"></i>Fee Structure
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'attendance:attendance_dashboard' %}">
+                        <i class="bi bi-check-circle-fill me-2"></i>Attendance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'academics:subject_list' %}">
+                        <i class="bi bi-book-fill me-2"></i>Subjects
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'academics:exam_list' %}">
+                        <i class="bi bi-clipboard-check-fill me-2"></i>Exams
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'academics:report_list' %}">
+                        <i class="bi bi-file-earmark-text-fill me-2"></i>Report List
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">
+                        <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>Class Reports
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% for class in classes %}
+                            <li><a class="dropdown-item" href="{% url 'academics:class_report' class.id %}">{{ class.name }}</a></li>
+                        {% empty %}
+                            <li class="dropdown-item text-muted">No classes found</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'teachers:teacher_list' %}">Teachers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'teachers:assign_teacher_subjects' %}">Assign Teacher</a>
-                    </li>
-                   
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'finance:invoice_list' %}">Invoices</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'finance:payment_list' %}">Payments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'students:parent_list' %}">Parents</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'finance:fee_list' %}">Fee Structure</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'attendance:attendance_dashboard' %}">Attendance</a>
-                    </li>
-                   
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'academics:subject_list' %}">Subjects</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'academics:exam_list' %}">Exams</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'academics:report_list' %}">Report List</a>
-                    </li>
-                    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-        Class Reports
-    </a>
-    <ul class="dropdown-menu">
-        {% for class in classes %}
-            <li>
-                <a class="dropdown-item" href="{% url 'academics:class_report' class.id %}">
-                    {{ class.name }}
-                </a>
-            </li>
-        {% empty %}
-            <li class="dropdown-item text-muted">No classes found</li>
-        {% endfor %}
-    </ul>
-</li>
-                </ul>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-md-10 p-4">
-                <h2 class="mb-4">Dashboard</h2>
+        <!-- Main Content -->
+        <div class="col-md-10">
+            <div class="p-4 p-lg-5">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-1">School Admin Dashboard</h1>
+                        <p class="text-muted mb-0">Welcome back! Here's what's happening today.</p>
+                    </div>
+                </div>
 
                 <!-- School Information -->
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header bg-secondary text-white">
-                        <h5 class="mb-0">
-                            <i class="bi bi-building me-2"></i> School Information
-                        </h5>
+                <div class="card mb-5 shadow-lg dashboard-stat">
+                    <div class="card-header bg-gradient text-white py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <h4 class="mb-0 fw-semibold">
+                            <i class="bi bi-building-school me-3"></i>School Information
+                        </h4>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-5">
                         <div class="row align-items-center">
-                            <!-- Logo -->
-                            <div class="col-md-3 text-center">
+                            <div class="col-lg-3 text-center mb-4 mb-lg-0">
                                 {% if school.logo %}
-                                    <img src="{{ school.logo.url }}" class="img-fluid rounded mb-2" style="max-height:120px;" alt="School Logo">
+                                    <img src="{{ school.logo.url }}" class="img-fluid rounded-4 shadow-lg" style="max-height:140px;" alt="School Logo">
                                 {% else %}
-                                    <i class="bi bi-image text-muted" style="font-size:80px;"></i>
-                                    <p class="text-muted">No logo</p>
+                                    <div class="bg-light rounded-4 shadow-lg p-4 mx-auto d-flex align-items-center justify-content-center" style="width: 140px; height: 140px;">
+                                        <i class="bi bi-building text-muted" style="font-size: 3rem;"></i>
+                                    </div>
                                 {% endif %}
                             </div>
-
-                            <!-- Details -->
-                            <div class="col-md-9">
-                                <table class="table table-borderless mb-0">
-                                    <tr>
-                                        <th>Name:</th>
-                                        <td>{{ school.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Code:</th>
-                                        <td>{{ school.code }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Address:</th>
-                                        <td>{{ school.address }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Phone:</th>
-                                        <td>{{ school.phone }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Email:</th>
-                                        <td>{{ school.email }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Subscription:</th>
-                                        <td>
-                                            {% if school.subscription and school.subscription.is_active %}
-                                                <span class="badge bg-success">Active</span>
-                                            {% else %}
-                                                <span class="badge bg-danger">Inactive</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dashboard Cards -->
-                <div class="row g-4 mb-5">
-                    <div class="col-md-3">
-                        <div class="card text-white bg-primary h-100">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Total Students</h5>
-                                <p class="card-text display-6">{{ total_students }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-success h-100">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Total Teachers</h5>
-                                <p class="card-text display-6">{{ total_teachers }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-warning h-100">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Total Invoices</h5>
-                                <p class="card-text display-6">{{ total_invoices }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card text-white bg-danger h-100">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Total Payments</h5>
-                                <p class="card-text display-6">${{ total_payments }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Subjects & Assign Subjects to Exams Cards -->
-                <div class="row g-4 mb-5">
-                    <div class="col-md-3">
-                        <div class="card text-white bg-info h-100">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Total Subjects</h5>
-                                <p class="card-text display-6">{{ subject_count }}</p>
-                                <div class="d-flex justify-content-center gap-2 mt-3">
-                                    <a href="{% url 'academics:subject_list' %}" class="btn btn-light btn-sm">Manage Subjects</a>
-                                    <a href="{% url 'academics:subject_add' %}" class="btn btn-light btn-sm"><i class="bi bi-plus-circle me-1"></i> Add</a>
+                            <div class="col-lg-9">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <h3 class="fw-bold mb-2">{{ school.name }}</h3>
+                                        <p class="text-muted mb-1"><i class="bi bi-hash me-2"></i>{{ school.code }}</p>
+                                        <p class="mb-0"><i class="bi bi-geo-alt-fill me-2 text-primary"></i>{{ school.address }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="bi bi-telephone-fill text-success me-2 fs-5"></i>
+                                            <span class="fw-medium">{{ school.phone }}</span>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-4">
+                                            <i class="bi bi-envelope-fill text-info me-2 fs-5"></i>
+                                            <span class="fw-medium">{{ school.email }}</span>
+                                        </div>
+                                        <div class="badge fs-6 px-4 py-3 fw-semibold {% if school.subscription and school.subscription.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                            <i class="bi bi-{% if school.subscription and school.subscription.is_active %}check-circle{% else %}x-circle{% endif %}-fill me-2"></i>
+                                            {% if school.subscription and school.subscription.is_active %}Active Subscription{% else %}Inactive{% endif %}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="col-md-3">
-                        <div class="card text-white bg-secondary h-100">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Assign Subjects to Exams</h5>
-                                <p class="card-text">Link subjects to exams and classes for teachers to enter marks.</p>
-                                <a href="{% url 'academics:assign_subjects_to_exam' %}" class="btn btn-light btn-sm">
-                                    <i class="bi bi-pencil-square me-1"></i> Assign
+                <!-- Dashboard Stats -->
+                <div class="row g-4 mb-5">
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card text-white h-100 dashboard-stat" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-people-fill display-4 opacity-75 mb-3"></i>
+                                <h3 class="display-5 fw-bold mb-1">{{ total_students|default:0 }}</h3>
+                                <h6 class="mb-0 opacity-90">Total Students</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card text-white h-100 dashboard-stat" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-person-badge-fill display-4 opacity-75 mb-3"></i>
+                                <h3 class="display-5 fw-bold mb-1">{{ total_teachers|default:0 }}</h3>
+                                <h6 class="mb-0 opacity-90">Total Teachers</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card text-white h-100 dashboard-stat" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-receipt-cutoff display-4 opacity-75 mb-3"></i>
+                                <h3 class="display-5 fw-bold mb-1">{{ total_invoices|default:0 }}</h3>
+                                <h6 class="mb-0 opacity-90">Total Invoices</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card text-white h-100 dashboard-stat" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-credit-card-fill display-4 opacity-75 mb-3"></i>
+                                <h3 class="display-5 fw-bold mb-1">Ksh{{ total_payments|default:0 }}</h3>
+                                <h6 class="mb-0 opacity-90">Total Payments</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subjects & Actions -->
+                <div class="row g-4 mb-5">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card text-white h-100 dashboard-stat" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-book-fill display-4 opacity-75 mb-3"></i>
+                                <h3 class="display-5 fw-bold mb-1">{{ subject_count|default:0 }}</h3>
+                                <h6 class="mb-3 opacity-90">Total Subjects</h6>
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <a href="{% url 'academics:subject_list' %}" class="btn btn-light btn-sm px-3">Manage</a>
+                                    <a href="{% url 'academics:subject_add' %}" class="btn btn-light btn-sm px-3">
+                                        <i class="bi bi-plus"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card text-white h-100 dashboard-stat" style="background: linear-gradient(135deg, #6b7280, #4b5563);">
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-arrow-right-circle-fill display-4 opacity-75 mb-3"></i>
+                                <h6 class="mb-3 opacity-90">Assign Subjects to Exams</h6>
+                                <p class="small mb-4 opacity-80">Link subjects to exams and classes</p>
+                                <a href="{% url 'academics:assign_subjects_to_exam' %}" class="btn btn-light btn-sm px-4">
+                                    Assign Now
                                 </a>
                             </div>
                         </div>
@@ -235,27 +330,102 @@
                 </div>
 
                 <!-- Charts -->
-                <div class="row mb-5">
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h5 class="card-title">Student Enrollment Trend</h5>
-                            <canvas id="studentsChart"></canvas>
+                <div class="row g-4 mb-5">
+                    <div class="col-lg-6">
+                        <div class="card h-100 shadow-lg">
+                            <div class="card-body p-4">
+                                <h5 class="card-title mb-4 fw-semibold">Student Enrollment Trend</h5>
+                                <div class="chart-container">
+                                    <canvas id="studentsChart"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card p-3">
-                            <h5 class="card-title">Payments Overview</h5>
-                            <canvas id="paymentsChart"></canvas>
+                    <div class="col-lg-6">
+                        <div class="card h-100 shadow-lg">
+                            <div class="card-body p-4">
+                                <h5 class="card-title mb-4 fw-semibold">Payments Overview</h5>
+                                <div class="chart-container">
+                                    <canvas id="paymentsChart"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Payments Table -->
-                <div class="row mb-5">
-                    <div class="col-12">
-                        <div class="card p-3">
-                            <h5 class="card-title">Recent Payments</h5>
-                            <table class="table table-striped align-middle">
+                <!-- Classes Section -->
+                <div class="card shadow-xl mb-5">
+                    <div class="card-body p-5">
+                        <div class="d-flex justify-content-between align-items-center mb-5">
+                            <div>
+                                <h3 class="fw-bold mb-1">
+                                    <i class="bi bi-mortarboard-fill text-primary me-3 fs-3"></i>Your Classes
+                                </h3>
+                                <p class="text-muted mb-0">Manage class streams and sections</p>
+                            </div>
+                            <a href="{% url 'schools:add_class' %}" class="btn btn-primary btn-lg px-5 shadow-lg">
+                                <i class="bi bi-plus-lg me-2"></i>New Class
+                            </a>
+                        </div>
+
+                        {% if classes %}
+                        <div class="row g-4">
+                            {% for cls in classes %}
+                            <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="card h-100 hover-lift shadow-lg border-0">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex justify-content-between align-items-start mb-4">
+                                            <h5 class="fw-bold text-truncate mb-0" style="max-width: 70%;" title="{{ cls.name }}">
+                                                {{ cls.name }}
+                                            </h5>
+                                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold fs-2rem">
+                                                {{ cls.stream }}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="mb-4">
+                                            <small class="text-muted d-block mb-2">
+                                                <i class="bi bi-hash me-1"></i>Section
+                                            </small>
+                                            <span class="h6 fw-semibold">{{ cls.section|default:"—" }}</span>
+                                        </div>
+
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'schools:edit_class' cls.id %}" class="btn btn-outline-primary hover-lift">
+                                                <i class="bi bi-pencil me-2"></i>Edit Class
+                                            </a>
+                                            <a href="{% url 'schools:delete_class' cls.id %}" class="btn btn-outline-danger hover-lift">
+                                                <i class="bi bi-trash me-2"></i>Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-8">
+                            <div class="bg-light rounded-5 p-5 mx-auto mb-4 shadow-lg d-inline-block" style="width: 140px; height: 140px;">
+                                <i class="bi bi-journal-text display-3 text-muted opacity-50"></i>
+                            </div>
+                            <h4 class="text-muted mb-3 fw-semibold">No classes yet</h4>
+                            <p class="text-muted mb-5 lh-lg">Get started by creating your first class to organize students and teachers.</p>
+                            <a href="{% url 'schools:add_class' %}" class="btn btn-outline-primary btn-lg px-6 shadow-lg">
+                                <i class="bi bi-plus-circle me-2"></i>Create First Class
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Recent Payments -->
+                <div class="card shadow-lg">
+                    <div class="card-body p-5">
+                        <h3 class="fw-bold mb-4">
+                            <i class="bi bi-clock-history me-2 text-primary"></i>Recent Payments
+                        </h3>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -268,102 +438,116 @@
                                 <tbody>
                                     {% for payment in recent_payments %}
                                     <tr>
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>{{ payment.invoice.student.full_name }}</td>
-                                        <td>{{ payment.invoice.id }}</td>
-                                        <td>${{ payment.amount }}</td>
-                                        <td>{{ payment.created_at|date:"Y-m-d" }}</td>
+                                        <td class="fw-semibold">{{ forloop.counter }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle me-2 p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                    <i class="bi bi-person fs-6"></i>
+                                                </div>
+                                                <span>{{ payment.invoice.student.full_name }}</span>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-light text-dark px-3 py-2">#{{ payment.invoice.id }}</span></td>
+                                        <td><strong class="text-success fs-5">${{ payment.amount }}</strong></td>
+                                        <td><span class="text-muted">{{ payment.created_at|date:"M d, Y" }}</span></td>
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="5" class="text-center">No recent payments</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Classes Section -->
-                <div class="row mb-5">
-                    <div class="col-12">
-                        <h5 class="mt-4"><i class="bi bi-mortarboard-fill me-2"></i> Your Classes</h5>
-
-                        {% if classes %}
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Stream</th>
-                                        <th>Section</th>
-                                        <th>Created At</th>
-                                        <th class="text-center">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for cls in classes %}
-                                    <tr>
-                                        <td>{{ cls.name }}</td>
-                                        <td>{{ cls.stream }}</td>
-                                        <td>{{ cls.section|default:"-" }}</td>
-                                        <td>{{ cls.created_at|date:"d M Y H:i" }}</td>
-                                        <td class="text-center">
-                                            <a href="{% url 'schools:edit_class' cls.id %}" class="btn btn-sm btn-warning me-1"><i class="bi bi-pencil-fill"></i></a>
-                                            <a href="{% url 'schools:delete_class' cls.id %}" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></a>
+                                        <td colspan="5" class="text-center py-5">
+                                            <i class="bi bi-credit-card display-4 text-muted opacity-50 mb-3 d-block"></i>
+                                            <p class="text-muted mb-0">No recent payments</p>
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
-                        {% else %}
-                            <p>No classes found. <a href="{% url 'schools:add_class' %}">Add your first class</a>.</p>
-                        {% endif %}
-
-                        <a href="{% url 'schools:add_class' %}" class="btn btn-primary mt-3"><i class="bi bi-plus-circle me-1"></i> Add New Class</a>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const studentsChartCtx = document.getElementById('studentsChart').getContext('2d');
-        const studentsChart = new Chart(studentsChartCtx, {
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    
+    function createSafeChart(ctx, config) {
+        try {
+            return new Chart(ctx, config);
+        } catch (error) {
+            console.error('Chart creation failed:', error);
+            return null;
+        }
+    }
+
+    // Students Chart
+    const studentsCtx = document.getElementById('studentsChart')?.getContext('2d');
+    if (studentsCtx) {
+        createSafeChart(studentsCtx, {
             type: 'line',
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
                 datasets: [{
                     label: 'Students',
                     data: [10, 20, 15, 25, 30],
-                    borderColor: 'rgba(13, 110, 253, 1)',
-                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
-                    tension: 0.4
+                    borderColor: isDark ? '#60a5fa' : '#3b82f6',
+                    backgroundColor: isDark ? 'rgba(96, 165, 250, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 3,
+                    pointBackgroundColor: isDark ? '#60a5fa' : '#3b82f6',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
                 }]
             },
-            options: { responsive: true }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } },
+                    x: { grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' } }
+                }
+            }
         });
+    }
 
-        const paymentsChartCtx = document.getElementById('paymentsChart').getContext('2d');
-        const paymentsChart = new Chart(paymentsChartCtx, {
+    // Payments Chart
+    const paymentsCtx = document.getElementById('paymentsChart')?.getContext('2d');
+    if (paymentsCtx) {
+        createSafeChart(paymentsCtx, {
             type: 'bar',
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
                 datasets: [{
                     label: 'Payments ($)',
                     data: [500, 700, 400, 900, 600],
-                    backgroundColor: 'rgba(220, 53, 69, 0.7)'
+                    backgroundColor: isDark ? 
+                        ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'] :
+                        ['#dc3545', '#fd7e14', '#28a745', '#007bff', '#6f42c1'],
+                    borderRadius: 8,
+                    borderSkipped: false
                 }]
             },
-            options: { responsive: true }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' },
+                        ticks: { callback: value => '$' + value }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
         });
-    </script>
-</body>
-</html>
+    }
+});
+</script>
+
+{% endblock %}
