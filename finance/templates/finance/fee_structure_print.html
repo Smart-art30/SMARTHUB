@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block content %}
+<style>
+    @media print {
+        button { display: none; }
+        .logo-section img { max-height: 80px; }
+        .signature-stamp { min-height: 60px; border-bottom: 1px solid #000; margin: 20px 0; }
+        .term-dates { font-weight: bold; font-size: 14px; }
+        .school-info { font-size: 12px; }
+    }
+    .print-friendly { font-family: 'Times New Roman', serif; }
+    .header-section { margin-bottom: 30px; }
+    .footer-section { margin-top: 40px; border-top: 2px solid #000; padding-top: 20px; }
+</style>
+
+<div class="container mt-4 print-friendly">
+    <!-- SCHOOL HEADER - Using School Model -->
+    <div class="d-flex align-items-start mb-4 print-header">
+        <!-- School Logo from School.logo -->
+        <div class="logo-section me-3">
+            {% if school.logo %}
+                <img src="{{ school.logo.url }}" alt="{{ school.name }} Logo" style="height:60px; flex-shrink: 0;">
+            {% else %}
+                <img src="{% static 'images/school_logo.png' %}" alt="School Logo" style="height:60px; flex-shrink: 0;">
+            {% endif %}
+        </div>
+
+        <!-- School Details + Fee Title -->
+        <div class="flex-grow-1">
+            <!-- SCHOOL NAME -->
+            <h2 class="mb-1" style="font-size: 24px; font-weight: bold; margin: 0; line-height: 1.1;">
+                {{ school.name }}
+            </h2>
+            
+            <!-- SCHOOL CONTACT INFO -->
+            <div class="school-info mb-2">
+                {% if school.address %}{{ school.address }}<br>{% endif %}
+                {% if school.phone %}Tel: {{ school.phone }}{% if school.email %} | {% endif %}{% endif %}
+                {% if school.email %}{{ school.email }}{% endif %}
+            </div>
+            
+            <!-- FEE STRUCTURE TITLE -->
+            <h4 class="mb-2">FEE STRUCTURE: {{ fee_structure.student_class.name }} - {{ fee_structure.term }} {{ fee_structure.year }}</h4>
+            
+            <!-- TERM DATES -->
+            <div class="term-dates">
+                <strong>Term Dates:</strong> {{ term_start_date|default:"DD/MM/YYYY" }} - {{ term_end_date|default:"DD/MM/YYYY" }}
+            </div>
+        </div>
+
+        <!-- Print Button -->
+        <div class="ms-auto no-print">
+            <button class="btn btn-primary" onclick="window.print()">🖨 Print</button>
+        </div>
+    </div>
+
+    <!-- FEE TABLE -->
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Fee Item</th>
+                <th>Amount (KES)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in fee_items %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.amount|intcomma }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center">No fee items found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="table-primary">
+                <th colspan="2"><strong>Total</strong></th>
+                <th><strong>KES {{ total_amount|intcomma }}</strong></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- FOOTER: Signature and Stamp Space -->
+    <div class="footer-section text-center">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="signature-stamp">
+                    <p><strong>Signature:</strong></p>
+                    <div style="height: 40px;"></div>
+                    <p><em>Accountant / Bursar</em></p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="signature-stamp">
+                    <p><strong>School Stamp:</strong></p>
+                    <div style="height: 60px; border: 2px dashed #666; border-radius: 50%; width: 120px; height: 120px; margin: 0 auto; display: flex; align-items: center; justify-content: center; background: #f9f9f9;">
+                        STAMP HERE
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
