@@ -1,5 +1,6 @@
 from django import forms
 from .models import FeeItem
+from finance.models import SchoolPaymentMethod
 
 class FeeItemForm(forms.ModelForm):
     class Meta:
@@ -29,3 +30,17 @@ class FeeItemForm(forms.ModelForm):
         if commit:
             obj.save()
         return obj
+
+
+
+
+
+class SchoolPaymentMethodForm(forms.ModelForm):
+    class Meta:
+        model = SchoolPaymentMethod
+        fields = ['method', 'details', 'notes']
+        widgets = {
+            'method': forms.Select(attrs={'class': 'form-select'}),
+            'details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+        }

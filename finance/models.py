@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from schools.models import School
 
 
 # =========================
@@ -203,3 +204,18 @@ def update_fee_structure_total(sender, instance, **kwargs):
 def auto_update_invoice(sender, instance, **kwargs):
     if instance.status == 'confirmed':
         instance.invoice.update_payment_status()
+
+
+class SchoolPaymentMethod(models.Model):
+    PAYMENT_CHOICES = [
+        ('MPESA', 'M-Pesa'),
+        ('PAYBILL', 'Paybill'),
+        ('BANK', 'Bank Transfer'),
+    ]
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='payment_methods')
+    method = models.CharField(max_length=20, choices=PAYMENT_CHOICES)
+    details = models.CharField(max_length=255)  
+    notes = models.TextField(blank=True, null=True) 
+
+    def __str__(self):
+        return f"{self.school.name} - {self.method}"

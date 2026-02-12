@@ -12,6 +12,9 @@ from .forms import FeeItemForm
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from weasyprint import HTML
+from finance.models import SchoolPaymentMethod
+from .forms import SchoolPaymentMethodForm
+
 
 
 
@@ -80,20 +83,66 @@ def fee_structure_print(request, fee_id):
     fee_items = FeeItem.objects.filter(fee_structure=fee_structure)
     total_amount = fee_items.aggregate(total=Sum('amount'))['total'] or 0 
 
-   
     school = request.user.school
+
+  
+    payment_methods = school.payment_methods.all()
 
     return render(request, 'finance/fee_structure_print.html', {
         'fee_structure': fee_structure,
         'fee_items': fee_items,
         'total_amount': total_amount,
         'school': school,
-        'term_start_date': fee_structure.term_start_date,
-        'term_end_date': fee_structure.term_end_date,
+        'payment_methods': payment_methods,  
     })
 
 
 #########################################
+
+@login_required
+@role_required('schooladmin')
+def school_payment_methods(request):
+    school = request.user.school  
+    methods = SchoolPaymentMethod.objects.filter(school=school)  
+    return render(request, "finance/school_payment_methods.html", {"methods": methods})
+
+
+
+@login_required
+def add_payment_method(request):
+    if request.method == 'POST':
+        form = SchoolPaymentMethodForm(request.POST)
+        if form.is_valid():
+            method = form.save(commit=False)
+            method.school = request.user.school
+            method.save()
+            messages.success(request, "Payment method added successfully!")
+            return redirect('finance:school_payment_methods')
+    else:
+        form = SchoolPaymentMethodForm()
+    return render(request, "finance/payment_method_form.html", {"form": form, "title": "Add Payment Method"})
+
+@login_required
+def edit_payment_method(request, pk):
+    method = get_object_or_404(SchoolPaymentMethod, pk=pk, school=request.user.school)
+    if request.method == 'POST':
+        form = SchoolPaymentMethodForm(request.POST, instance=method)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Payment method updated successfully!")
+            return redirect('finance:school_payment_methods')
+    else:
+        form = SchoolPaymentMethodForm(instance=method)
+    return render(request, "finance/payment_method_form.html", {"form": form, "title": "Edit Payment Method"})
+
+@login_required
+def delete_payment_method(request, pk):
+    method = get_object_or_404(SchoolPaymentMethod, pk=pk, school=request.user.school)
+    if request.method == 'POST':
+        method.delete()
+        messages.success(request, "Payment method deleted successfully!")
+        return redirect('finance:school_payment_methods')
+    return render(request, "finance/payment_method_confirm_delete.html", {"method": method})
 
 
 @login_required
@@ -103,20 +152,28 @@ def fee_structure_pdf(request, fee_id):
     fee_items = FeeItem.objects.filter(fee_structure=fee_structure)
     school = request.user.school  
 
+    payment_methods = school.payment_methods.all()  
+
+    if school.logo:
+        logo_url = request.build_absolute_uri(school.logo.url)
+    else:
+        logo_url = request.build_absolute_uri(static('images/school_logo.png'))
+
     html_string = render_to_string('finance/fee_structure_print.html', {
         'fee_structure': fee_structure,
         'fee_items': fee_items,
         'school': school,
-        'term_start_date': fee_structure.term_start_date,
-        'term_end_date': fee_structure.term_end_date,
+        'logo_url': logo_url,
+        'payment_methods': payment_methods,  
     })
 
-    html = HTML(string=html_string)
+    html = HTML(string=html_string, base_url=request.build_absolute_uri('/'))  
     pdf = html.write_pdf()
 
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'filename=FeeStructure_{fee_structure.student_class.name}.pdf'
     return response
+
 
 
 

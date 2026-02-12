@@ -26,6 +26,7 @@ urlpatterns = [
 
     # Payments
     path('payments/', views.payment_list, name='payment_list'),
+    path('school-payment-methods/', views.school_payment_methods, name='school_payment_methods'),
     path('payments/add/<int:invoice_id>/', views.payment_add, name='payment_add'),
 
         # FeeStructure edit/delete
@@ -37,6 +38,12 @@ urlpatterns = [
     path('fee-structure/<int:structure_id>/items/<int:item_id>/delete/', views.fee_item_delete, name='fee_item_delete'),
     path('fees/<int:fee_id>/print/', views.fee_structure_print, name='fee_structure_print'),
     path('fees/<int:fee_id>/pdf/', views.fee_structure_pdf, name='fee_structure_pdf'),
+
+
+    path('school-payment-methods/', views.school_payment_methods, name='school_payment_methods'),
+    path('school-payment-methods/add/', views.add_payment_method, name='add_payment_method'),
+    path('school-payment-methods/<int:pk>/edit/', views.edit_payment_method, name='edit_payment_method'),
+    path('school-payment-methods/<int:pk>/delete/', views.delete_payment_method, name='delete_payment_method'),
 
 
 
