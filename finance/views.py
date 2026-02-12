@@ -14,6 +14,8 @@ from django.http import HttpResponse
 from weasyprint import HTML
 from finance.models import SchoolPaymentMethod
 from .forms import SchoolPaymentMethodForm
+from decimal import Decimal
+from django.core.exceptions import ValidationError
 
 
 
@@ -261,24 +263,31 @@ def fee_item_delete(request, structure_id, item_id):
 
     return render(request, 'finance/fee_item_delete.html', {'fee_item': fee_item, 'fee_structure': fee_structure})
 #############################################################################################################################
-
 @login_required
 @role_required('schooladmin')
 def invoice_create(request):
-    students = Student.objects.filter(school=request.user.school)
-    fees = FeeStructure.objects.filter(school=request.user.school, is_active=True)
+    school = request.user.school
+
+    
+    classes = SchoolClass.objects.filter(school=school)
+
+    
+    students = Student.objects.filter(school=school)
+
+    
+    fees = FeeStructure.objects.filter(school=school, is_active=True)
 
     if request.method == 'POST':
         student = get_object_or_404(
             Student,
             id=request.POST.get('student'),
-            school=request.user.school
+            school=school
         )
 
         fee_structure = get_object_or_404(
             FeeStructure,
             id=request.POST.get('fee'),
-            school=request.user.school
+            school=school
         )
 
         Invoice.objects.create(
@@ -287,14 +296,16 @@ def invoice_create(request):
             total_amount=fee_structure.total_amount
         )
 
-        messages.success(request, 'Invoice created successfully')
+        messages.success(request, 'Invoice created successfully.')
         return redirect('finance:invoice_list')
 
-    return render(
-        request,
-        'finance/invoice_create.html',
-        {'students': students, 'fees': fees}
-    )
+    return render(request, 'finance/invoice_create.html', {
+        'classes': classes,
+        'students': students,
+        'fees': fees,
+    })
+
+
 
 
 @login_required
@@ -317,39 +328,89 @@ def invoice_list(request):
         {'invoices': invoices}
     )
 
+
+
 @login_required
 @role_required('schooladmin')
-def payment_add(request):
-    students = Student.objects.filter(school=request.user.school)
-    invoices = Invoice.objects.filter(
-        student__school=request.user.school,
-        is_paid=False
-    )
+def payment_add(request, invoice_id=None):
+    school = request.user.school
+
+    classes = SchoolClass.objects.filter(school=school)
+    students = Student.objects.filter(school=school)
+    invoices = Invoice.objects.filter(student__school=school, is_paid=False)
+
+    # Use invoice_id from URL if provided
+    preselected_invoice_id = invoice_id or request.GET.get('invoice')
 
     if request.method == 'POST':
         invoice = get_object_or_404(
             Invoice,
             id=request.POST.get('invoice'),
-            student__school=request.user.school
+            student__school=school
         )
+        amount = request.POST.get('amount')
+        payment_method = request.POST.get('payment_method')
+        settlement_account = request.POST.get('settlement_account') or payment_method
+        transaction_reference = request.POST.get('transaction_reference') or None
 
         Payment.objects.create(
             invoice=invoice,
-            amount=request.POST.get('amount'),
-            payment_method=request.POST.get('method'),
-            settlement_account=request.POST.get('method'),
-            transaction_reference=request.POST.get('transaction_reference'),
-            status='confirmed' 
+            amount=amount,
+            payment_method=payment_method,
+            settlement_account=settlement_account,
+            transaction_reference=transaction_reference,
+            status='pending'  
         )
 
-        messages.success(request, 'Payment recorded successfully')
+        messages.success(request, "Payment recorded and awaiting confirmation.")
         return redirect('finance:payment_list')
 
-    return render(
-        request,
-        'finance/payment_add.html',
-        {'students': students, 'invoices': invoices}
+    return render(request, 'finance/payment_add.html', {
+        'classes': classes,
+        'students': students,
+        'invoices': invoices,
+        'preselected_invoice_id': preselected_invoice_id
+    })
+
+
+@login_required
+@role_required('schooladmin')
+def payment_confirm(request, payment_id):
+    payment = get_object_or_404(
+        Payment,
+        id=payment_id,
+        invoice__student__school=request.user.school
     )
+
+    if payment.status != 'pending':
+        messages.warning(request, "Only pending payments can be confirmed.")
+        return redirect('finance:payment_list')
+
+    payment.status = 'confirmed'
+    payment.save()  
+
+    messages.success(request, "Payment confirmed successfully.")
+    return redirect('finance:payment_list')
+
+
+@login_required
+@role_required('schooladmin')
+def payment_fail(request, payment_id):
+    payment = get_object_or_404(
+        Payment,
+        id=payment_id,
+        invoice__student__school=request.user.school
+    )
+
+    if payment.status != 'pending':
+        messages.warning(request, "Only pending payments can be marked failed.")
+        return redirect('finance:payment_list')
+
+    payment.status = 'failed'
+    payment.save()
+
+    messages.success(request, "Payment marked as failed.")
+    return redirect('finance:payment_list')
 
 
 
@@ -388,12 +449,28 @@ def add_fee_item(request, structure_id):
 @login_required
 @role_required('schooladmin')
 def payment_list(request):
+    status_filter = request.GET.get('status')
+
     payments = Payment.objects.filter(
         invoice__student__school=request.user.school
-    ).order_by('-payment_date')
+    )
+
+    if status_filter:
+        payments = payments.filter(status=status_filter)
+
+    payments = payments.order_by('-payment_date')
+
+    total_amount = payments.aggregate(
+        total=Sum('amount')
+    )['total'] or 0
 
     return render(
         request,
         'finance/payment_list.html',
-        {'payments': payments}
+        {
+            'payments': payments,
+            'status_filter': status_filter,
+            'total_amount': total_amount
+        }
     )
+

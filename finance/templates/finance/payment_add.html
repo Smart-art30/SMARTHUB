@@ -5,9 +5,9 @@
 <div class="container mt-4">
     <h2 class="mb-4">Add Payment</h2>
 
-    {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
 
     <form method="POST" class="needs-validation" novalidate>
         {% csrf_token %}
@@ -15,7 +15,7 @@
         <!-- Select Class -->
         <div class="mb-3">
             <label for="student_class" class="form-label">Class</label>
-            <select class="form-select" id="student_class" required>
+            <select class="form-select" id="student_class">
                 <option value="">Select Class</option>
                 {% for cls in classes %}
                     <option value="{{ cls.id }}">{{ cls.name }}</option>
@@ -26,30 +26,16 @@
         <!-- Select Student -->
         <div class="mb-3">
             <label for="student" class="form-label">Student</label>
-            <select class="form-select" id="student" name="student" required style="max-height:200px; overflow:auto;">
+            <select class="form-select" id="student" name="student">
                 <option value="">Select Student</option>
-                {% for student in students %}
-                    <option value="{{ student.id }}" 
-                            data-class="{{ student.student_class.id }}" 
-                            style="display:none;">
-                        {{ student.first_name }} {{ student.last_name }}
-                    </option>
-                {% endfor %}
             </select>
         </div>
 
         <!-- Select Invoice -->
         <div class="mb-3">
-            <label for="invoice" class="form-label">Invoice / Fee Item</label>
-            <select class="form-select" id="invoice" name="invoice" required style="max-height:200px; overflow:auto;">
+            <label for="invoice" class="form-label">Invoice</label>
+            <select class="form-select" id="invoice" name="invoice" required>
                 <option value="">Select Invoice</option>
-                {% for invoice in invoices %}
-                    <option value="{{ invoice.id }}" 
-                            data-student="{{ invoice.student.id }}" 
-                            style="display:none;">
-                        {{ invoice.fee.name }} | Total: {{ invoice.fee.amount }} | Paid: {{ invoice.total_paid }} | Balance: {{ invoice.balance }}
-                    </option>
-                {% endfor %}
             </select>
         </div>
 
@@ -60,8 +46,8 @@
         </div>
 
         <div class="mb-3">
-            <label for="method" class="form-label">Payment Method</label>
-            <select class="form-select" id="method" name="method" required>
+            <label for="payment_method" class="form-label">Payment Method</label>
+            <select class="form-select" id="payment_method" name="payment_method" required>
                 <option value="">Select Method</option>
                 <option value="cash">Cash</option>
                 <option value="bank">Bank</option>
@@ -70,47 +56,73 @@
         </div>
 
         <div class="mb-3">
-            <label for="transaction_reference" class="form-label">
-                Transaction Reference (optional)
-            </label>
+            <label for="settlement_account" class="form-label">Settlement Account</label>
+            <select class="form-select" id="settlement_account" name="settlement_account" required>
+                <option value="">Select Account</option>
+                <option value="cash">Cash</option>
+                <option value="bank">Bank</option>
+                <option value="mpesa">M-Pesa</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="transaction_reference" class="form-label">Transaction Reference (optional)</label>
             <input type="text" class="form-control" id="transaction_reference" name="transaction_reference">
         </div>
 
-        <button type="submit" class="btn btn-success">Add Payment</button>
-        <a href="{% url 'payment_list' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-success">Record Payment</button>
+        <a href="{% url 'finance:payment_list' %}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 
-<!-- JS for dynamic filtering -->
 <script>
-    const classSelect = document.getElementById('student_class');
-    const studentSelect = document.getElementById('student');
-    const invoiceSelect = document.getElementById('invoice');
+// Preload student and invoice data as JS arrays
+const students = [
+    {% for student in students %}
+    {id: '{{ student.id }}', full_name: '{{ student.first_name }} {{ student.last_name }}', class_id: '{{ student.student_class.id }}'},
+    {% endfor %}
+];
 
-    // Filter students when a class is selected
-    classSelect.addEventListener('change', function() {
-        const selectedClass = this.value;
-        for (let option of studentSelect.options) {
-            if (!option.value) continue; // skip placeholder
-            option.style.display = option.dataset.class === selectedClass ? '' : 'none';
+const invoices = [
+    {% for invoice in invoices %}
+    {id: '{{ invoice.id }}', student_id: '{{ invoice.student.id }}', text: '{{ invoice.fee_structure.student_class.name }} | {{ invoice.fee_structure.term }} {{ invoice.fee_structure.year }} | Total: {{ invoice.total_amount }} | Paid: {{ invoice.total_paid|default:"0" }} | Balance: {{ invoice.balance|default:"0" }}'},
+    {% endfor %}
+];
+
+const classSelect = document.getElementById('student_class');
+const studentSelect = document.getElementById('student');
+const invoiceSelect = document.getElementById('invoice');
+
+// Rebuild student options when class changes
+classSelect.addEventListener('change', () => {
+    const selectedClass = classSelect.value;
+    studentSelect.innerHTML = '<option value="">Select Student</option>';
+
+    students.forEach(s => {
+        if (s.class_id === selectedClass) {
+            const option = document.createElement('option');
+            option.value = s.id;
+            option.textContent = s.full_name;
+            studentSelect.appendChild(option);
         }
-        studentSelect.value = '';
-        // hide all invoices until student is selected
-        for (let option of invoiceSelect.options) {
-            if (!option.value) continue;
-            option.style.display = 'none';
-        }
-        invoiceSelect.value = '';
     });
 
-    // Filter invoices when a student is selected
-    studentSelect.addEventListener('change', function() {
-        const selectedStudent = this.value;
-        for (let option of invoiceSelect.options) {
-            if (!option.value) continue; // skip placeholder
-            option.style.display = option.dataset.student === selectedStudent ? '' : 'none';
+    invoiceSelect.innerHTML = '<option value="">Select Invoice</option>';
+});
+
+// Rebuild invoice options when student changes
+studentSelect.addEventListener('change', () => {
+    const selectedStudent = studentSelect.value;
+    invoiceSelect.innerHTML = '<option value="">Select Invoice</option>';
+
+    invoices.forEach(i => {
+        if (i.student_id === selectedStudent) {
+            const option = document.createElement('option');
+            option.value = i.id;
+            option.textContent = i.text;
+            invoiceSelect.appendChild(option);
         }
-        invoiceSelect.value = '';
     });
+});
 </script>
 {% endblock %}

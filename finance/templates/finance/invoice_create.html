@@ -1,27 +1,128 @@
-<!-- finance/templates/finance/invoice_create.html -->
 {% extends 'base.html' %}
+{% load humanize %}
+
 {% block content %}
 <div class="container mt-4">
-    <h2>Create Invoice</h2>
-    <form method="POST">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="student" class="form-label">Select Student</label>
-            <select class="form-control" id="student" name="student" required>
-                {% for student in students %}
-                <option value="{{ student.id }}">{{ student.full_name }}</option>
-                {% endfor %}
-            </select>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Create Invoice</h5>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <!-- Class Selection -->
+                        <div class="mb-3">
+                            <label for="student_class" class="form-label">Select Class</label>
+                            <select class="form-select" id="student_class" required>
+                                <option value="">-- Choose Class --</option>
+                                {% for cls in classes %}
+                                    <option value="{{ cls.id }}">{{ cls.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Student Selection -->
+                       <!-- Student Selection -->
+                    <div class="mb-3">
+                        <label for="student" class="form-label">Select Student</label>
+                        <select class="form-select" id="student" name="student" required>
+                            <option value="">-- Choose Student --</option>
+                            {% for student in students %}
+                                <option value="{{ student.id }}" data-class-id="{{ student.student_class.id }}">
+                                    {{ student.user.get_full_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+                        <!-- Fee Selection -->
+                        <div class="mb-3">
+                            <label for="fee" class="form-label">Select Fee Structure</label>
+                            <select class="form-select" id="fee" name="fee" required>
+                                <option value="">-- Choose Fee --</option>
+                                {% for fee in fees %}
+                                    <option value="{{ fee.id }}"
+                                            data-class-id="{{ fee.student_class.id }}"
+                                            data-term="{{ fee.term }}"
+                                            data-year="{{ fee.year }}"
+                                            data-amount="{{ fee.total_amount }}">
+                                        {{ fee.student_class.name }} | {{ fee.term }} {{ fee.year }} | KES {{ fee.total_amount|intcomma }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Fee Preview -->
+                        <div id="feePreview" class="alert alert-info d-none"></div>
+
+                        <!-- Form Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'finance:invoice_list' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success">Create Invoice</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
         </div>
-        <div class="mb-3">
-            <label for="fee" class="form-label">Select Fee</label>
-            <select class="form-control" id="fee" name="fee" required>
-                {% for fee in fees %}
-                <option value="{{ fee.id }}">{{ fee.name }} - {{ fee.amount }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <button type="submit" class="btn btn-success">Create Invoice</button>
-    </form>
+    </div>
+
 </div>
+
+<script>
+    const classSelect = document.getElementById('student_class');
+    const studentSelect = document.getElementById('student');
+    const feeSelect = document.getElementById('fee');
+    const feePreview = document.getElementById('feePreview');
+
+    // Filter students by class
+    classSelect.addEventListener('change', function () {
+        const selectedClassId = this.value;
+
+        // Show only students of selected class
+        for (let option of studentSelect.options) {
+            if (!option.value) continue;
+            option.style.display = option.dataset.classId === selectedClassId ? '' : 'none';
+        }
+        studentSelect.value = '';
+        
+        // Also filter fees to the selected class
+        for (let option of feeSelect.options) {
+            if (!option.value) continue;
+            option.style.display = option.dataset.classId === selectedClassId ? '' : 'none';
+        }
+        feeSelect.value = '';
+        feePreview.classList.add('d-none');
+        feePreview.innerHTML = '';
+    });
+
+    // Show fee preview on fee selection
+    feeSelect.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const amount = selectedOption.dataset.amount;
+        const term = selectedOption.dataset.term;
+        const year = selectedOption.dataset.year;
+        const clsId = selectedOption.dataset.classId;
+
+        if (amount) {
+            const clsName = selectedOption.text.split('|')[0].trim();
+            feePreview.classList.remove('d-none');
+            feePreview.innerHTML = `
+                <strong>Fee Structure:</strong> ${clsName} | ${term} ${year}<br>
+                <strong>Amount:</strong> KES ${parseFloat(amount).toLocaleString()}
+            `;
+        } else {
+            feePreview.classList.add('d-none');
+            feePreview.innerHTML = '';
+        }
+    });
+</script>
 {% endblock %}

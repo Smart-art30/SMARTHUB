@@ -28,6 +28,7 @@ urlpatterns = [
     path('payments/', views.payment_list, name='payment_list'),
     path('school-payment-methods/', views.school_payment_methods, name='school_payment_methods'),
     path('payments/add/<int:invoice_id>/', views.payment_add, name='payment_add'),
+    path('payments/add/', views.payment_add, name='payment_add'),
 
         # FeeStructure edit/delete
     path('fees/<int:fee_id>/edit/', views.fee_edit, name='fee_edit'),
