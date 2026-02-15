@@ -7,6 +7,7 @@ urlpatterns = [
     # Fees
     path('fees/', views.fee_list, name='fee_list'),
     path('fees/add/', views.fee_add, name='fee_add'),
+    path('fees/<int:fee_id>/edit/', views.fee_edit, name='fee_edit'),
 
     # Fee structure items
     path(
@@ -47,6 +48,11 @@ urlpatterns = [
     path('school-payment-methods/<int:pk>/delete/', views.delete_payment_method, name='delete_payment_method'),
 
 
+    path('payments/<int:payment_id>/confirm/', views.payment_confirm, name='payment_confirm'),
+    path('payments/<int:payment_id>/fail/', views.payment_fail, name='payment_fail'),
+
+    path('invoices/<int:invoice_id>/print/',views.invoice_print,name='invoice_print'),
+    path('invoices/class/<int:class_id>/print/', views.invoice_print, name='invoice_print_class'),
 
 ]
 

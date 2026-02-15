@@ -12,30 +12,62 @@
     <form method="POST" class="needs-validation" novalidate>
         {% csrf_token %}
 
-        <!-- Select Class -->
+        <!-- Class -->
         <div class="mb-3">
             <label for="student_class" class="form-label">Class</label>
-            <select class="form-select" id="student_class">
+            <select class="form-select" id="student_class" {% if preselected_invoice_id %}disabled{% endif %}>
                 <option value="">Select Class</option>
                 {% for cls in classes %}
-                    <option value="{{ cls.id }}">{{ cls.name }}</option>
+                    {% if preselected_invoice_id %}
+                        {% for inv in invoices %}
+                            {% if inv.id|stringformat:"s" == preselected_invoice_id|stringformat:"s" %}
+                                {% if inv.fee_structure.student_class.id == cls.id %}
+                                    <option value="{{ cls.id }}" selected>{{ cls.name }}</option>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <option value="{{ cls.id }}">{{ cls.name }}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>
 
-        <!-- Select Student -->
+        <!-- Student -->
         <div class="mb-3">
             <label for="student" class="form-label">Student</label>
-            <select class="form-select" id="student" name="student">
+            <select class="form-select" id="student" name="student" {% if preselected_invoice_id %}disabled{% endif %}>
                 <option value="">Select Student</option>
+                {% for s in students %}
+                    {% if preselected_invoice_id %}
+                        {% for inv in invoices %}
+                            {% if inv.id|stringformat:"s" == preselected_invoice_id|stringformat:"s" %}
+                                {% if inv.student.id == s.id %}
+                                    <option value="{{ s.id }}" selected>{{ s.user.get_full_name }}</option>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <option value="{{ s.id }}">{{ s.user.get_full_name }}</option>
+                    {% endif %}
+                {% endfor %}
             </select>
         </div>
 
-        <!-- Select Invoice -->
+        <!-- Invoice -->
         <div class="mb-3">
             <label for="invoice" class="form-label">Invoice</label>
-            <select class="form-select" id="invoice" name="invoice" required>
+            <select class="form-select" id="invoice" name="invoice" required {% if preselected_invoice_id %}disabled{% endif %}>
                 <option value="">Select Invoice</option>
+                {% for inv in invoices %}
+                    <option value="{{ inv.id }}"
+                        {% if preselected_invoice_id and inv.id|stringformat:"s" == preselected_invoice_id|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ inv.fee_structure.student_class.name }} | {{ inv.fee_structure.term }} {{ inv.fee_structure.year }} | Total: {{ inv.total_amount }} | Paid: {{ inv.total_paid|default:"0" }} | Balance: {{ inv.balance|default:"0" }}
+                    </option>
+                {% endfor %}
             </select>
         </div>
 
@@ -74,55 +106,4 @@
         <a href="{% url 'finance:payment_list' %}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
-
-<script>
-// Preload student and invoice data as JS arrays
-const students = [
-    {% for student in students %}
-    {id: '{{ student.id }}', full_name: '{{ student.first_name }} {{ student.last_name }}', class_id: '{{ student.student_class.id }}'},
-    {% endfor %}
-];
-
-const invoices = [
-    {% for invoice in invoices %}
-    {id: '{{ invoice.id }}', student_id: '{{ invoice.student.id }}', text: '{{ invoice.fee_structure.student_class.name }} | {{ invoice.fee_structure.term }} {{ invoice.fee_structure.year }} | Total: {{ invoice.total_amount }} | Paid: {{ invoice.total_paid|default:"0" }} | Balance: {{ invoice.balance|default:"0" }}'},
-    {% endfor %}
-];
-
-const classSelect = document.getElementById('student_class');
-const studentSelect = document.getElementById('student');
-const invoiceSelect = document.getElementById('invoice');
-
-// Rebuild student options when class changes
-classSelect.addEventListener('change', () => {
-    const selectedClass = classSelect.value;
-    studentSelect.innerHTML = '<option value="">Select Student</option>';
-
-    students.forEach(s => {
-        if (s.class_id === selectedClass) {
-            const option = document.createElement('option');
-            option.value = s.id;
-            option.textContent = s.full_name;
-            studentSelect.appendChild(option);
-        }
-    });
-
-    invoiceSelect.innerHTML = '<option value="">Select Invoice</option>';
-});
-
-// Rebuild invoice options when student changes
-studentSelect.addEventListener('change', () => {
-    const selectedStudent = studentSelect.value;
-    invoiceSelect.innerHTML = '<option value="">Select Invoice</option>';
-
-    invoices.forEach(i => {
-        if (i.student_id === selectedStudent) {
-            const option = document.createElement('option');
-            option.value = i.id;
-            option.textContent = i.text;
-            invoiceSelect.appendChild(option);
-        }
-    });
-});
-</script>
 {% endblock %}

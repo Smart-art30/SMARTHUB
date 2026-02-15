@@ -1,6 +1,7 @@
 from django import forms
 from .models import FeeItem
 from finance.models import SchoolPaymentMethod
+from .models import FeeStructure
 
 class FeeItemForm(forms.ModelForm):
     class Meta:
@@ -44,3 +45,9 @@ class SchoolPaymentMethodForm(forms.ModelForm):
             'details': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
         }
+
+
+class FeeStructureForm(forms.ModelForm):
+    class Meta:
+        model = FeeStructure
+        fields = ['school', 'student_class', 'term', 'year', 'is_active']

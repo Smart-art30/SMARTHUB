@@ -3,6 +3,7 @@ from django.conf import settings
 from schools.models import School, SchoolClass
 
 User =  settings.AUTH_USER_MODEL
+
 class Student(models.Model):
     user = models.OneToOneField(
         User,

@@ -11,59 +11,73 @@
         <a href="{% url 'finance:invoice_create' %}" class="btn btn-primary">➕ Create Invoice</a>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Invoice ID</th>
-                            <th>Student</th>
-                            <th>Fee Structure</th>
-                            <th>Total Amount</th>
-                            <th>Total Paid</th>
-                            <th>Balance</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for invoice in invoices %}
-                        <tr>
-                            <td>#{{ invoice.id }}</td>
-                            <td>{{ invoice.student.user.get_full_name }}</td>
-                            <td>
-                                {{ invoice.fee_structure.student_class.name }} |
-                                {{ invoice.fee_structure.term }} {{ invoice.fee_structure.year }}
-                            </td>
-                            <td>KES {{ invoice.total_amount|intcomma }}</td>
-                            <td>KES {{ invoice.total_paid|default:0|intcomma }}</td>
-                            <td>
-                                {% if invoice.balance > 0 %}
-                                    <span class="text-danger">KES {{ invoice.balance|intcomma }}</span>
-                                {% else %}
-                                    <span class="text-success">0</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if invoice.balance > 0 %}
-                                    <a href="{% url 'finance:payment_add' invoice.id %}" class="btn btn-sm btn-success">
-                                        ➕ Add Payment
+    {% if invoices_by_class %}
+        {% for class_name, class_invoices in invoices_by_class %}
+        <div class="card shadow-sm mb-4">
+            <!-- CLASS HEADER WITH PRINT ALL BUTTON -->
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Class: {{ class_name }}</h5>
+                {% if class_invoices %}
+                <!-- Fixed class-level print URL -->
+                <a href="{% url 'finance:invoice_print_class' class_invoices.0.fee_structure.student_class.id %}" 
+                   class="btn btn-sm btn-outline-primary" target="_blank">
+                   🖨 Print/Download All
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Invoice ID</th>
+                                <th>Student</th>
+                                <th>Fee Structure</th>
+                                <th>Total Amount</th>
+                                <th>Total Paid</th>
+                                <th>Balance</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in class_invoices %}
+                            <tr>
+                                <td>#{{ invoice.id }}</td>
+                                <td>{{ invoice.student.user.get_full_name }}</td>
+                                <td>{{ invoice.fee_structure.term }} {{ invoice.fee_structure.year }}</td>
+                                <td>KES {{ invoice.total_amount_display|intcomma }}</td>
+                                <td>KES {{ invoice.total_paid|intcomma }}</td>
+                                <td>
+                                    {% if invoice.balance > 0 %}
+                                        <span class="text-danger">KES {{ invoice.balance|intcomma }}</span>
+                                    {% else %}
+                                        <span class="text-success">0</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if invoice.balance > 0 %}
+                                        <a href="{% url 'finance:payment_add' invoice.id %}" class="btn btn-sm btn-success">
+                                            ➕ Add Payment
+                                        </a>
+                                    {% endif %}
+                                    <!-- Fixed single invoice print URL -->
+                                    <a href="{% url 'finance:invoice_print' invoice.id %}" 
+                                       class="btn btn-sm btn-outline-secondary" target="_blank">
+                                       🖨 Print
                                     </a>
-                                {% else %}
-                                    <span class="badge bg-success">Paid</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center text-muted">No invoices found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-center text-muted">No invoices found.</p>
+    {% endif %}
 
 </div>
 {% endblock %}

@@ -16,6 +16,10 @@ from finance.models import SchoolPaymentMethod
 from .forms import SchoolPaymentMethodForm
 from decimal import Decimal
 from django.core.exceptions import ValidationError
+from .forms import FeeStructureForm
+from django.forms import inlineformset_factory
+from collections import defaultdict
+
 
 
 
@@ -181,25 +185,42 @@ def fee_structure_pdf(request, fee_id):
 
 ##################################################################################################################################################
 
-@login_required
-@role_required('schooladmin')
-def fee_edit(request, fee_id):
-    fee_structure = get_object_or_404(FeeStructure, id=fee_id, school=request.user.school)
 
+def fee_edit(request, fee_id):
+    fee_structure = get_object_or_404(FeeStructure, pk=fee_id)
+
+    # Inline formset for FeeItems
+    FeeItemFormSet = inlineformset_factory(
+        FeeStructure,
+        FeeItem,
+        form=FeeItemForm,
+        extra=1,          
+        can_delete=True    
+    )
+
+    # Prevent edits if any invoices are paid
     if not fee_structure.can_edit():
-        messages.error(request, "This fee structure cannot be edited.")
+        messages.warning(request, "This fee structure cannot be edited because some invoices are already paid.")
         return redirect('finance:fee_list')
 
     if request.method == 'POST':
         form = FeeStructureForm(request.POST, instance=fee_structure)
-        if form.is_valid():
+        formset = FeeItemFormSet(request.POST, instance=fee_structure)
+
+        if form.is_valid() and formset.is_valid():
             form.save()
-            messages.success(request, "Fee structure updated successfully.")
+            formset.save()
+            messages.success(request, "Fee structure and items updated successfully.")
             return redirect('finance:fee_list')
     else:
         form = FeeStructureForm(instance=fee_structure)
+        formset = FeeItemFormSet(instance=fee_structure)
 
-    return render(request, 'finance/fee_edit.html', {'form': form, 'fee_structure': fee_structure})
+    return render(request, 'finance/fee_edit.html', {
+        'form': form,
+        'formset': formset,
+        'fee_structure': fee_structure,
+    })
 
 
 @login_required
@@ -307,27 +328,42 @@ def invoice_create(request):
 
 
 
-
 @login_required
 @role_required('schooladmin')
 def invoice_list(request):
+   
     invoices = Invoice.objects.filter(
         student__school=request.user.school
-    ).annotate(
-        total_paid=Sum('payments__amount', filter=Q(payments__status='confirmed'))
-
+    ).select_related(
+        'student__user',
+        'fee_structure__student_class'
     )
 
+    
     for invoice in invoices:
-        invoice.total_paid = invoice.total_paid or 0
-        invoice.balance = invoice.total_amount - invoice.total_paid
+       
+        invoice.total_amount_display = invoice.fee_structure.total_amount if not invoice.is_paid else invoice.total_amount
 
-    return render(
-        request,
-        'finance/invoice_list.html',
-        {'invoices': invoices}
-    )
+        # Sum confirmed payments
+        invoice.total_paid = invoice.payments.filter(status='confirmed').aggregate(
+            total=Sum('amount')
+        )['total'] or 0
 
+        # Balance
+        invoice.balance = invoice.total_amount_display - invoice.total_paid
+
+    # Group invoices by class
+    invoices_by_class_dict = defaultdict(list)
+    for invoice in invoices:
+        class_name = invoice.fee_structure.student_class.name
+        invoices_by_class_dict[class_name].append(invoice)
+
+    # Convert to list of tuples for template unpacking
+    invoices_by_class = list(invoices_by_class_dict.items())
+
+    return render(request, 'finance/invoice_list.html', {
+        'invoices_by_class': invoices_by_class
+    })
 
 
 @login_required
@@ -339,15 +375,16 @@ def payment_add(request, invoice_id=None):
     students = Student.objects.filter(school=school)
     invoices = Invoice.objects.filter(student__school=school, is_paid=False)
 
-    # Use invoice_id from URL if provided
     preselected_invoice_id = invoice_id or request.GET.get('invoice')
 
     if request.method == 'POST':
+        invoice_pk = request.POST.get('invoice') or invoice_id
         invoice = get_object_or_404(
             Invoice,
-            id=request.POST.get('invoice'),
+            id=invoice_pk,
             student__school=school
         )
+
         amount = request.POST.get('amount')
         payment_method = request.POST.get('payment_method')
         settlement_account = request.POST.get('settlement_account') or payment_method
@@ -359,7 +396,7 @@ def payment_add(request, invoice_id=None):
             payment_method=payment_method,
             settlement_account=settlement_account,
             transaction_reference=transaction_reference,
-            status='pending'  
+            status='pending'
         )
 
         messages.success(request, "Payment recorded and awaiting confirmation.")
@@ -371,6 +408,7 @@ def payment_add(request, invoice_id=None):
         'invoices': invoices,
         'preselected_invoice_id': preselected_invoice_id
     })
+
 
 
 @login_required
@@ -387,10 +425,22 @@ def payment_confirm(request, payment_id):
         return redirect('finance:payment_list')
 
     payment.status = 'confirmed'
-    payment.save()  
+    payment.save()
+
+    # 🔥 UPDATE INVOICE STATUS
+    invoice = payment.invoice
+
+    total_paid = invoice.payments.filter(status='confirmed').aggregate(
+        total=Sum('amount')
+    )['total'] or 0
+
+    if total_paid >= invoice.total_amount:
+        invoice.is_paid = True
+        invoice.save()
 
     messages.success(request, "Payment confirmed successfully.")
     return redirect('finance:payment_list')
+
 
 
 @login_required
@@ -446,12 +496,18 @@ def add_fee_item(request, structure_id):
 
 
 
+
 @login_required
 @role_required('schooladmin')
 def payment_list(request):
     status_filter = request.GET.get('status')
 
-    payments = Payment.objects.filter(
+    # Fetch payments for this school, with related student & user to avoid extra queries
+    payments = Payment.objects.select_related(
+        'invoice',
+        'invoice__student',
+        'invoice__student__user'
+    ).filter(
         invoice__student__school=request.user.school
     )
 
@@ -460,9 +516,17 @@ def payment_list(request):
 
     payments = payments.order_by('-payment_date')
 
-    total_amount = payments.aggregate(
-        total=Sum('amount')
-    )['total'] or 0
+    # Calculate balance for each payment
+    for payment in payments:
+        total_paid = Payment.objects.filter(
+            invoice=payment.invoice,
+            status='confirmed'
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        payment.balance = payment.invoice.total_amount - total_paid
+
+    # Total amount of filtered payments
+    total_amount = payments.aggregate(total=Sum('amount'))['total'] or 0
 
     return render(
         request,
@@ -474,3 +538,56 @@ def payment_list(request):
         }
     )
 
+
+@login_required
+@role_required('schooladmin')
+def invoice_print(request, invoice_id=None, class_id=None):
+    school = request.user.school
+
+    invoices_data = []
+
+    if invoice_id:
+        invoice = get_object_or_404(
+            Invoice.objects.select_related(
+                'student__user',
+                'fee_structure__student_class'
+            ),
+            id=invoice_id,
+            student__school=school
+        )
+        fee_items = FeeItem.objects.filter(fee_structure=invoice.fee_structure)
+        total_paid = invoice.payments.filter(status='confirmed').aggregate(total=Sum('amount'))['total'] or 0
+        balance = invoice.total_amount - total_paid
+        invoices_data.append({
+            'invoice': invoice,
+            'fee_items': fee_items,
+            'total_paid': total_paid,
+            'balance': balance
+        })
+
+    elif class_id:
+        invoices = Invoice.objects.filter(
+            student__school=school,
+            fee_structure__student_class_id=class_id
+        ).select_related(
+            'student__user',
+            'fee_structure__student_class'
+        )
+        for invoice in invoices:
+            fee_items = FeeItem.objects.filter(fee_structure=invoice.fee_structure)
+            total_paid = invoice.payments.filter(status='confirmed').aggregate(total=Sum('amount'))['total'] or 0
+            balance = invoice.total_amount - total_paid
+            invoices_data.append({
+                'invoice': invoice,
+                'fee_items': fee_items,
+                'total_paid': total_paid,
+                'balance': balance
+            })
+
+    else:
+        return redirect('finance:invoice_list')
+
+    return render(request, 'finance/invoice_print.html', {
+        'invoices_data': invoices_data,
+        'school': school
+    })

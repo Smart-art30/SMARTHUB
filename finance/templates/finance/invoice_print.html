@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoices</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        body::before {
+            content: "{{ school.name }}";
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 48px;
+            font-weight: bold;
+            color: rgba(0, 123, 255, 0.1);
+            z-index: -1;
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        .container {
+            max-width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto 20px;
+            background: white;
+            padding: 20mm;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        .school-info {
+            flex: 1;
+            text-align: center;
+        }
+
+        .school-info h2 {
+            margin: 0;
+            color: #007bff;
+            font-size: 24px;
+        }
+
+        .school-info p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .invoice-title {
+            text-align: center;
+            margin: 20px 0;
+            color: #007bff;
+        }
+
+        .invoice-title h3 {
+            margin: 0;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .info-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .info-grid div {
+            flex: 1;
+        }
+
+        .info-grid strong {
+            color: #007bff;
+        }
+
+        table.fee-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .fee-table th, .fee-table td {
+            border: 1px solid #dee2e6;
+            padding: 12px 8px;
+            text-align: left;
+        }
+
+        .fee-table th {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            font-weight: 600;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .summary {
+            margin-top: 25px;
+            width: 40%;
+            float: right;
+        }
+
+        .summary table {
+            width: 100%;
+            margin: 0;
+        }
+
+        .summary th {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .summary td.right strong {
+            color: #dc3545;
+            font-size: 16px;
+        }
+
+        .payment-methods {
+            margin-top: 25px;
+            clear: both;
+        }
+
+        .payment-methods h4 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .payment-methods table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .payment-methods th,
+        .payment-methods td {
+            border: 1px solid #dee2e6;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        .payment-methods th {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .signature-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .sign-box {
+            width: 40%;
+            text-align: center;
+            position: relative;
+        }
+
+        .line {
+            border-top: 2px solid #000;
+            margin-top: 50px;
+            height: 1px;
+        }
+
+        .print-btn {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .print-btn button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media print {
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            body::before {
+                opacity: 0.08;
+            }
+
+            .container {
+                box-shadow: none;
+                min-height: auto;
+                padding: 15mm;
+                overflow: visible;
+            }
+
+            .print-btn {
+                display: none;
+            }
+
+            .payment-methods table {
+                font-size: 12px;
+            }
+        }
+    </style>
+     <div class="print-btn">
+        <button onclick="window.print()">🖨 Print Invoice(s)</button>
+    </div>
+</head>
+<body>
+    {% for data in invoices_data %}
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            {% if school.logo %}
+                <img src="{{ school.logo.url }}" class="logo" alt="School Logo">
+            {% endif %}
+            <div class="school-info">
+                <h2>{{ school.name }}</h2>
+                <p>{{ school.address }}<br>Tel: {{ school.phone }} | Email: {{ school.email }}</p>
+            </div>
+        </div>
+
+        <div class="invoice-title">
+            <h3>OFFICIAL SCHOOL INVOICE</h3>
+        </div>
+
+        <!-- STUDENT & INVOICE INFO -->
+        <div class="info-grid">
+            <div>
+                <strong>Invoice No:</strong> {{ data.invoice.id }}<br>
+                <strong>Student Name:</strong> {{ data.invoice.student.user.get_full_name }}<br>
+                <strong>Admission No:</strong> {{ data.invoice.student.admission_number }}<br>
+                <strong>Class:</strong> {{ data.invoice.fee_structure.student_class.name }}
+            </div>
+            <div style="text-align: right;">
+                <strong>Term:</strong> {{ data.invoice.fee_structure.term }} {{ data.invoice.fee_structure.year }}<br>
+                <strong>Date Issued:</strong> {% now "d M Y" %}<br>
+            </div>
+        </div>
+
+        <!-- FEE BREAKDOWN -->
+        <table class="fee-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th class="right">Amount (KES)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data.fee_items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td class="right">{{ item.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- TOTALS -->
+        <div class="summary">
+            <table>
+                <tr>
+                    <th>Total Fees</th>
+                    <td class="right">{{ data.invoice.total_amount }}</td>
+                </tr>
+                <tr>
+                    <th>Total Paid</th>
+                    <td class="right">{{ data.total_paid }}</td>
+                </tr>
+                <tr>
+                    <th>Balance</th>
+                    <td class="right"><strong>{{ data.balance }}</strong></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- PAYMENT METHODS -->
+        <div class="payment-methods">
+            <h4>School Payment Methods</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Method</th>
+                        <th>Details</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for method in school.payment_methods.all %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ method.get_method_display }}</td>
+                        <td>{{ method.details }}</td>
+                        <td>{{ method.notes|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #666;">No payment methods configured.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SIGNATURE & STAMP -->
+        <div class="signature-section">
+            <div class="sign-box">
+                <div class="line"></div>
+                <p>Authorized Signature</p>
+            </div>
+            <div class="sign-box">
+                <div class="line"></div>
+                <p>School Stamp</p>
+            </div>
+        </div>
+    </div>
+    <div style="page-break-after: always;"></div>
+    {% endfor %}
+
+    <!-- PRINT BUTTON -->
+    <div class="print-btn">
+        <button onclick="window.print()">🖨 Print Invoice(s)</button>
+    </div>
+</body>
+</html>
