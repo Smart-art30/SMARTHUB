@@ -5,15 +5,22 @@ from django.utils import timezone
 
 class User(AbstractUser):
     
-    ROLES_CHOOCES = (
-        ('superadmin', 'Super Admin'),
-        ('chiefexercutiveofficer', 'C.E.O'),
-        ('schooladmin', 'School Admin'),
-        ('teacher', 'Teacher'),
-        ('student', 'student'),
-        ('parent', 'Parent'),
-    )
-    role = models.CharField(max_length = 100, choices = ROLES_CHOOCES)
+    ROLES_CHOICES = (
+            ('superadmin', 'Super Admin'),
+            ('chiefexercutiveofficer', 'C.E.O'),
+            ('schooladmin', 'School Admin'),
+
+        
+            ('bursar', 'Bursar'),
+            ('accountant', 'Accountant'),
+
+        
+            ('teacher', 'Teacher'),
+            ('student', 'Student'),
+            ('parent', 'Parent'),
+        )
+
+    role = models.CharField(max_length=100, choices=ROLES_CHOICES)
     school = models.ForeignKey(
         'schools.School',
         on_delete = models.CASCADE,

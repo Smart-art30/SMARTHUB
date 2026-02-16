@@ -26,47 +26,36 @@ from django.db.models import Count
 def dashboard_redirect(request):
     user = request.user
 
-  
     if user.is_superuser or user.role == 'superadmin':
         return redirect('dashboard:superadmin_dashboard')
+
+    if user.role == 'chiefexercutiveofficer':
+        return redirect('dashboard:ceo_dashboard')
 
     if user.role == 'schooladmin':
         return redirect('dashboard:schooladmin_dashboard')
 
-   
+    
+    if user.role in ['bursar', 'accountant']:
+        return redirect('finance:finance_dashboard')
+
     if user.role == 'teacher':
         if hasattr(user, 'teacher'):
             return redirect('dashboard:teacher_dashboard')
-
-        return render(
-            request,
-            'dashboard/profile_pending.html',
-            {'message': 'Teacher profile not created. Contact admin.'}
-        )
+        return render(request, 'dashboard/profile_pending.html')
 
     if user.role == 'student':
         if hasattr(user, 'student'):
             return redirect('dashboard:student_dashboard')
+        return render(request, 'dashboard/profile_pending.html')
 
-        return render(
-            request,
-            'dashboard/profile_pending.html',
-            {'message': 'Student profile not created.'}
-        )
-
-    
     if user.role == 'parent':
         if hasattr(user, 'parent'):
             return redirect('dashboard:parent_dashboard')
+        return render(request, 'dashboard/profile_pending.html')
 
-        return render(
-            request,
-            'dashboard/profile_pending.html',
-            {'message': 'Parent profile not created.'}
-        )
-
-   
     return redirect('login')
+
 
 
 User = get_user_model()

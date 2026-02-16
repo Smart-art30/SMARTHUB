@@ -54,5 +54,7 @@ urlpatterns = [
     path('invoices/<int:invoice_id>/print/',views.invoice_print,name='invoice_print'),
     path('invoices/class/<int:class_id>/print/', views.invoice_print, name='invoice_print_class'),
 
+     path("dashboard/",views.finance_dashboard,name="finance_dashboard"),
+
 ]
 

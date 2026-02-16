@@ -591,3 +591,9 @@ def invoice_print(request, invoice_id=None, class_id=None):
         'invoices_data': invoices_data,
         'school': school
     })
+
+
+@login_required
+@role_required(["schooladmin", "superadmin", "finance"])
+def finance_dashboard(request):
+    return render(request, "finance/dashboard.html")
