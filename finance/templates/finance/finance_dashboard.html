@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Finance Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1 class="mb-4">Finance Dashboard</h1>
+
+    <!-- ================== Summary Cards ================== -->
+    <div class="row g-4">
+        <!-- Total Fees Collected -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-white bg-primary shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Total Fees Collected</h5>
+                    <p class="card-text display-6">
+                        KES {{ total_collected|floatformat:2 }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Pending Fees -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-white bg-warning shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Fees</h5>
+                    <p class="card-text display-6">
+                        KES {{ total_pending|floatformat:2 }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Paid -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-white bg-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Students Paid</h5>
+                    <p class="card-text display-6">
+                        {{ students_paid_count }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Pending -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-white bg-danger shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Students Pending</h5>
+                    <p class="card-text display-6">
+                        {{ students_pending_count }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================== Recent Invoices ================== -->
+    <div class="mt-5">
+        <h3>Recent Invoices</h3>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Invoice Amount</th>
+                        <th>Paid Amount</th>
+                        <th>Balance</th>
+                        <th>Status</th>
+                        <th>Issued Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in recent_invoices %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ invoice.student.get_full_name }}</td>
+                        <td>{{ invoice.fee_structure.student_class.name }}</td>
+                        <td>{{ invoice.total_amount|floatformat:2 }}</td>
+                        <td>{{ invoice.total_paid|floatformat:2 }}</td>
+                        <td>{{ invoice.balance|floatformat:2 }}</td>
+                        <td>
+                            {% if invoice.is_paid %}
+                                <span class="badge bg-success">Paid</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ invoice.issued_date|date:"d M Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center">No invoices found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================== Recent Payments ================== -->
+    <div class="mt-5">
+        <h3>Recent Payments</h3>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Invoice</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in recent_payments %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ payment.invoice.student.get_full_name }}</td>
+                        <td>#{{ payment.invoice.id }}</td>
+                        <td>KES {{ payment.amount|floatformat:2 }}</td>
+                        <td>{{ payment.created_at|date:"d M Y" }}</td>
+                        <td>
+                            {% if not payment.is_confirmed %}
+                                <a href="{% url 'finance:payment_confirm' payment.id %}" class="btn btn-success btn-sm mb-1">Confirm</a>
+                                <a href="{% url 'finance:payment_fail' payment.id %}" class="btn btn-danger btn-sm mb-1">Fail</a>
+                            {% else %}
+                                <span class="badge bg-success">Confirmed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No recent payments</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================== Monthly Fees Chart ================== -->
+    <div class="mt-5">
+        <h3>Monthly Fees Overview</h3>
+        <canvas id="feesChart" height="100"></canvas>
+    </div>
+</div>
+
+<!-- ================== Chart.js ================== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('feesChart').getContext('2d');
+    const feesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Fees Collected (KES)',
+                data: {{ chart_data|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: { 
+                y: { 
+                    beginAtZero: true 
+                } 
+            },
+            plugins: {
+                legend: { display: true }
+            }
+        }
+    });
+</script>
+{% endblock %}

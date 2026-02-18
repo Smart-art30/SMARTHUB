@@ -189,7 +189,7 @@ def fee_structure_pdf(request, fee_id):
 def fee_edit(request, fee_id):
     fee_structure = get_object_or_404(FeeStructure, pk=fee_id)
 
-    # Inline formset for FeeItems
+  
     FeeItemFormSet = inlineformset_factory(
         FeeStructure,
         FeeItem,
@@ -198,7 +198,7 @@ def fee_edit(request, fee_id):
         can_delete=True    
     )
 
-    # Prevent edits if any invoices are paid
+    
     if not fee_structure.can_edit():
         messages.warning(request, "This fee structure cannot be edited because some invoices are already paid.")
         return redirect('finance:fee_list')
@@ -344,21 +344,21 @@ def invoice_list(request):
        
         invoice.total_amount_display = invoice.fee_structure.total_amount if not invoice.is_paid else invoice.total_amount
 
-        # Sum confirmed payments
+       
         invoice.total_paid = invoice.payments.filter(status='confirmed').aggregate(
             total=Sum('amount')
         )['total'] or 0
 
-        # Balance
+        
         invoice.balance = invoice.total_amount_display - invoice.total_paid
 
-    # Group invoices by class
+  
     invoices_by_class_dict = defaultdict(list)
     for invoice in invoices:
         class_name = invoice.fee_structure.student_class.name
         invoices_by_class_dict[class_name].append(invoice)
 
-    # Convert to list of tuples for template unpacking
+    
     invoices_by_class = list(invoices_by_class_dict.items())
 
     return render(request, 'finance/invoice_list.html', {
@@ -427,7 +427,7 @@ def payment_confirm(request, payment_id):
     payment.status = 'confirmed'
     payment.save()
 
-    # 🔥 UPDATE INVOICE STATUS
+    
     invoice = payment.invoice
 
     total_paid = invoice.payments.filter(status='confirmed').aggregate(
@@ -593,7 +593,32 @@ def invoice_print(request, invoice_id=None, class_id=None):
     })
 
 
-@login_required
-@role_required(["schooladmin", "superadmin", "finance"])
+
+
 def finance_dashboard(request):
-    return render(request, "finance/dashboard.html")
+    recent_invoices = Invoice.objects.select_related('student', 'fee_structure').order_by('-issued_date')[:20]
+    
+    total_collected = sum(inv.total_paid() for inv in recent_invoices)
+    total_pending = sum(inv.balance() for inv in recent_invoices)
+    
+    students_paid_count = sum(1 for inv in recent_invoices if inv.is_paid)
+    students_pending_count = sum(1 for inv in recent_invoices if not inv.is_paid)
+
+   
+    from django.db.models.functions import ExtractMonth
+    monthly_data = Invoice.objects.filter(is_paid=True).annotate(month=ExtractMonth('issued_date')) \
+                    .values('month').annotate(amount=Sum('total_amount')).order_by('month')
+
+    chart_labels = [entry['month'] for entry in monthly_data]
+    chart_data = [float(entry['amount']) for entry in monthly_data]
+
+    context = {
+        'recent_invoices': recent_invoices,
+        'total_collected': total_collected,
+        'total_pending': total_pending,
+        'students_paid_count': students_paid_count,
+        'students_pending_count': students_pending_count,
+        'chart_labels': chart_labels,
+        'chart_data': chart_data,
+    }
+    return render(request, 'finance/finance_dashboard.html', context)

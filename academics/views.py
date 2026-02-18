@@ -668,20 +668,20 @@ def report_list(request):
         }
     )
 
-from .models import School  # make sure you import your School model
+from .models import School  
 
 @login_required
 @role_required('schooladmin', 'teacher')
 def class_report(request, class_id):
     school_class = get_object_or_404(SchoolClass, id=class_id)
-    school = School.objects.first()  # or however you identify your school
+    school = School.objects.first() 
     students = Student.objects.filter(student_class=school_class)
 
     subjects = Subject.objects.filter(
         teachersubjectassignment__school_class=school_class
     ).distinct().order_by('name')
 
-    # Get all exams sorted
+    
     exam_order = ['Opener', 'Mid-term', 'End-term']
     exams = list(Exam.objects.filter(examsubject__subject__in=subjects).distinct())
     exams.sort(key=lambda x: exam_order.index(x.term) if x.term in exam_order else 99)
@@ -719,7 +719,7 @@ def class_report(request, class_id):
                 class_exam_totals[idx] += mark
                 class_exam_counts[idx] += 1
 
-            # Trend arrows
+           
             for idx, mark in enumerate(marks_list):
                 if idx == 0:
                     trend = 'same'
@@ -728,7 +728,7 @@ def class_report(request, class_id):
                     trend = 'up' if mark > prev_mark else ('down' if mark < prev_mark else 'same')
                 marks_with_trends.append({'mark': mark, 'trend': trend})
 
-            # Subject remark
+            
             avg_subject = sum(marks_list) / len(exams) if exams else 0
             if avg_subject >= 80:
                 remark = 'Exceeding Expectation'
@@ -747,7 +747,7 @@ def class_report(request, class_id):
 
             student_total += sum(marks_list)
 
-        # Facilitator
+       
         first_facilitator = next(
             (m.facilitator for m in all_marks_qs.filter(student=student, facilitator__isnull=False)),
             None
@@ -768,14 +768,14 @@ def class_report(request, class_id):
             'facilitator': facilitator_name,
         })
 
-    # Class grand total
+ 
     class_grand_total = sum(class_exam_totals)
     class_exam_averages = [
         round(class_exam_totals[i] / class_exam_counts[i], 2) if class_exam_counts[i] else 0
         for i in range(len(exams))
     ]
 
-    # Compute class rank
+   
     all_student_reports.sort(key=lambda x: x['total'], reverse=True)
     rank = 0
     prev_total = None

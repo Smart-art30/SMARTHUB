@@ -29,4 +29,6 @@ urlpatterns = [
         student_report,
         name='student_report'
     ),
+    path('ceo/', views.ceo_dashboard, name='ceo_dashboard'),
+
 ]

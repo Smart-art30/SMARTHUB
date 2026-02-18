@@ -204,3 +204,8 @@ def teacher_profile_edit(request):
     return render(request, 'dashboard/teacher_profile_edit.html', {
         'teacher': teacher
     })
+
+
+@login_required
+def ceo_dashboard(request):
+    return render(request, 'dashboard/ceo_dashboard.html')
