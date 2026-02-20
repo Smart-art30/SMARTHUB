@@ -1,158 +1,494 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="text-center no-print mt-1">
-    <button onclick="window.print();" class="btn btn-primary btn-sm">Print All Reports</button>
+<div class="text-center no-print mt-3 mb-4 p-4" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border-radius: 16px;">
+    <h4 style="margin: 0 0 12px 0;">📋 Multiple Student Reports</h4>
+    <button onclick="window.print();" class="btn px-4 py-2" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; border-radius: 25px; font-size: 16px; backdrop-filter: blur(10px);">🖨️ Print All Reports ({{ all_student_reports|length }} students)</button>
 </div>
 
 <style>
+/* A4 PERFECT LAYOUT - NO OVERFLOW */
+* { box-sizing: border-box; }
+
 body {
     font-family: "Calibri", "Verdana", Arial, sans-serif;
     margin: 0;
-    padding: 10px;
+    padding: 20px;
     font-size: 0.8rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    line-height: 1.3;
+}
+
+/* A4 PAGE CONTAINER - EXACT DIMENSIONS */
+.a4-page {
+    width: 210mm;
+    min-height: 297mm;
+    max-height: 297mm;
+    margin: 0 auto 30px;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border-radius: 12px;
+    overflow: hidden;
+    page-break-inside: avoid;
+    page-break-after: always;
+    position: relative;
+}
+
+/* LAST PAGE - NO BREAK AFTER */
+.a4-page:last-child {
+    page-break-after: auto;
+    margin-bottom: 20px;
 }
 
 .student-photo {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     object-fit: cover;
-    border: 1px solid #ccc;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
 }
 
-.table-sm td, .table-sm th {
-    padding: 0.25rem;
+.no-photo {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+/* PERFECT TABLE SIZING */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin: 12px 0;
+}
+
+.marks-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+    table-layout: fixed;
+}
+
+.marks-table th,
+.marks-table td {
+    padding: 6px 4px;
+    border: 1px solid #d1d5db;
+    vertical-align: middle;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+.marks-table th:first-child,
+.marks-table td:first-child {
+    width: 22%;
+    text-align: left;
+    padding-left: 12px;
+    background: #f8fafc;
+    font-weight: 600;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+
+.marks-table th {
+    background: linear-gradient(135deg, #1f2937, #374151);
+    color: white;
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.marks-table th:first-child {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+}
+
+.marks-table .mark-cell {
+    font-weight: 700;
+    font-size: 0.8rem;
+    min-width: 45px;
+}
+
+.trend-up { 
+    color: #10b981; 
+    font-size: 0.95rem; 
+    font-weight: bold;
+    animation: bounce 0.6s ease-in-out;
+}
+.trend-down { 
+    color: #ef4444; 
+    font-size: 0.95rem; 
+    font-weight: bold;
+}
+.trend-same { 
+    color: #6b7280; 
+    font-size: 0.95rem; 
+    font-weight: bold;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+
+.remark-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: inline-block;
+    max-width: 95%;
+}
+
+.remark-exceeding { 
+    color: #059669; 
+    background: rgba(16,185,129,0.15);
+    border-left: 3px solid #059669;
+}
+.remark-meeting { 
+    color: #3b82f6; 
+    background: rgba(59,130,246,0.15);
+    border-left: 3px solid #3b82f6;
+}
+.remark-approaching { 
+    color: #d97706; 
+    background: rgba(245,158,11,0.15);
+    border-left: 3px solid #d97706;
+}
+.remark-below { 
+    color: #dc2626; 
+    background: rgba(239,68,68,0.15);
+    border-left: 3px solid #dc2626;
+}
+
+/* HEADER */
+.header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    padding: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.school-logo { 
+    height: 42px; 
+    max-width: 130px; 
+    margin-bottom: 10px; 
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.header h3 { 
+    font-size: 1.3rem; 
+    font-weight: 800; 
+    margin: 8px 0 4px 0;
+}
+
+.header p { 
+    margin: 2px 0; 
+    opacity: 0.95; 
     font-size: 0.75rem;
 }
 
-.table-bordered th, .table-bordered td {
-    border: 1px solid #333 !important;
+.report-title {
+    font-size: 1.1rem;
+    margin-top: 8px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 25px;
+    display: inline-block;
+    font-weight: 700;
 }
 
-.trend-up { color: green; font-weight: bold; }
-.trend-down { color: red; font-weight: bold; }
-.trend-same { color: gray; font-weight: bold; }
+/* STATS */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 16px;
+}
 
-.remark-exceeding { color: green; font-weight: bold; text-align: left; }
-.remark-meeting { color: blue; font-weight: bold; text-align: left; }
-.remark-approaching { color: orange; font-weight: bold; text-align: left; }
-.remark-below { color: red; font-weight: bold; text-align: left; }
+.stat-card {
+    background: rgba(255,255,255,0.8);
+    padding: 12px 8px;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.4);
+    backdrop-filter: blur(10px);
+}
 
-.header, .footer { text-align: center; font-size: 0.75rem; }
-.school-logo { height: 50px; object-fit: contain; margin-bottom: 2px; }
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #3b82f6;
+    display: block;
+}
 
-.sign-space { border-top: 1px solid #000; width: 150px; text-align: center; margin-top: 5px; font-size: 0.7rem; }
-.feedback-box { border: 1px solid #000; padding: 2px; height: 50px; font-size: 0.7rem; margin-bottom: 2px; }
-.chart-container { width: 100%; max-width: 400px; height: 120px; margin: 5px auto; }
+.stat-label {
+    font-size: 0.7rem;
+    color: #374151;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-.center-dates { text-align: center; font-size: 0.75rem; margin-top: 3px; }
+/* CHART */
+.chart-section {
+    padding: 16px;
+    text-align: center;
+}
 
+.chart-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+}
+
+.chart-container {
+    width: 100%;
+    height: 85px;
+    max-width: 380px;
+    margin: 0 auto;
+}
+
+/* FEEDBACK */
+.feedback-section {
+    padding: 0 16px 16px;
+}
+
+.feedback-label {
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+}
+
+.feedback-box {
+    border: 2px dashed #9ca3af;
+    padding: 10px;
+    height: 42px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-style: italic;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.dates-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    font-size: 0.8rem;
+}
+
+.date-input {
+    flex: 1;
+    text-align: center;
+}
+
+.date-line {
+    border-bottom: 1px solid #374151;
+    padding: 2px 0;
+    margin-top: 4px;
+}
+
+/* SIGNATURES */
+.signature-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 16px 16px;
+    border-top: 2px solid #e5e7eb;
+    gap: 20px;
+}
+
+.signature-box {
+    flex: 1;
+    text-align: center;
+}
+
+.signature-line {
+    height: 1px;
+    background: #374151;
+    margin: 10px auto 0;
+    width: 120px;
+}
+
+.signature-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+/* PRINT PERFECTION */
 @media print {
-    @page { size: A4; margin: 10mm; }
-    body { font-size: 9pt; }
-    .no-print { display: none; }
-
-    .card {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* Footer at bottom */
-        page-break-inside: avoid;  
-        page-break-after: always;  
-        width: 100%;
-        min-height: 280mm; /* Ensure content + footer fit on A4 */
-        overflow: hidden;
+    @page { 
+        size: A4 portrait; 
+        margin: 6mm 8mm 6mm 8mm !important;
     }
+    
+    body { 
+        padding: 0 !important; 
+        background: white !important;
+        font-size: 9pt !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .no-print { display: none !important; }
+    
+    .a4-page {
+        width: 100% !important;
+        min-height: auto !important;
+        max-height: none !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        page-break-after: always;
+        break-inside: avoid;
+        overflow: visible !important;
+    }
+    
+    .a4-page:last-child {
+        page-break-after: auto !important;
+    }
+    
+    .chart-container { height: 75px !important; }
+    
+    .marks-table th,
+    .marks-table td {
+        font-size: 0.7rem !important;
+        padding: 4px 3px !important;
+    }
+    
+    * { color: black !important; background: white !important; }
+}
 
-    .table-sm td, .table-sm th { padding: 0.2rem; font-size: 0.7rem; }
-    .chart-container { height: 100px; }
+/* RESPONSIVE SCREEN */
+@media (max-width: 768px) {
+    .a4-page {
+        width: 100%;
+        max-width: 100%;
+        margin: 10px 0;
+    }
+    
+    body { padding: 10px; }
 }
 </style>
 
+<!-- A4 REPORTS -->
 {% for report in all_student_reports %}
-<div class="card mb-4 p-3" id="report-{{ report.student.id }}">
+<div class="a4-page" id="report-{{ report.student.id }}">
 
-    <!-- Header -->
-    <div class="header mb-1">
+    <!-- HEADER -->
+    <div class="header">
         {% if school.logo %}
             <img src="{{ school.logo.url }}" alt="{{ school.name }}" class="school-logo">
         {% endif %}
-        <h3 style="margin:0;">{{ school.name }}</h3>
-        <p style="margin:0;"><em>{{ school.motto|default:"Beyond Limits For Success" }}</em></p>
-        <p style="margin:0; font-size:0.7rem;">P.O BOX: 1298-00232 | Tel: 0722-267-382 | Email: annaluciaacademy10@gmail.com</p>
-        <h4 style="margin:2px 0;">Report Card</h4>
+        <h3>{{ school.name }}</h3>
+        <p><em>{{ school.motto|default:"Beyond Limits For Success" }}</em></p>
+        <p>P.O BOX: 1298-00232 | Tel: 0722-267-382 | Email: annaluciaacademy10@gmail.com</p>
+        <div class="report-title">📊 Academic Progress Report</div>
     </div>
 
-    <!-- Student Info -->
-    <div class="d-flex align-items-center mb-1" style="font-size:0.75rem;">
-        {% if report.student.photo %}
-            <img src="{{ report.student.photo.url }}" alt="{{ report.student.user.get_full_name }}" class="rounded me-2 student-photo">
-        {% else %}
-            <div class="rounded bg-secondary text-white d-flex justify-content-center align-items-center me-2 student-photo" style="font-size:0.6rem;">
-                No Photo
+    <!-- STUDENT INFO + STATS -->
+    <div style="padding: 20px;">
+        <div style="display: flex; align-items: center; margin-bottom: 20px; font-size: 0.9rem;">
+            {% if report.student.photo %}
+                <img src="{{ report.student.photo.url }}" alt="{{ report.student.user.get_full_name }}" class="student-photo" style="margin-right: 16px;">
+            {% else %}
+                <div class="no-photo" style="margin-right: 16px;">Photo</div>
+            {% endif %}
+            <div>
+                <p style="margin: 0; font-weight: 700; font-size: 1rem;">{{ report.student.user.get_full_name }}</p>
+                <p style="margin: 4px 0;"><strong>Class:</strong> {{ school_class.name }}</p>
+                <p style="margin: 4px 0;"><strong>Position:</strong> {{ report.rank|default:"—" }}</p>
+                <p style="margin: 0;"><strong>Facilitator:</strong> {{ report.facilitator|default:"—" }}</p>
             </div>
-        {% endif %}
-        <div>
-            <p style="margin:0;"><strong>Student:</strong> {{ report.student.user.get_full_name }}</p>
-            <p style="margin:0;"><strong>Class:</strong> {{ school_class.name }}</p>
-            <p style="margin:0;"><strong>Position in Class:</strong> {{ report.rank }}</p>
-            <p style="margin:0;"><strong>Facilitator:</strong> {{ report.facilitator }}</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value">{{ report.report_rows_with_trends|length }}</span>
+                <span class="stat-label">Subjects</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">{{ exams|length }}</span>
+                <span class="stat-label">Exams</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">{{ report.exam_averages|last|floatformat:0|default:"0" }}</span>
+                <span class="stat-label">Final Avg</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">{{ report.rank|default:"—" }}</span>
+                <span class="stat-label">Rank</span>
+            </div>
         </div>
     </div>
 
-    <!-- Marks Table -->
-    <div class="table-responsive mb-1">
-        <table class="table table-bordered table-sm text-center">
-            <thead class="table-light">
+    <!-- MARKS TABLE -->
+    <div class="table-container">
+        <table class="marks-table">
+            <thead>
                 <tr>
-                    <th class="text-start">Subject</th>
+                    <th>Subject</th>
                     {% for exam in exams %}
-                        <th>{{ exam.name }}<br>({{ exam.term }})</th>
+                        <th title="{{ exam.name }} ({{ exam.term }})">
+                            <div style="font-size: 0.7rem;">{{ exam.name|truncatechars:6 }}</div>
+                            <div style="font-size: 0.65rem;">({{ exam.term }})</div>
+                        </th>
                     {% endfor %}
-                    <th>Remarks</th>
+                    <th>Progress</th>
                 </tr>
             </thead>
             <tbody>
                 {% for row in report.report_rows_with_trends %}
                 <tr>
-                    <td class="text-start">{{ row.subject }}</td>
+                    <td>{{ row.subject }}</td>
                     {% for mark in row.marks %}
-                        <td>
+                        <td class="mark-cell">
                             {{ mark.mark }}
                             {% if mark.trend == 'up' %}
-                                <span class="trend-up">↑</span>
+                                <span class="trend-up">↗</span>
                             {% elif mark.trend == 'down' %}
-                                <span class="trend-down">↓</span>
+                                <span class="trend-down">↘</span>
                             {% else %}
                                 <span class="trend-same">→</span>
                             {% endif %}
                         </td>
                     {% endfor %}
-                    <td>
-                        {% if row.remarks == 'Exceeding Expectation' %}
-                            <span class="remark-exceeding">{{ row.remarks }}</span>
-                        {% elif row.remarks == 'Meeting Expectation' %}
-                            <span class="remark-meeting">{{ row.remarks }}</span>
-                        {% elif row.remarks == 'Approaching Expectation' %}
-                            <span class="remark-approaching">{{ row.remarks }}</span>
-                        {% else %}
-                            <span class="remark-below">{{ row.remarks }}</span>
-                        {% endif %}
-                    </td>
+                    <td><span class="{% if row.remarks == 'Exceeding Expectation' %}remark-exceeding{% elif row.remarks == 'Meeting Expectation' %}remark-meeting{% elif row.remarks == 'Approaching Expectation' %}remark-approaching{% else %}remark-below{% endif %}">{{ row.remarks }}</span></td>
                 </tr>
                 {% endfor %}
             </tbody>
-            <tfoot class="table-info text-center">
-                <tr>
-                    <td class="text-start"><strong>Total Marks</strong></td>
+            <tfoot>
+                <tr style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                    <td><strong>Total ({{ report.report_rows_with_trends|length }} subjects)</strong></td>
                     {% for total in report.exam_totals %}
                         <td><strong>{{ total }}</strong></td>
                     {% endfor %}
                     <td></td>
                 </tr>
-                <tr>
-                    <td class="text-start"><strong>Average</strong></td>
+                <tr style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white;">
+                    <td><strong>Average</strong></td>
                     {% for avg in report.exam_averages %}
-                        <td>{{ avg }}</td>
+                        <td><strong>{{ avg|floatformat:1 }}</strong></td>
                     {% endfor %}
                     <td></td>
                 </tr>
@@ -160,62 +496,82 @@ body {
         </table>
     </div>
 
-    <!-- Trend Graph -->
-    <div class="chart-container mb-1">
-        <canvas id="chart-{{ forloop.counter }}"></canvas>
+    <!-- CHART -->
+    <div class="chart-section">
+        <div class="chart-title">📈 Performance Trend</div>
+        <div class="chart-container">
+            <canvas id="chart-{{ forloop.counter }}"></canvas>
+        </div>
     </div>
 
-    <!-- Feedback Box -->
-    <div style="font-size:0.75rem;">
-        <p style="margin:0;"><strong>Core Competence Achieved & Facilitator's Feedback:</strong></p>
-        <div class="feedback-box"></div>
-        <p class="center-dates"><strong>Closing Date:</strong> __________ &nbsp;&nbsp; <strong>Opening Date:</strong> __________</p>
+    <!-- FEEDBACK -->
+    <div class="feedback-section">
+        <div class="feedback-label">Core Competence & Facilitator Feedback:</div>
+        <div class="feedback-box">___________________________________________________</div>
+        <div class="dates-row">
+            <div class="date-input">
+                <strong>Closing Date:</strong><br>
+                <div class="date-line"></div>
+            </div>
+            <div class="date-input">
+                <strong>Opening Date:</strong><br>
+                <div class="date-line"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Signatures -->
-    <div class="d-flex justify-content-between mt-1" style="font-size:0.75rem;">
-        <div class="text-center"><div class="sign-space">Headteacher's Signature</div></div>
-        <div class="text-center"><div class="sign-space">Facilitator's Signature</div></div>
-    </div>
-
-    <!-- Footer / Copyright -->
-    <div class="footer">
-        &copy; 2026 {{ school.name }}. All Rights Reserved.
+    <!-- SIGNATURES -->
+    <div class="signature-section">
+        <div class="signature-box">
+            <div class="signature-label">Headteacher's Signature</div>
+            <div class="signature-line"></div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-label">Facilitator's Signature</div>
+            <div class="signature-line"></div>
+        </div>
     </div>
 
 </div>
 {% endfor %}
-
-<!-- Print Button -->
-<div class="text-center no-print mt-1">
-    <button onclick="window.print();" class="btn btn-primary btn-sm">Print All Reports</button>
-</div>
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-{% for report in all_student_reports %}
-var ctx{{ forloop.counter }} = document.getElementById('chart-{{ forloop.counter }}').getContext('2d');
-new Chart(ctx{{ forloop.counter }}, {
-    type: 'line',
-    data: {
-        labels: [{% for exam in exams %}'{{ exam.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
-        datasets: [{
-            label: 'Total Marks',
-            data: [{% for avg in report.exam_averages %}{{ avg }}{% if not forloop.last %}, {% endif %}{% endfor %}],
-            borderColor: 'rgba(54,162,235,1)',
-            backgroundColor: 'rgba(54,162,235,0.2)',
-            fill: true,
-            tension: 0.3
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true } }
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    {% for report in all_student_reports %}
+    (function() {
+        const ctx{{ forloop.counter }} = document.getElementById('chart-{{ forloop.counter }}')?.getContext('2d');
+        if (ctx{{ forloop.counter }}) {
+            new Chart(ctx{{ forloop.counter }}, {
+                type: 'line',
+                data: {
+                    labels: [{% for exam in exams %}'{{ exam.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    datasets: [{
+                        data: [{% for total in report.exam_totals %}{{ total }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,0.15)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+                        y: { beginAtZero: true, ticks: { font: { size: 9 } } }
+                    },
+                    animation: { duration: 1000 }
+                }
+            });
+        }
+    })();
+    {% endfor %}
 });
-{% endfor %}
 </script>
 
 {% endblock %}
