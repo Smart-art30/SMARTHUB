@@ -3,7 +3,11 @@
 
 <div class="text-center no-print mt-3 mb-4 p-4" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border-radius: 16px;">
     <h4 style="margin: 0 0 12px 0;">📋 Multiple Student Reports</h4>
-    <button onclick="window.print();" class="btn px-4 py-2" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; border-radius: 25px; font-size: 16px; backdrop-filter: blur(10px);">🖨️ Print All Reports ({{ all_student_reports|length }} students)</button>
+    <p style="margin: 0 0 8px 0; font-size: 0.9rem;">{{ all_student_reports|length }} students ready</p>
+    <button onclick="window.print();" class="btn px-4 py-2 no-print" 
+            style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; border-radius: 25px; font-size: 16px; backdrop-filter: blur(10px);">
+        🖨️ Print All Reports
+    </button>
 </div>
 
 <style>
@@ -34,7 +38,6 @@ body {
     position: relative;
 }
 
-/* LAST PAGE - NO BREAK AFTER */
 .a4-page:last-child {
     page-break-after: auto;
     margin-bottom: 20px;
@@ -61,7 +64,6 @@ body {
     font-weight: 700;
 }
 
-/* PERFECT TABLE SIZING */
 .table-container {
     width: 100%;
     overflow-x: auto;
@@ -119,7 +121,6 @@ body {
     color: #10b981; 
     font-size: 0.95rem; 
     font-weight: bold;
-    animation: bounce 0.6s ease-in-out;
 }
 .trend-down { 
     color: #ef4444; 
@@ -167,7 +168,6 @@ body {
     border-left: 3px solid #dc2626;
 }
 
-/* HEADER */
 .header {
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: white;
@@ -214,7 +214,6 @@ body {
     font-weight: 700;
 }
 
-/* STATS */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -246,7 +245,6 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* CHART */
 .chart-section {
     padding: 16px;
     text-align: center;
@@ -265,7 +263,6 @@ body {
     margin: 0 auto;
 }
 
-/* FEEDBACK */
 .feedback-section {
     padding: 0 16px 16px;
 }
@@ -308,7 +305,6 @@ body {
     margin-top: 4px;
 }
 
-/* SIGNATURES */
 .signature-section {
     display: flex;
     justify-content: space-between;
@@ -335,6 +331,11 @@ body {
     margin-bottom: 6px;
 }
 
+/* HIDE PRINT BUTTON ON SCREEN */
+.no-print {
+    display: block !important;
+}
+
 /* PRINT PERFECTION */
 @media print {
     @page { 
@@ -350,8 +351,18 @@ body {
         color-adjust: exact;
     }
     
-    .no-print { display: none !important; }
-    
+    /* BULLETPROOF PRINT BUTTON HIDING */
+    .no-print { 
+        display: none !important; 
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: absolute !important;
+        left: -9999px !important;
+    }
+
     .a4-page {
         width: 100% !important;
         min-height: auto !important;
@@ -367,26 +378,41 @@ body {
     .a4-page:last-child {
         page-break-after: auto !important;
     }
-    
-    .chart-container { height: 75px !important; }
-    
+
+    .marks-table,
+    .stats-grid,
+    .feedback-section,
+    .chart-section,
+    .signature-section {
+        page-break-inside: avoid !important;
+    }
+
+    .chart-container { 
+        height: 75px !important; 
+        max-width: 100% !important;
+    }
+
     .marks-table th,
     .marks-table td {
         font-size: 0.7rem !important;
         padding: 4px 3px !important;
+        color: black !important;
+        background: white !important;
     }
-    
-    * { color: black !important; background: white !important; }
+
+    * { 
+        color: black !important; 
+        background: white !important; 
+        text-shadow: none !important;
+    }
 }
 
-/* RESPONSIVE SCREEN */
 @media (max-width: 768px) {
     .a4-page {
         width: 100%;
         max-width: 100%;
         margin: 10px 0;
     }
-    
     body { padding: 10px; }
 }
 </style>
@@ -473,7 +499,7 @@ body {
                             {% endif %}
                         </td>
                     {% endfor %}
-                    <td><span class="{% if row.remarks == 'Exceeding Expectation' %}remark-exceeding{% elif row.remarks == 'Meeting Expectation' %}remark-meeting{% elif row.remarks == 'Approaching Expectation' %}remark-approaching{% else %}remark-below{% endif %}">{{ row.remarks }}</span></td>
+                    <td><span class="{% if row.remarks == 'Exceeding Expectation' %}remark-exceeding{% elif row.remarks == 'Meeting Expectation' %}remark-meeting{% elif row.remarks == 'Approaching Expectation' %}remark-approaching{% else %}remark-below{% endif %} remark-badge">{{ row.remarks }}</span></td>
                 </tr>
                 {% endfor %}
             </tbody>
