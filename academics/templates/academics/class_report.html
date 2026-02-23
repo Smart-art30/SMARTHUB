@@ -4,34 +4,53 @@
 <div class="text-center no-print mt-3 mb-4 p-4" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border-radius: 16px;">
     <h4 style="margin: 0 0 12px 0;">📋 Multiple Student Reports</h4>
     <p style="margin: 0 0 8px 0; font-size: 0.9rem;">{{ all_student_reports|length }} students ready</p>
-    <button onclick="window.print();" class="btn px-4 py-2 no-print" 
+    <button onclick="prepareAndPrint();" class="btn px-4 py-2 no-print" 
             style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; border-radius: 25px; font-size: 16px; backdrop-filter: blur(10px);">
         🖨️ Print All Reports
     </button>
 </div>
 
 <style>
-/* A4 PERFECT LAYOUT - NO OVERFLOW */
-* { box-sizing: border-box; }
+/* FORCE HIDE ALL SMARTHUB ELEMENTS - CRITICAL */
+.smarthub, .smart-hub, .smarthub-header, .smarthub-footer, 
+.navbar-brand, [class*="smart"], [id*="smart"],
+header, .header-top, .top-bar, nav,
+.footer, footer, [class*="footer"], #footer {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+}
+
+/* SINGLE A4 PAGE - FULL COVERAGE */
+* { 
+    box-sizing: border-box; 
+    margin: 0;
+    padding: 0;
+}
 
 body {
     font-family: "Calibri", "Verdana", Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    line-height: 1.3;
+    line-height: 1.2;
+    padding: 20px;
 }
 
-/* A4 PAGE CONTAINER - EXACT DIMENSIONS */
+/* FULL A4 PAGE */
 .a4-page {
     width: 210mm;
-    min-height: 297mm;
-    max-height: 297mm;
-    margin: 0 auto 30px;
+    height: 297mm;
+    margin: 0 auto 20px;
     background: white;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     page-break-inside: avoid;
     page-break-after: always;
@@ -43,54 +62,132 @@ body {
     margin-bottom: 20px;
 }
 
+/* COPYRIGHT FOOTER - ONLY THIS SHOWS */
+.copyright-footer {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #1f2937;
+    font-weight: 800;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
 .student-photo {
-    width: 48px;
-    height: 48px;
+    width: 38px;
+    height: 38px;
     object-fit: cover;
     border: 2px solid #e5e7eb;
-    border-radius: 10px;
+    border-radius: 6px;
+    margin-right: 10px;
 }
 
 .no-photo {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
     background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.65rem;
+    font-size: 0.55rem;
     font-weight: 700;
 }
 
+.student-info {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 12px 8px;
+    background: #f8fafc;
+    border-bottom: 2px solid #e5e7eb;
+    flex-shrink: 0;
+}
+
+.student-details {
+    flex: 1;
+    font-size: 0.75rem;
+}
+
+.student-details p {
+    margin: 1px 0;
+    line-height: 1.2;
+}
+
+.student-details p:first-child {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #1f2937;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+}
+
+.stat-card {
+    background: rgba(255,255,255,0.9);
+    padding: 6px 3px;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid rgba(59,130,246,0.2);
+}
+
+.stat-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #3b82f6;
+    display: block;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.55rem;
+    color: #374151;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+}
+
 .table-container {
-    width: 100%;
-    overflow-x: auto;
-    margin: 12px 0;
+    flex: 1;
+    overflow: hidden;
+    margin: 0;
 }
 
 .marks-table {
     width: 100%;
+    height: 100%;
     border-collapse: collapse;
-    font-size: 0.75rem;
+    font-size: 0.62rem;
     table-layout: fixed;
 }
 
 .marks-table th,
 .marks-table td {
-    padding: 6px 4px;
+    padding: 2px 1px;
     border: 1px solid #d1d5db;
     vertical-align: middle;
     text-align: center;
-    word-wrap: break-word;
+    font-size: 0.62rem;
+    height: 18px;
 }
 
 .marks-table th:first-child,
 .marks-table td:first-child {
-    width: 22%;
+    width: 26%;
     text-align: left;
-    padding-left: 12px;
+    padding-left: 6px;
     background: #f8fafc;
     font-weight: 600;
     position: sticky;
@@ -102,9 +199,9 @@ body {
     background: linear-gradient(135deg, #1f2937, #374151);
     color: white;
     font-weight: 700;
-    font-size: 0.7rem;
+    font-size: 0.58rem;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.1px;
 }
 
 .marks-table th:first-child {
@@ -113,68 +210,55 @@ body {
 
 .marks-table .mark-cell {
     font-weight: 700;
-    font-size: 0.8rem;
-    min-width: 45px;
+    font-size: 0.65rem;
+    min-width: 32px;
 }
 
-.trend-up { 
-    color: #10b981; 
-    font-size: 0.95rem; 
-    font-weight: bold;
-}
-.trend-down { 
-    color: #ef4444; 
-    font-size: 0.95rem; 
-    font-weight: bold;
-}
-.trend-same { 
-    color: #6b7280; 
-    font-size: 0.95rem; 
-    font-weight: bold;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-2px); }
-}
+.trend-up { color: #10b981; font-size: 0.75rem; font-weight: bold; }
+.trend-down { color: #ef4444; font-size: 0.75rem; font-weight: bold; }
+.trend-same { color: #6b7280; font-size: 0.75rem; font-weight: bold; }
 
 .remark-badge {
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
+    padding: 1px 4px;
+    border-radius: 8px;
+    font-size: 0.55rem;
     font-weight: 700;
     display: inline-block;
     max-width: 95%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .remark-exceeding { 
     color: #059669; 
-    background: rgba(16,185,129,0.15);
-    border-left: 3px solid #059669;
+    background: rgba(16,185,129,0.25);
+    border-left: 2px solid #059669;
 }
 .remark-meeting { 
     color: #3b82f6; 
-    background: rgba(59,130,246,0.15);
-    border-left: 3px solid #3b82f6;
+    background: rgba(59,130,246,0.25);
+    border-left: 2px solid #3b82f6;
 }
 .remark-approaching { 
     color: #d97706; 
-    background: rgba(245,158,11,0.15);
-    border-left: 3px solid #d97706;
+    background: rgba(245,158,11,0.25);
+    border-left: 2px solid #d97706;
 }
 .remark-below { 
     color: #dc2626; 
-    background: rgba(239,68,68,0.15);
-    border-left: 3px solid #dc2626;
+    background: rgba(239,68,68,0.25);
+    border-left: 2px solid #dc2626;
 }
 
 .header {
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: white;
-    padding: 16px;
+    padding: 10px 8px;
     text-align: center;
     position: relative;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .header::before {
@@ -182,116 +266,91 @@ body {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 40px;
 }
 
 .school-logo { 
-    height: 42px; 
-    max-width: 130px; 
-    margin-bottom: 10px; 
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    height: 32px; 
+    max-width: 100px; 
+    margin-bottom: 6px; 
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
 .header h3 { 
-    font-size: 1.3rem; 
+    font-size: 1rem; 
     font-weight: 800; 
-    margin: 8px 0 4px 0;
+    margin: 4px 0 2px 0;
 }
 
 .header p { 
-    margin: 2px 0; 
+    margin: 1px 0; 
     opacity: 0.95; 
-    font-size: 0.75rem;
+    font-size: 0.6rem;
 }
 
 .report-title {
-    font-size: 1.1rem;
-    margin-top: 8px;
-    padding: 8px 16px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 25px;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 16px;
     display: inline-block;
     font-weight: 700;
 }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 16px;
-}
-
-.stat-card {
-    background: rgba(255,255,255,0.8);
-    padding: 12px 8px;
-    text-align: center;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.4);
-    backdrop-filter: blur(10px);
-}
-
-.stat-value {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #3b82f6;
-    display: block;
-}
-
-.stat-label {
-    font-size: 0.7rem;
-    color: #374151;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
 .chart-section {
-    padding: 16px;
+    padding: 6px 8px;
     text-align: center;
+    flex-shrink: 0;
+    border-top: 1px solid #e5e7eb;
 }
 
 .chart-title {
     font-weight: 700;
-    margin-bottom: 10px;
-    font-size: 0.85rem;
+    margin-bottom: 4px;
+    font-size: 0.7rem;
 }
 
 .chart-container {
     width: 100%;
-    height: 85px;
-    max-width: 380px;
+    height: 55px;
+    max-width: 300px;
     margin: 0 auto;
 }
 
 .feedback-section {
-    padding: 0 16px 16px;
+    padding: 10px 8px;
+    flex-shrink: 0;
+    border-top: 1px solid #e5e7eb;
 }
 
 .feedback-label {
     font-weight: 700;
-    margin-bottom: 8px;
-    font-size: 0.85rem;
+    margin-bottom: 6px;
+    font-size: 0.72rem;
 }
 
 .feedback-box {
     border: 2px dashed #9ca3af;
     padding: 10px;
-    height: 42px;
-    border-radius: 10px;
-    font-size: 0.8rem;
+    height: 48px;
+    border-radius: 8px;
+    font-size: 0.7rem;
     font-style: italic;
-    background: #f8fafc;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .dates-row {
     display: flex;
     justify-content: space-between;
-    gap: 20px;
-    font-size: 0.8rem;
+    gap: 10px;
+    font-size: 0.65rem;
 }
 
 .date-input {
@@ -301,16 +360,17 @@ body {
 
 .date-line {
     border-bottom: 1px solid #374151;
-    padding: 2px 0;
-    margin-top: 4px;
+    padding: 1px 0;
+    margin-top: 1px;
 }
 
 .signature-section {
     display: flex;
     justify-content: space-between;
-    padding: 20px 16px 16px;
+    padding: 12px 8px 80px 8px;
     border-top: 2px solid #e5e7eb;
-    gap: 20px;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 .signature-box {
@@ -321,39 +381,43 @@ body {
 .signature-line {
     height: 1px;
     background: #374151;
-    margin: 10px auto 0;
-    width: 120px;
+    margin: 4px auto 0;
+    width: 90px;
 }
 
 .signature-label {
-    font-size: 0.8rem;
+    font-size: 0.65rem;
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 3px;
 }
 
-/* HIDE PRINT BUTTON ON SCREEN */
 .no-print {
     display: block !important;
 }
 
-/* PRINT PERFECTION */
+/* PRINT - BULLETPROOF SMARTHUB REMOVAL */
 @media print {
     @page { 
         size: A4 portrait; 
-        margin: 6mm 8mm 6mm 8mm !important;
+        margin: 0 !important;
     }
     
     body { 
         padding: 0 !important; 
         background: white !important;
-        font-size: 9pt !important;
-        -webkit-print-color-adjust: exact;
-        color-adjust: exact;
+        font-size: 7.5pt !important;
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
     }
     
-    /* BULLETPROOF PRINT BUTTON HIDING */
-    .no-print { 
-        display: none !important; 
+    /* AGGRESSIVE SMARTHUB BLOCKING */
+    .no-print, 
+    .smarthub, .smart-hub, .smarthub-header, .smarthub-footer,
+    .navbar-brand, [class*="smart"], [id*="smart"],
+    header, .header-top, .top-bar, nav,
+    .footer, footer, [class*="footer"], #footer,
+    navbar, .navbar, [class*="navbar"] {
+        display: none !important;
         visibility: hidden !important;
         height: 0 !important;
         width: 0 !important;
@@ -363,64 +427,63 @@ body {
         left: -9999px !important;
     }
 
+    /* CHART.JS FIX */
+    canvas ~ div[class*="chartjs"],
+    .chartjs-size-monitor,
+    .chartjs-size-monitor * {
+        display: none !important;
+        height: 0 !important;
+        width: 0 !important;
+        visibility: hidden !important;
+    }
+
     .a4-page {
         width: 100% !important;
-        min-height: auto !important;
-        max-height: none !important;
+        height: 100vh !important;
+        max-height: 297mm !important;
         margin: 0 !important;
+        padding: 0 !important;
         box-shadow: none !important;
         border-radius: 0 !important;
         page-break-after: always;
         break-inside: avoid;
-        overflow: visible !important;
+        box-sizing: border-box;
+        position: relative;
     }
     
     .a4-page:last-child {
         page-break-after: auto !important;
     }
 
-    .marks-table,
-    .stats-grid,
-    .feedback-section,
-    .chart-section,
-    .signature-section {
-        page-break-inside: avoid !important;
+    /* COPYRIGHT - ONLY ELEMENT VISIBLE AT BOTTOM */
+    .copyright-footer {
+        position: fixed !important;
+        bottom: 4mm !important;
+        left: 4mm !important;
+        right: 4mm !important;
+        z-index: 1000 !important;
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb) !important;
+        border: 2px solid #3b82f6 !important;
     }
 
-    .chart-container { 
-        height: 75px !important; 
-        max-width: 100% !important;
-    }
-
-    .marks-table th,
-    .marks-table td {
-        font-size: 0.7rem !important;
-        padding: 4px 3px !important;
-        color: black !important;
-        background: white !important;
-    }
-
-    * { 
-        color: black !important; 
-        background: white !important; 
-        text-shadow: none !important;
+    .chart-container { height: 45px !important; }
+    .marks-table th, .marks-table td { font-size: 0.58rem !important; padding: 1.5px 1px !important; }
+    
+    .header, .marks-table th, .stat-card, .copyright-footer {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
     }
 }
 
 @media (max-width: 768px) {
-    .a4-page {
-        width: 100%;
-        max-width: 100%;
-        margin: 10px 0;
-    }
+    .a4-page { width: 100%; height: auto; margin: 10px 0; }
     body { padding: 10px; }
 }
 </style>
 
-<!-- A4 REPORTS -->
+<!-- A4 REPORTS - CLEAN NO SMARTHUB -->
 {% for report in all_student_reports %}
 <div class="a4-page" id="report-{{ report.student.id }}">
-
     <!-- HEADER -->
     <div class="header">
         {% if school.logo %}
@@ -433,38 +496,36 @@ body {
     </div>
 
     <!-- STUDENT INFO + STATS -->
-    <div style="padding: 20px;">
-        <div style="display: flex; align-items: center; margin-bottom: 20px; font-size: 0.9rem;">
-            {% if report.student.photo %}
-                <img src="{{ report.student.photo.url }}" alt="{{ report.student.user.get_full_name }}" class="student-photo" style="margin-right: 16px;">
-            {% else %}
-                <div class="no-photo" style="margin-right: 16px;">Photo</div>
-            {% endif %}
-            <div>
-                <p style="margin: 0; font-weight: 700; font-size: 1rem;">{{ report.student.user.get_full_name }}</p>
-                <p style="margin: 4px 0;"><strong>Class:</strong> {{ school_class.name }}</p>
-                <p style="margin: 4px 0;"><strong>Position:</strong> {{ report.rank|default:"—" }}</p>
-                <p style="margin: 0;"><strong>Facilitator:</strong> {{ report.facilitator|default:"—" }}</p>
-            </div>
+    <div class="student-info">
+        {% if report.student.photo %}
+            <img src="{{ report.student.photo.url }}" alt="{{ report.student.user.get_full_name }}" class="student-photo">
+        {% else %}
+            <div class="no-photo">Photo</div>
+        {% endif %}
+        <div class="student-details">
+            <p>{{ report.student.user.get_full_name }}</p>
+            <p><strong>Class:</strong> {{ school_class.name }}</p>
+            <p><strong>Position:</strong> {{ report.rank|default:"—" }}</p>
+            <p><strong>Facilitator:</strong> {{ report.facilitator|default:"—" }}</p>
         </div>
+    </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-value">{{ report.report_rows_with_trends|length }}</span>
-                <span class="stat-label">Subjects</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-value">{{ exams|length }}</span>
-                <span class="stat-label">Exams</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-value">{{ report.exam_averages|last|floatformat:0|default:"0" }}</span>
-                <span class="stat-label">Final Avg</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-value">{{ report.rank|default:"—" }}</span>
-                <span class="stat-label">Rank</span>
-            </div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-value">{{ report.report_rows_with_trends|length }}</span>
+            <span class="stat-label">Subjects</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">{{ exams|length }}</span>
+            <span class="stat-label">Exams</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">{{ report.exam_averages|last|floatformat:0|default:"0" }}</span>
+            <span class="stat-label">Final Avg</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">{{ report.rank|default:"—" }}</span>
+            <span class="stat-label">Rank</span>
         </div>
     </div>
 
@@ -476,8 +537,8 @@ body {
                     <th>Subject</th>
                     {% for exam in exams %}
                         <th title="{{ exam.name }} ({{ exam.term }})">
-                            <div style="font-size: 0.7rem;">{{ exam.name|truncatechars:6 }}</div>
-                            <div style="font-size: 0.65rem;">({{ exam.term }})</div>
+                            <div style="font-size: 0.58rem;">{{ exam.name|truncatechars:4 }}</div>
+                            <div style="font-size: 0.53rem;">({{ exam.term }})</div>
                         </th>
                     {% endfor %}
                     <th>Progress</th>
@@ -486,7 +547,7 @@ body {
             <tbody>
                 {% for row in report.report_rows_with_trends %}
                 <tr>
-                    <td>{{ row.subject }}</td>
+                    <td>{{ row.subject|truncatechars:18 }}</td>
                     {% for mark in row.marks %}
                         <td class="mark-cell">
                             {{ mark.mark }}
@@ -499,13 +560,15 @@ body {
                             {% endif %}
                         </td>
                     {% endfor %}
-                    <td><span class="{% if row.remarks == 'Exceeding Expectation' %}remark-exceeding{% elif row.remarks == 'Meeting Expectation' %}remark-meeting{% elif row.remarks == 'Approaching Expectation' %}remark-approaching{% else %}remark-below{% endif %} remark-badge">{{ row.remarks }}</span></td>
+                    <td><span class="{% if row.remarks == 'Exceeding Expectation' %}remark-exceeding{% elif row.remarks == 'Meeting Expectation' %}remark-meeting{% elif row.remarks == 'Approaching Expectation' %}remark-approaching{% else %}remark-below{% endif %} remark-badge">
+                        {{ row.remarks|truncatechars:12 }}
+                    </span></td>
                 </tr>
                 {% endfor %}
             </tbody>
             <tfoot>
                 <tr style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
-                    <td><strong>Total ({{ report.report_rows_with_trends|length }} subjects)</strong></td>
+                    <td><strong>Total ({{ report.report_rows_with_trends|length }})</strong></td>
                     {% for total in report.exam_totals %}
                         <td><strong>{{ total }}</strong></td>
                     {% endfor %}
@@ -522,65 +585,71 @@ body {
         </table>
     </div>
 
-    <!-- CHART -->
-    <div class="chart-section">
-        <div class="chart-title">📈 Performance Trend</div>
-        <div class="chart-container">
-            <canvas id="chart-{{ forloop.counter }}"></canvas>
-        </div>
-    </div>
-
-    <!-- FEEDBACK -->
-    <div class="feedback-section">
-        <div class="feedback-label">Core Competence & Facilitator Feedback:</div>
-        <div class="feedback-box">___________________________________________________</div>
-        <div class="dates-row">
-            <div class="date-input">
-                <strong>Closing Date:</strong><br>
-                <div class="date-line"></div>
-            </div>
-            <div class="date-input">
-                <strong>Opening Date:</strong><br>
-                <div class="date-line"></div>
+    <!-- CHART + FEEDBACK + SIGNATURES -->
+    <div style="display: flex; flex-direction: column; flex: 1;">
+        <div class="chart-section">
+            <div class="chart-title">📈 Performance Trend</div>
+            <div class="chart-container">
+                <canvas id="chart-{{ forloop.counter }}"></canvas>
             </div>
         </div>
+
+        <div class="feedback-section">
+            <div class="feedback-label">Core Competence & Facilitator Feedback:</div>
+            <div class="feedback-box">___________________________________________________</div>
+            <div class="dates-row">
+                <div class="date-input">
+                    <strong>Closing Date:</strong><br>
+                    <div class="date-line"></div>
+                </div>
+                <div class="date-input">
+                    <strong>Opening Date:</strong><br>
+                    <div class="date-line"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="signature-section">
+            <div class="signature-box">
+                <div class="signature-label">Headteacher's Signature</div>
+                <div class="signature-line"></div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-label">Facilitator's Signature</div>
+                <div class="signature-line"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- SIGNATURES -->
-    <div class="signature-section">
-        <div class="signature-box">
-            <div class="signature-label">Headteacher's Signature</div>
-            <div class="signature-line"></div>
-        </div>
-        <div class="signature-box">
-            <div class="signature-label">Facilitator's Signature</div>
-            <div class="signature-line"></div>
-        </div>
-    </div>
-
+    <!-- ONLY COPYRIGHT SHOWS AT BOTTOM -->
+    <div class="copyright-footer">
+    © 2026 SmartHub
+     </div>
 </div>
 {% endfor %}
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+let charts = [];
+
 document.addEventListener('DOMContentLoaded', function() {
     {% for report in all_student_reports %}
     (function() {
         const ctx{{ forloop.counter }} = document.getElementById('chart-{{ forloop.counter }}')?.getContext('2d');
         if (ctx{{ forloop.counter }}) {
-            new Chart(ctx{{ forloop.counter }}, {
+            const chart = new Chart(ctx{{ forloop.counter }}, {
                 type: 'line',
                 data: {
-                    labels: [{% for exam in exams %}'{{ exam.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    labels: [{% for exam in exams %}'{{ exam.name|truncatechars:3 }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
                     datasets: [{
                         data: [{% for total in report.exam_totals %}{{ total }}{% if not forloop.last %}, {% endif %}{% endfor %}],
                         borderColor: '#3b82f6',
                         backgroundColor: 'rgba(59,130,246,0.15)',
                         fill: true,
                         tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 4
+                        borderWidth: 2,
+                        pointRadius: 2.5
                     }]
                 },
                 options: {
@@ -588,15 +657,46 @@ document.addEventListener('DOMContentLoaded', function() {
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 9 } } },
-                        y: { beginAtZero: true, ticks: { font: { size: 9 } } }
+                        x: { grid: { display: false }, ticks: { font: { size: 6.5 } } },
+                        y: { beginAtZero: true, ticks: { font: { size: 6.5 } } }
                     },
-                    animation: { duration: 1000 }
+                    animation: { duration: 400 }
                 }
             });
+            charts[{{ forloop.counter }}] = chart;
         }
     })();
     {% endfor %}
+});
+
+function prepareAndPrint() {
+    charts.forEach((chart) => {
+        if (chart) {
+            chart.resize(300, 55);
+            chart.update('none');
+        }
+    });
+    window.print();
+}
+
+window.addEventListener('beforeprint', () => {
+    charts.forEach((chart) => {
+        if (chart) {
+            chart.resize(300, 55);
+            chart.update('none');
+        }
+    });
+});
+
+window.addEventListener('afterprint', () => {
+    setTimeout(() => {
+        charts.forEach((chart) => {
+            if (chart) {
+                chart.resize();
+                chart.update('active');
+            }
+        });
+    }, 100);
 });
 </script>
 
