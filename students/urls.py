@@ -10,6 +10,8 @@ urlpatterns=[
    
     path('parents/', views.parent_list, name='parent_list'),
     path('add_parents/', views.add_parent, name='add_parent'),
+    path('parents/<int:pk>/', views.parent_detail, name='parent_detail'),  
+
 
  
     path('class/<int:class_id>/download/', views.class_download, name='class_download'),
@@ -42,6 +44,10 @@ urlpatterns=[
     path('<int:pk>/edit/', views.student_update, name='student_update'),
     path('<int:pk>/delete/', views.student_delete, name='student_delete'),
     path("", views.student_list, name="student_list"),
+
+    path('parents/<int:pk>/', views.parent_detail, name='parent_detail'),
+    path('parents/<int:pk>/edit/', views.parent_update, name='parent_update'),
+    path('parents/<int:pk>/delete/', views.parent_delete, name='parent_delete'),
 
 
     

@@ -13,6 +13,8 @@ from django.http import HttpResponse
 from .models import SchoolClass
 from reportlab.pdfgen import canvas
 from schools.models import SchoolClass
+from .forms import ParentForm
+from django.contrib import messages
 
 
 
@@ -229,6 +231,40 @@ def parent_list(request):
     return render(request, 'students/parent_list.html', {   
         'parents': parents
     })
+
+@login_required
+@role_required('schooladmin')
+def parent_detail(request, pk):
+    school = request.user.school
+    parent = get_object_or_404(Parent, pk=pk, school=school)
+
+    return render(request, 'students/parent_detail.html',{
+        'parent': parent
+    })
+
+@login_required
+@role_required('schooladmin')
+def parent_update(request, pk):
+    parent = get_object_or_404(Parent, pk=pk, school=request.user.school)
+    if request.method == 'POST':
+        form = ParentForm(request.POST, instance=parent)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'parent updated successfully.')
+            return redirect('students:parent_detail', pk=parent.id)
+    else:
+        form = ParentForm(instance=parent)
+    return render(request, 'students/parent_form.html', {'form': form, 'parent':parent})
+
+@login_required
+@role_required("schooladmnin")
+def parent_delete(request, pk):
+    parent = get_object_or_404(Parent, pk=pk, school=request.user.school)
+    if request.method == 'POST':
+        parent.delete()
+        message.success(request, 'Parent deleted successfully.')
+        return redirect('students:parents_list')
+    return render(request, 'students/parent_confirm_delete.html', {'parent': parent})
 
 
 @login_required

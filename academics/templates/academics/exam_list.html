@@ -2,76 +2,127 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Exams</h2>
-
-    <!-- Add new exam -->
-    <div class="mb-3">
-        <a href="{% url 'academics:exam_add' %}" class="btn btn-primary">
-            Add New Exam
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 class="h3 mb-1 fw-bold text-dark">Exams Management</h1>
+            <p class="text-muted mb-0">Manage exams and assigned classes</p>
+        </div>
+        <a href="{% url 'academics:exam_add' %}" class="btn btn-primary btn-lg px-4">
+            <i class="bi bi-plus-circle me-2"></i>Add New Exam
         </a>
     </div>
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-light">
-            <tr>
-                <th>Name</th>
-                <th>Term</th>
-                <th>Year</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for e in exams %}
-            <tr>
-                <td>{{ e.name|default:"<span class='text-muted'>No Name</span>"|safe }}</td>
-                <td>{{ e.term }}</td>
-                <td>{{ e.year }}</td>
-                <td>
-                    <!-- Assigned Classes & Subjects -->
-                    {% if e.assigned_classes %}
-                        {% for sc in e.assigned_classes %}
-                            <div class="mb-1">
-                                <a href="{% url 'academics:enter_marks' class_id=sc.id exam_id=e.id %}" 
-                                   class="btn btn-sm btn-success">
-                                    Enter Marks - {{ sc.name }}
-                                </a>
-                                <small class="text-muted">
-                                    Subjects: 
-                                    {% for es in sc.examsubject_set.all %}
-                                        {% if es.exam == e %}
-                                            {{ es.subject.name }}{% if not forloop.last %}, {% endif %}
-                                        {% endif %}
-                                    {% endfor %}
-                                </small>
+    {% if exams %}
+    <div class="row g-4">
+        {% for e in exams %}
+        <div class="col-lg-6 col-xl-4">
+            <div class="card h-100 shadow-sm border-0 hover-lift">
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h3 class="card-title mb-1 fw-semibold">{{ e.name|default:"Unnamed Exam" }}</h3>
+                            <div class="d-flex gap-2 text-white-50 small">
+                                <span class="badge bg-light text-dark">{{ e.term }}</span>
+                                <span class="badge bg-light text-dark">{{ e.year }}</span>
                             </div>
-                        {% endfor %}
-                    {% else %}
-                        <span class="text-muted">No classes assigned yet</span>
-                    {% endif %}
-
-                
-                    <!-- Edit & Delete -->
-                    <div class="mt-2">
-                        <a href="{% url 'academics:exam_edit' e.id %}" class="btn btn-sm btn-warning">
-                            Edit
-                        </a>
-                        <a href="{% url 'academics:exam_delete' e.id %}" class="btn btn-sm btn-danger"
-                           onclick="return confirm('Are you sure you want to delete this exam?');">
-                            Delete
-                        </a>
-                        
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-light" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'academics:exam_edit' e.id %}">
+                                    <i class="bi bi-pencil me-2"></i>Edit Exam
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{% url 'academics:exam_delete' e.id %}"
+                                       onclick="return confirm('Delete this exam? This cannot be undone.');">
+                                        <i class="bi bi-trash me-2"></i>Delete Exam
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" class="text-center text-muted">
-                    No exams found.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </div>
+                
+                <div class="card-body py-4">
+                    {% if e.assigned_classes %}
+                        <h6 class="text-muted mb-3">Assigned Classes <span class="badge bg-success">{{ e.assigned_classes|length }}</span></h6>
+                        <div class="list-group list-group-flush">
+                            {% for sc in e.assigned_classes %}
+                            <div class="list-group-item px-0 border-0 py-2">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <a href="{% url 'academics:enter_marks' class_id=sc.id exam_id=e.id %}" 
+                                           class="btn btn-sm btn-outline-success w-100 text-start mb-1">
+                                            <i class="bi bi-check-circle-fill me-2"></i>{{ sc.name }}
+                                        </a>
+                                        {% if sc.examsubject_set.all %}
+                                        <div class="small text-muted">
+                                            <i class="bi bi-book me-1"></i>
+                                            {% for es in sc.examsubject_set.all %}
+                                                {% if es.exam == e %}
+                                                    {{ es.subject.name }}{% if not forloop.last %}, {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox display-4 text-muted mb-3"></i>
+                            <p class="text-muted mb-2">No classes assigned</p>
+                            <a href="#" class="btn btn-outline-secondary btn-sm">Assign Classes</a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-footer bg-light border-0 pt-0">
+                    <small class="text-muted">
+                        {% if e.assigned_classes %}
+                            {{ e.assigned_classes|length }} class{{ e.assigned_classes|length|pluralize }}
+                        {% else %}
+                            No assignments
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-6">
+        <i class="bi bi-clipboard-x display-1 text-muted mb-4"></i>
+        <h3 class="mb-2 text-muted">No exams created yet</h3>
+        <p class="text-muted mb-4">Get started by creating your first exam.</p>
+        <a href="{% url 'academics:exam_add' %}" class="btn btn-primary btn-lg px-5">
+            <i class="bi bi-plus-lg me-2"></i>Create First Exam
+        </a>
+    </div>
+    {% endif %}
 </div>
+
+<style>
+.hover-lift {
+    transition: all 0.2s ease-in-out;
+}
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12) !important;
+}
+.card-header {
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+}
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
 {% endblock %}

@@ -2,6 +2,7 @@ from django import forms
 from .models import Student
 from schools.models import SchoolClass, School
 from django.contrib.auth import get_user_model
+from .models import Parent
 
 User = get_user_model()
 
@@ -87,3 +88,31 @@ class StudentAddForm(forms.ModelForm):
             student.user.save()
             student.save()
         return student
+
+class ParentForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    email = forms.EmailField()
+
+    class Meta:
+        model = Parent
+        fields = ['phone', 'students', 'first_name', 'last_name', 'email']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.user:
+            self.fields['first_name'].initial = self.instance.user.first_name
+            self.fields['last_name'].initial = self.instance.user.last_name
+            self.fields['email'].initial = self.instance.user.email
+
+    def save(self, commit=True):
+        parent = super().save(commit=False)
+        user = parent.user
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+            parent.save()
+            self.save_m2m()
+        return parent

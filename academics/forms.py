@@ -31,3 +31,13 @@ class AssignSubjectsToExamForm(forms.Form):
     exam = forms.ModelChoiceField(queryset=Exam.objects.all(), required=True)
     school_class = forms.ModelChoiceField(queryset=SchoolClass.objects.all(), required=True)
     subjects = forms.ModelMultipleChoiceField(queryset=Subject.objects.all(), widget=forms.CheckboxSelectMultiple)
+
+class ExamForm(forms.ModelForm):
+    class Meta:
+        model = Exam
+        fields = ['name', 'term', 'year']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'term': forms.TextInput(attrs={'class': 'form-control'}),
+            'year': forms.NumberInput(attrs={'class': 'form-control', 'min': '2000', 'max': '2030'}),
+        }

@@ -33,6 +33,8 @@ import json
 from django.db import models
 from schools.forms import AssignExamForm
 from .forms import AssignSubjectsToExamForm
+from .forms import ExamForm
+
 
 from django.contrib.auth import get_user_model
 
@@ -90,6 +92,7 @@ def subject_delete(request, pk):
         return redirect('academics:subject_list')
 
     return render(request, 'academics/subject_confirm_delete.html', {'subject': subject})
+    
 @login_required
 @role_required('schooladmin')
 def exam_list(request):
@@ -210,20 +213,16 @@ def exam_subject_add(request, exam_id):
 def exam_edit(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
     
-   
-    new_name = request.GET.get('name')
-    new_term = request.GET.get('term')
-    new_year = request.GET.get('year')
-
-    if new_name:
-        exam.name = new_name
-    if new_term:
-        exam.term = new_term
-    if new_year:
-        exam.year = new_year
-
-    exam.save()
-    return redirect('academics:exam_list')
+    if request.method == 'POST':
+        form = ExamForm(request.POST, instance=exam)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Exam updated successfully.')
+            return redirect('academics:exam_list')
+    else:
+        form = ExamForm(instance=exam)
+    
+    return render(request, 'academics/exam_edit.html', {'form': form, 'exam': exam})
 
 
 def exam_delete(request, pk):
@@ -337,23 +336,28 @@ def select_exam(request, class_id, subject_id):
     })
 
 
-
 @login_required
 @role_required('teacher', 'schooladmin')
-
 def enter_marks(request, class_id, exam_id):
-    teacher = request.user
+    user = request.user
+
+    # 🔒 HARD SAFETY CHECK
+    if not hasattr(user, 'teacher'):
+        messages.error(request, "Teacher profile required to enter marks.")
+        return redirect('academics:class_overview', class_id=class_id)
+    teacher = user.teacher
+    school = teacher.school
 
     school_class = get_object_or_404(
         SchoolClass,
         id=class_id,
-        school=teacher.teacher.school
+        school=school
     )
 
     exam = get_object_or_404(
         Exam,
         id=exam_id,
-        school=teacher.teacher.school
+        school=school
     )
 
     exam_subjects = ExamSubject.objects.filter(
@@ -368,7 +372,6 @@ def enter_marks(request, class_id, exam_id):
         student_class=school_class
     ).order_by('user__last_name', 'user__first_name')
 
-  
     subjects = Subject.objects.filter(
         examsubject__exam=exam,
         examsubject__school_class=school_class
@@ -381,7 +384,6 @@ def enter_marks(request, class_id, exam_id):
     ):
         existing_marks.setdefault(m.student_id, {})[m.subject_id] = m.marks
 
-    
     for student in students:
         student.marks_list = []
         total = 0
@@ -409,7 +411,6 @@ def enter_marks(request, class_id, exam_id):
         student.total = total
         student.average = round(total / len(subjects), 2) if subjects else 0
 
-    
     if request.method == 'POST':
         with transaction.atomic():
             for student in students:
@@ -433,15 +434,13 @@ def enter_marks(request, class_id, exam_id):
                                 'marks': mark_float,
                                 'school_class': school_class,
                                 'term': exam.term,
-                                'facilitator': teacher
+                                'facilitator': teacher  # ✅ Teacher object
                             }
                         )
 
         messages.success(request, "Marks saved successfully.")
         return redirect('academics:class_overview', class_id=class_id)
 
- 
-    school = teacher.teacher.school
     school_logo_url = school.logo.url if school.logo else None
 
     return render(request, 'academics/enter_marks.html', {
@@ -449,9 +448,8 @@ def enter_marks(request, class_id, exam_id):
         'school_class': school_class,
         'students': students,
         'subjects': subjects,
-        'school_logo_url': school_logo_url,  
+        'school_logo_url': school_logo_url,
     })
-
 
 
 

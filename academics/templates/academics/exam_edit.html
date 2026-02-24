@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Edit Exam</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            {{ form.name.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.term.label_tag }}
+            {{ form.term }}
+            {{ form.term.errors }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.year.label_tag }}
+            {{ form.year }}
+            {{ form.year.errors }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Update Exam
+        </button>
+
+        <a href="{% url 'academics:exam_list' %}" class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}
