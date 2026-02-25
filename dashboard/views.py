@@ -12,11 +12,13 @@ from accounts.decorators import role_required
 from students.models import Parent
 from django.contrib.auth import get_user_model
 from students.models import Student
-from academics.models import Exam
+from academics.models import Exam,StudentMark
 from students.models import Student 
 from notifications.models import Notification
 from academics.models import Subject,AcademicTerm
 from django.db.models import Count
+from attendance.models import StudentAttendance
+from finance.models import Invoice
 
 
 
@@ -178,15 +180,56 @@ def student_dashboard(request):
         'student': student
     })
 
+TERM_ORDER = {'Opener': 1, 'Mid-term': 2, 'End-term': 3}
+
 @login_required
 @role_required('parent')
 def parent_dashboard(request):
     parent = request.user.parent
-    students = parent.students.all()
-    return render(request, 'dashboard/parent.html', {
-        'students': students
-    })
+    children = parent.students.all().select_related('student_class', 'school')
 
+    TERM_ORDER = {'Opener': 1, 'Mid-term': 2, 'End-term': 3}
+
+    children_data = []
+
+    for child in children:
+        # Latest exam based on year and term
+        exams = Exam.objects.filter(school=child.school)
+        latest_exam = sorted(
+            exams,
+            key=lambda e: (e.year, TERM_ORDER.get(e.term, 0)),
+            reverse=True
+        )[0] if exams.exists() else None
+
+        # Student marks for latest exam
+        marks = StudentMark.objects.filter(student=child, exam=latest_exam) if latest_exam else None
+
+        # Attendance
+        attendance = StudentAttendance.objects.filter(student=child)
+        total_days = attendance.count()
+        present_days = attendance.filter(status='present').count()
+        absent_days = attendance.filter(status='absent').count()
+        attendance_percentage = (present_days / total_days * 100) if total_days else 0
+
+        # Pending invoices → Use is_paid field
+        pending_invoices = Invoice.objects.filter(student=child, is_paid=False)
+
+        children_data.append({
+            'student': child,
+            'latest_exam': latest_exam,
+            'marks': marks,
+            'attendance': {
+                'total_days': total_days,
+                'present_days': present_days,
+                'absent_days': absent_days,
+                'percentage': attendance_percentage
+            },
+            'pending_invoices': pending_invoices,
+        })
+
+    return render(request, 'dashboard/parent.html', {
+        'children_data': children_data
+    })
 
 
 @login_required

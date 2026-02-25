@@ -622,3 +622,14 @@ def finance_dashboard(request):
         'chart_data': chart_data,
     }
     return render(request, 'finance/finance_dashboard.html', context)
+
+
+
+
+def student_invoices(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+    invoices = Invoice.objects.filter(student=student)
+    return render(request, 'finance/student_invoices.html', {
+        'student': student,
+        'invoices': invoices
+    })

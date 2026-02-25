@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ student.user.get_full_name }} - Invoices</h2>
+    <p><strong>Class:</strong> {{ student.student_class.name }}</p>
+    <p><strong>School:</strong> {{ student.school.name }}</p>
+
+    {% if invoices %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Invoice ID</th>
+                    <th>Fee Structure</th>
+                    <th>Total Amount</th>
+                    <th>Issued Date</th>
+                    <th>Paid</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                    <tr>
+                        <td>{{ invoice.id }}</td>
+                        <td>{{ invoice.fee_structure.name }}</td>
+                        <td>{{ invoice.total_amount }}</td>
+                        <td>{{ invoice.issued_date }}</td>
+                        <td>
+                            {% if invoice.is_paid %}
+                                <span class="text-success">Yes</span>
+                            {% else %}
+                                <span class="text-danger">No</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No invoices found for this student.</p>
+    {% endif %}
+</div>
+{% endblock %}

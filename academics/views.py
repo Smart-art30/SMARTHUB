@@ -1043,3 +1043,20 @@ def admin_class_list(request):
     """
     classes = SchoolClass.objects.filter(school=request.user.school)
     return render(request, 'academics/admin_class_list.html', {'classes': classes})
+
+
+
+def student_results(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+    marks = StudentMark.objects.filter(student=student).select_related('subject', 'exam')
+    
+   
+    results_by_exam = {}
+    for mark in marks:
+        exam_name = f"{mark.exam.name} ({mark.exam.term} {mark.exam.year})"
+        results_by_exam.setdefault(exam_name, []).append(mark)
+
+    return render(request, 'academics/student_results.html', {
+        'student': student,
+        'results_by_exam': results_by_exam
+    })

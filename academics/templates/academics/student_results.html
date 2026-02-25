@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ student.user.get_full_name }} - Results</h2>
+    <p><strong>Class:</strong> {{ student.student_class.name }}</p>
+    <p><strong>School:</strong> {{ student.school.name }}</p>
+
+    {% if results_by_exam %}
+        {% for exam, marks_list in results_by_exam.items %}
+            <h4 class="mt-4">{{ exam }}</h4>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mark in marks_list %}
+                        <tr>
+                            <td>{{ mark.subject.name }}</td>
+                            <td>{{ mark.marks }}</td>
+                            <td>{{ mark.grade }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    {% else %}
+        <p>No results found for this student.</p>
+    {% endif %}
+</div>
+{% endblock %}
