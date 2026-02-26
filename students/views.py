@@ -28,11 +28,7 @@ def student_list(request):
         school=request.user.school
     ).prefetch_related('student_set')
 
-    return render(
-        request,
-        'students/students_list.html',
-        {'classes': classes}
-    )
+    return render(request,'students/students_list.html',{'classes': classes})
 
 
 
@@ -237,9 +233,12 @@ def parent_list(request):
 def parent_detail(request, pk):
     school = request.user.school
     parent = get_object_or_404(Parent, pk=pk, school=school)
+    students = parent.students.filter(school=school).select_related('user')
+
 
     return render(request, 'students/parent_detail.html',{
-        'parent': parent
+        'parent': parent,
+        'students': students,
     })
 
 @login_required

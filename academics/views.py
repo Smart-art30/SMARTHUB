@@ -434,7 +434,7 @@ def enter_marks(request, class_id, exam_id):
                                 'marks': mark_float,
                                 'school_class': school_class,
                                 'term': exam.term,
-                                'facilitator': teacher  # ✅ Teacher object
+                                'facilitator': teacher  
                             }
                         )
 
@@ -1035,6 +1035,8 @@ def admin_class_marks(request, class_id):
         "school_class": school_class,
         "exam_tables": exam_tables
     })
+
+
 @login_required
 @role_required('schooladmin')
 def admin_class_list(request):

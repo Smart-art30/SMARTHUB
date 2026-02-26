@@ -73,13 +73,13 @@ class StudentMark(models.Model):
 
     def grade(self):
         if self.marks >= 80:
-            return 'A'
+            return 'Exeeding Expectation'
         elif self.marks >= 60:
-            return 'B'
+            return 'Meeting Expectation'
         elif self.marks >= 40:
-            return 'C'
+            return 'Approaching Expectation'
         else:
-            return 'D'
+            return 'Below Expectation'
 
 
 class ExamSubject(models.Model):

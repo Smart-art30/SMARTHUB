@@ -8,13 +8,13 @@
     <p><strong>Students:</strong>
         {% if parent.students.all %}
             {% for student in parent.students.all %}
-                {{ student.first_name }} {{ student.last_name }}{% if not forloop.last %}, {% endif %}
+                {{ student.user.first_name }} {{ student.user.last_name }}{% if not forloop.last %}, {% endif %}
             {% empty %}
                 None
             {% endfor %}
         {% elif parent.student_set.all %}
             {% for student in parent.student_set.all %}
-                {{ student.first_name }} {{ student.last_name }}{% if not forloop.last %}, {% endif %}
+                {{ student.first_name }} {{ student.user.last_name }}{% if not forloop.last %}, {% endif %}
             {% empty %}
                 None
             {% endfor %}
