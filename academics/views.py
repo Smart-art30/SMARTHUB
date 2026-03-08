@@ -341,47 +341,28 @@ def select_exam(request, class_id, subject_id):
 def enter_marks(request, class_id, exam_id):
     user = request.user
 
-    # 🔒 HARD SAFETY CHECK
+   
     if not hasattr(user, 'teacher'):
         messages.error(request, "Teacher profile required to enter marks.")
         return redirect('academics:class_overview', class_id=class_id)
     teacher = user.teacher
     school = teacher.school
 
-    school_class = get_object_or_404(
-        SchoolClass,
-        id=class_id,
-        school=school
-    )
+    school_class = get_object_or_404(SchoolClass,id=class_id,school=school)
 
-    exam = get_object_or_404(
-        Exam,
-        id=exam_id,
-        school=school
-    )
+    exam = get_object_or_404(Exam,id=exam_id,school=school)
 
-    exam_subjects = ExamSubject.objects.filter(
-        exam=exam,
-        school_class=school_class
-    )
+    exam_subjects = ExamSubject.objects.filter(exam=exam,school_class=school_class)
 
     if not exam_subjects.exists():
         raise Http404("This exam is not assigned to this class")
 
-    students = Student.objects.filter(
-        student_class=school_class
-    ).order_by('user__last_name', 'user__first_name')
+    students = Student.objects.filter(student_class=school_class).order_by('user__last_name', 'user__first_name')
 
-    subjects = Subject.objects.filter(
-        examsubject__exam=exam,
-        examsubject__school_class=school_class
-    ).distinct()
+    subjects = Subject.objects.filter(examsubject__exam=exam,examsubject__school_class=school_class).distinct()
 
     existing_marks = {}
-    for m in StudentMark.objects.filter(
-        exam=exam,
-        school_class=school_class
-    ):
+    for m in StudentMark.objects.filter(exam=exam,school_class=school_class):
         existing_marks.setdefault(m.student_id, {})[m.subject_id] = m.marks
 
     for student in students:
@@ -495,28 +476,15 @@ def save_mark_ajax(request):
 @login_required
 def student_report(request, student_id):
     student = get_object_or_404(Student, id=student_id)
-
-   
+  
     subjects = Subject.objects.filter(
-        teachersubjectassignment__school_class=student.student_class
-    ).distinct().order_by('name')
-
+        teachersubjectassignment__school_class=student.student_class).distinct().order_by('name')
     
-    exams = Exam.objects.filter(
-        examsubject__subject__in=subjects  
-    ).distinct()
-
- 
+    exams = Exam.objects.filter(examsubject__subject__in=subjects).distinct()
     exam_order = ['Opener', 'Mid-term', 'End-term']
     exams = list(exams)
     exams.sort(key=lambda x: exam_order.index(x.term) if x.term in exam_order else 99)
-
-    marks_qs = StudentMark.objects.filter(
-        student=student,
-        subject__in=subjects,
-        exam__in=exams
-    )
-   
+    marks_qs = StudentMark.objects.filter(student=student,subject__in=subjects,exam__in=exams)
     marks_by_exam_subject = {(m.exam_id, m.subject_id): m for m in marks_qs}
 
   
@@ -958,31 +926,15 @@ def get_rubric(mark):
 @login_required
 @role_required('schooladmin')
 def admin_class_marks(request, class_id):
-    # Get class and students
     school_class = get_object_or_404(SchoolClass, id=class_id, school=request.user.school)
     students = Student.objects.filter(student_class=school_class)
 
-    # Subjects for this class
-    subjects = Subject.objects.filter(
-        teachersubjectassignment__school_class=school_class
-    ).distinct().order_by('name')
-
-    # Exams that have these subjects
-    exams = Exam.objects.filter(
-        examsubject__subject__in=subjects
-    ).distinct().order_by('year', 'term')
-
-    # Fetch marks
-    marks_qs = StudentMark.objects.filter(
-        student__in=students,
-        subject__in=subjects,
-        exam__in=exams
-    )
+  
+    subjects = Subject.objects.filter(teachersubjectassignment__school_class=school_class).distinct().order_by('name')
+    exams = Exam.objects.filter(examsubject__subject__in=subjects).distinct().order_by('year', 'term')
+    marks_qs = StudentMark.objects.filter(student__in=students,subject__in=subjects,exam__in=exams)
     marks_map = {(m.student_id, m.subject_id, m.exam_id): m.marks for m in marks_qs}
-
-    # Get teacher(s) assigned to this class
-    assigned_teachers_qs = TeacherClass.objects.filter(
-        school_class=school_class
+    assigned_teachers_qs = TeacherClass.objects.filter(school_class=school_class
     ).select_related('teacher', 'teacher__user')
     assigned_teachers = [t.teacher.user.get_full_name() for t in assigned_teachers_qs]
 
@@ -1040,19 +992,14 @@ def admin_class_marks(request, class_id):
 @login_required
 @role_required('schooladmin')
 def admin_class_list(request):
-    """
-    Admin sees all classes for their school.
-    """
+    #Admin sees all classes for their school.
     classes = SchoolClass.objects.filter(school=request.user.school)
     return render(request, 'academics/admin_class_list.html', {'classes': classes})
-
-
 
 def student_results(request, student_id):
     student = get_object_or_404(Student, id=student_id)
     marks = StudentMark.objects.filter(student=student).select_related('subject', 'exam')
     
-   
     results_by_exam = {}
     for mark in marks:
         exam_name = f"{mark.exam.name} ({mark.exam.term} {mark.exam.year})"
