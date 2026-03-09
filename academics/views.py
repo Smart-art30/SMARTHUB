@@ -689,7 +689,7 @@ def class_report(request, class_id):
         for subject in subjects:
             marks_with_trends = []
             marks_list = []
-            non_zero_marks = []  # For remarks only
+            non_zero_marks = []  
 
             for idx, exam in enumerate(exams):
                 mark_obj = marks_by_student_subject_exam.get((student.id, subject.id, exam.id))
@@ -703,7 +703,7 @@ def class_report(request, class_id):
                 class_exam_totals[idx] += mark
                 class_exam_counts[idx] += 1
 
-            # Trends: unchanged (includes zeros as-is)
+            
             for idx, mark in enumerate(marks_list):
                 if idx == 0:
                     trend = 'same'
