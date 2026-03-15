@@ -173,11 +173,11 @@ def teacher_profile_edit(request):
 
 @login_required
 @role_required('schooladmin')
-
 def assign_teacher_subjects(request):
-    teachers = Teacher.objects.select_related('user').all()
-    classes = SchoolClass.objects.all()
-    subjects = Subject.objects.all()
+    school = request.user.school
+    teachers = Teacher.objects.select_related('user').filter(school=school)
+    classes = SchoolClass.objects.filter(school=school)
+    subjects = Subject.objects.filter(school=school)
 
     selected_teacher = None
     selected_class = None
@@ -197,18 +197,18 @@ def assign_teacher_subjects(request):
             ).values_list('subject_id', flat=True)
         )
 
-    # Handle POST
+   
     if request.method == 'POST' and selected_teacher and selected_class:
         subject_ids = request.POST.getlist('subjects')
         selected_subjects = Subject.objects.filter(id__in=subject_ids)
 
-        # Remove unchecked
+       
         TeacherSubjectAssignment.objects.filter(
             teacher=selected_teacher,
             school_class=selected_class
         ).exclude(subject__in=selected_subjects).delete()
 
-        # Add new
+        
         for subject in selected_subjects:
             TeacherSubjectAssignment.objects.get_or_create(
                 teacher=selected_teacher,
@@ -218,14 +218,11 @@ def assign_teacher_subjects(request):
 
         return redirect(f"{request.path}?teacher={selected_teacher.id}&school_class={selected_class.id}")
 
-    # Group assignments by teacher -> class -> subjects
-    teacher_data = defaultdict(list)  # key=teacher, value=list of dicts {class, subjects}
-    all_assignments = TeacherSubjectAssignment.objects.select_related(
-        'teacher', 'school_class', 'subject'
-    ).order_by('teacher__user__first_name', 'school_class__name')
-
+   
+    teacher_data = defaultdict(list)  
+    all_assignments = TeacherSubjectAssignment.objects.select_related('teacher', 'school_class', 'subject').filter(teacher__school=school).order_by('teacher__user__first_name', 'school_class__name')
     for assign in all_assignments:
-        # Check if this class already exists in teacher_data
+        
         existing = next((x for x in teacher_data[assign.teacher] if x['class'] == assign.school_class), None)
         if existing:
             existing['subjects'].append(assign.subject)
@@ -259,7 +256,7 @@ def remove_teacher_subjects(request, teacher_id, class_id):
     return redirect(f"/teachers/assign/?teacher={teacher.id}&school_class={school_class.id}")
 
 
-# Remove a single assignment
+
 def remove_single_assignment(request, assignment_id):
     assignment = get_object_or_404(TeacherSubjectAssignment, id=assignment_id)
     teacher = assignment.teacher
@@ -268,25 +265,25 @@ def remove_single_assignment(request, assignment_id):
     return redirect(f"/teachers/assign/?teacher={teacher.id}&school_class={school_class.id}")
 
 
-@csrf_exempt  # Use only for AJAX POST; or use proper CSRF token in headers
-
+@csrf_exempt  
 def ajax_assign_subjects(request):
+    school = request.user.school
     if request.method == 'POST':
         teacher_id = request.POST.get('teacher')
         class_id = request.POST.get('school_class')
         subject_ids = request.POST.getlist('subjects[]')
 
-        teacher = get_object_or_404(Teacher, id=teacher_id)
-        school_class = get_object_or_404(SchoolClass, id=class_id)
+        teacher = get_object_or_404(Teacher, id=teacher_id, school=school)
+        school_class = get_object_or_404(SchoolClass, id=class_id, school=school)
         subjects = Subject.objects.filter(id__in=subject_ids)
 
-        # Remove unchecked assignments
+        
         TeacherSubjectAssignment.objects.filter(
             teacher=teacher,
             school_class=school_class
         ).exclude(subject__in=subjects).delete()
 
-        # Add new assignments
+       
         for subject in subjects:
             TeacherSubjectAssignment.objects.get_or_create(
                 teacher=teacher,
@@ -294,18 +291,18 @@ def ajax_assign_subjects(request):
                 subject=subject
             )
 
-        # Rebuild teacher_data for updated assignments
-        teacher_data = {}  # same structure as in your main view
+       
+        teacher_data = {} 
         assignments = TeacherSubjectAssignment.objects.select_related(
             'teacher', 'school_class', 'subject'
-        ).all()
+        ).filter(teacher__school=school)
 
         from collections import defaultdict
         grouped = defaultdict(lambda: defaultdict(list))
         for a in assignments:
             grouped[a.teacher][a.school_class].append(a.subject)
 
-        # Convert to list for template
+        
         teacher_data = {}
         for teacher_obj, classes in grouped.items():
             class_list = []

@@ -115,12 +115,12 @@ def exam_list(request):
    
     if request.method == 'POST':
         exam_id = request.POST.get('exam_id')
-        exam = Exam.objects.get(id=exam_id)
+        exam = Exam.objects.get(Exam,id=exam_id, school=request.user.school)
         form = AssignExamForm(request.POST, user=request.user)
         if form.is_valid():
             classes = form.cleaned_data['classes']
             for school_class in classes:
-                for subject in school_class.subjects.all():
+                for subject in school_class.subjects.filter(school=school):
                     ExamSubject.objects.get_or_create(
                         exam=exam,
                         school_class=school_class,
@@ -211,7 +211,7 @@ def exam_subject_add(request, exam_id):
 
 
 def exam_edit(request, pk):
-    exam = get_object_or_404(Exam, pk=pk)
+    exam = get_object_or_404(Exam, pk=pk, school=request.user.school)
     
     if request.method == 'POST':
         form = ExamForm(request.POST, instance=exam)
@@ -226,7 +226,7 @@ def exam_edit(request, pk):
 
 
 def exam_delete(request, pk):
-    exam = get_object_or_404(Exam, pk=pk)
+    exam = get_object_or_404(Exam, pk=pk, school=request.user.school)
     exam.delete()
     return redirect('academics:exam_list')
 
@@ -437,6 +437,7 @@ def enter_marks(request, class_id, exam_id):
 @login_required
 @role_required('teacher')
 def save_mark_ajax(request):
+    school = request.user.teacher.school
     if request.method != "POST":
         return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
 
@@ -450,9 +451,9 @@ def save_mark_ajax(request):
 
         marks = float(marks)
 
-        student = Student.objects.get(id=student_id)
-        exam = Exam.objects.get(id=exam_id)
-        subject = Subject.objects.get(id=subject_id)
+        student = Student.objects.get(Student,id=student_id, student_class__school=school)
+        exam = Exam.objects.get(Exam,id=exam_id, school=school)
+        subject = Subject.objects.get(Subject,id=subject_id,school=school)
 
         StudentMark.objects.update_or_create(
             student=student,
@@ -475,7 +476,7 @@ def save_mark_ajax(request):
 
 @login_required
 def student_report(request, student_id):
-    student = get_object_or_404(Student, id=student_id)
+    student = get_object_or_404(Student, id=student_id,student_class__school=request.user.school)
   
     subjects = Subject.objects.filter(
         teachersubjectassignment__school_class=student.student_class).distinct().order_by('name')
@@ -639,29 +640,30 @@ from .models import School
 @login_required
 @role_required('schooladmin', 'teacher')
 def class_report(request, class_id):
-    school_class = get_object_or_404(SchoolClass, id=class_id)
-    school = School.objects.first() 
+    school = request.user.school
+    school_class = get_object_or_404(SchoolClass, id=class_id,school=school)
+    #school = School.objects.first() 
     students = Student.objects.filter(student_class=school_class)
 
     subjects = Subject.objects.filter(
         teachersubjectassignment__school_class=school_class
     ).distinct().order_by('name')
 
-    # Group exams by term, limit to 3 per term (Opener, Mid-term, End-term)
+    
     all_exams = Exam.objects.filter(examsubject__subject__in=subjects).distinct()
     exams_by_term = {}
     for exam in all_exams:
-        term = getattr(exam, 'term', 'Unknown')  # Flexible field access
+        term = getattr(exam, 'term', 'Unknown') 
         exams_by_term.setdefault(term, []).append(exam)
     
-    # Take first term with exactly 3 standard exams (or closest match)
+    
     exam_order = ['Opener', 'Mid-term', 'End-term']
     exams = []
     for term, term_exams in exams_by_term.items():
         term_exams.sort(key=lambda x: exam_order.index(x.term) if hasattr(x, 'term') and x.term in exam_order else 99)
-        # Limit to first 3 matching order, extras ignored/pushed implicitly by selection
+        
         selected = [e for e in term_exams[:3] if e.term in exam_order]
-        if len(selected) >= 2:  # Use first valid term group
+        if len(selected) >= 2:  
             exams = selected
             break
     if not exams:
@@ -783,10 +785,11 @@ def class_report(request, class_id):
 @login_required
 @role_required('schooladmin')
 def assign_teacher(request):
+    school = request.user.school
     if request.method == "POST":
-        teacher = Teacher.objects.get(id=request.POST['teacher'])
-        school_class = SchoolClass.objects.get(id=request.POST['school_class'])
-        subject = Subject.objects.get(id=request.POST['subject'])
+        teacher = get_object_or_404(Teacher, id=request.POST['teacher'], school=school)
+        school_class = get_object_or_404(SchoolClass, id=request.POST['school_class'], school=school)
+        subject = get_object_or_404(Subject, id=request.POST['subject'], school=school)
 
         obj, created = TeacherClass.objects.get_or_create(
             teacher=teacher,
@@ -805,9 +808,9 @@ def assign_teacher(request):
         return redirect('academics:assign_teacher')
 
     context = {
-        'teachers': Teacher.objects.all(),
-        'classes': SchoolClass.objects.all(),
-        'subjects': Subject.objects.all(),
+        'teachers': Teacher.objects.filter(school=request.user.school),
+        'classes': SchoolClass.objects.filter(school=request.user.school),
+        'subjects': Subject.objects.filter(school=request.user.school),
     }
     return render(request, 'academics/assign_teacher.html', context)
 
@@ -857,12 +860,13 @@ def select_classes(request):
 @login_required
 @role_required("schooladmin")
 def assign_subjects_to_exam(request):
+    school = request.user.school
     assigned_subjects = ExamSubject.objects.none()
     exam = None
     school_class = None
 
     if request.method == "POST":
-        form = AssignSubjectsToExamForm(request.POST)
+        form = AssignSubjectsToExamForm(request.POST,school=school)
 
         if form.is_valid():
             exam = form.cleaned_data["exam"]
@@ -884,13 +888,13 @@ def assign_subjects_to_exam(request):
             )
 
     else:
-        form = AssignSubjectsToExamForm()
+        form = AssignSubjectsToExamForm(school=school)
         exam_id = request.GET.get("exam")
         class_id = request.GET.get("class")
 
         if exam_id and class_id:
-            exam = get_object_or_404(Exam, id=exam_id)
-            school_class = get_object_or_404(SchoolClass, id=class_id)
+            exam = get_object_or_404(Exam, id=exam_id, school=school)
+            school_class = get_object_or_404(SchoolClass, id=class_id, school=school)
 
             assigned_subjects = ExamSubject.objects.filter(
                 exam=exam,
@@ -911,7 +915,7 @@ def assign_subjects_to_exam(request):
 @login_required
 @role_required("schooladmin")
 def remove_exam_subject(request, pk):
-    exam_subject = get_object_or_404(ExamSubject, pk=pk)
+    exam_subject = get_object_or_404(ExamSubject, pk=pk,exam__school=request.user.school)
 
     exam_id = exam_subject.exam.id
     class_id = exam_subject.school_class.id
@@ -1008,12 +1012,12 @@ def admin_class_marks(request, class_id):
 @login_required
 @role_required('schooladmin')
 def admin_class_list(request):
-    #Admin sees all classes for their school.
+   
     classes = SchoolClass.objects.filter(school=request.user.school)
     return render(request, 'academics/admin_class_list.html', {'classes': classes})
 
 def student_results(request, student_id):
-    student = get_object_or_404(Student, id=student_id)
+    student = get_object_or_404(Student, id=student_id,student_class__school=request.user.school)
     marks = StudentMark.objects.filter(student=student).select_related('subject', 'exam')
     
     results_by_exam = {}
