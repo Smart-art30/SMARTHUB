@@ -433,11 +433,11 @@ def enter_marks(request, class_id, exam_id):
     })
 
 
-
 @login_required
 @role_required('teacher')
 def save_mark_ajax(request):
     school = request.user.teacher.school
+
     if request.method != "POST":
         return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
 
@@ -447,13 +447,13 @@ def save_mark_ajax(request):
         student_id = data.get("student_id")
         subject_id = data.get("subject_id")
         exam_id = data.get("exam_id")
-        marks = data.get("mark") 
+        marks = data.get("mark")
 
         marks = float(marks)
 
-        student = Student.objects.get(Student,id=student_id, student_class__school=school)
-        exam = Exam.objects.get(Exam,id=exam_id, school=school)
-        subject = Subject.objects.get(Subject,id=subject_id,school=school)
+        student = Student.objects.get(id=student_id, student_class__school=school)
+        exam = Exam.objects.get(id=exam_id, school=school)
+        subject = Subject.objects.get(id=subject_id, school=school)
 
         StudentMark.objects.update_or_create(
             student=student,
@@ -471,7 +471,6 @@ def save_mark_ajax(request):
 
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
-
 
 
 @login_required
@@ -642,7 +641,7 @@ from .models import School
 def class_report(request, class_id):
     school = request.user.school
     school_class = get_object_or_404(SchoolClass, id=class_id,school=school)
-    #school = School.objects.first() 
+    
     students = Student.objects.filter(student_class=school_class)
 
     subjects = Subject.objects.filter(
@@ -951,7 +950,7 @@ def admin_class_marks(request, class_id):
 
   
     subjects = Subject.objects.filter(teachersubjectassignment__school_class=school_class).distinct().order_by('name')
-    exams = Exam.objects.filter(examsubject__subject__in=subjects).distinct().order_by('year', 'term')
+    exams = Exam.objects.filter(school=school_class.school).order_by('year', 'term')
     marks_qs = StudentMark.objects.filter(student__in=students,subject__in=subjects,exam__in=exams)
     marks_map = {(m.student_id, m.subject_id, m.exam_id): m.marks for m in marks_qs}
     assigned_teachers_qs = TeacherClass.objects.filter(school_class=school_class

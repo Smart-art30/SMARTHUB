@@ -28,9 +28,29 @@ User = get_user_model()
 @login_required
 @role_required('schooladmin')
 def teacher_list(request):
-    teachers = Teacher.objects.filter(school=request.user.school)
-    return render(request, 'teachers/teacher_list.html', {'teachers': teachers})
 
+    school = request.user.school
+
+    teachers = Teacher.objects.filter(school=school)
+
+    assignments = TeacherSubjectAssignment.objects.select_related(
+        'teacher', 'school_class', 'subject'
+    ).filter(teacher__school=school)
+
+    teacher_assignments = defaultdict(list)
+
+    for a in assignments:
+        teacher_assignments[a.teacher_id].append({
+            "class": a.school_class,
+            "subject": a.subject
+        })
+
+    context = {
+        "teachers": teachers,
+        "teacher_assignments": dict(teacher_assignments)
+    }
+
+    return render(request, "teachers/teacher_list.html", context)
 
 
 def generate_random_password(length=10):
@@ -173,8 +193,10 @@ def teacher_profile_edit(request):
 
 @login_required
 @role_required('schooladmin')
-def assign_teacher_subjects(request):
+def assign_teacher_subjects(request, pk=None):
+
     school = request.user.school
+
     teachers = Teacher.objects.select_related('user').filter(school=school)
     classes = SchoolClass.objects.filter(school=school)
     subjects = Subject.objects.filter(school=school)
@@ -183,7 +205,9 @@ def assign_teacher_subjects(request):
     selected_class = None
     assigned_subject_ids = []
 
-    teacher_id = request.POST.get('teacher') or request.GET.get('teacher')
+    # teacher from URL
+    teacher_id = pk or request.POST.get('teacher') or request.GET.get('teacher')
+
     class_id = request.POST.get('school_class') or request.GET.get('school_class')
 
     if teacher_id and class_id:
@@ -197,18 +221,16 @@ def assign_teacher_subjects(request):
             ).values_list('subject_id', flat=True)
         )
 
-   
     if request.method == 'POST' and selected_teacher and selected_class:
+
         subject_ids = request.POST.getlist('subjects')
         selected_subjects = Subject.objects.filter(id__in=subject_ids)
 
-       
         TeacherSubjectAssignment.objects.filter(
             teacher=selected_teacher,
             school_class=selected_class
         ).exclude(subject__in=selected_subjects).delete()
 
-        
         for subject in selected_subjects:
             TeacherSubjectAssignment.objects.get_or_create(
                 teacher=selected_teacher,
@@ -216,14 +238,28 @@ def assign_teacher_subjects(request):
                 subject=subject
             )
 
-        return redirect(f"{request.path}?teacher={selected_teacher.id}&school_class={selected_class.id}")
+        return redirect(
+            f"{request.path}?teacher={selected_teacher.id}&school_class={selected_class.id}"
+        )
 
-   
-    teacher_data = defaultdict(list)  
-    all_assignments = TeacherSubjectAssignment.objects.select_related('teacher', 'school_class', 'subject').filter(teacher__school=school).order_by('teacher__user__first_name', 'school_class__name')
+    teacher_data = defaultdict(list)
+
+    all_assignments = TeacherSubjectAssignment.objects.select_related(
+        'teacher', 'school_class', 'subject'
+    ).filter(
+        teacher__school=school
+    ).order_by(
+        'teacher__user__first_name',
+        'school_class__name'
+    )
+
     for assign in all_assignments:
-        
-        existing = next((x for x in teacher_data[assign.teacher] if x['class'] == assign.school_class), None)
+
+        existing = next(
+            (x for x in teacher_data[assign.teacher] if x['class'] == assign.school_class),
+            None
+        )
+
         if existing:
             existing['subjects'].append(assign.subject)
         else:
