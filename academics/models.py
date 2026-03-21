@@ -20,8 +20,7 @@ class Subject(models.Model):
         unique_together = ('school', 'code')
 
     def save(self, *args, **kwargs):
-        if not self.short_name:
-            self.short_name = self.name[:4].upper()
+        self.short_name = self.name[:4].upper()
         super().save(*args, **kwargs)
 
     def __str__(self):

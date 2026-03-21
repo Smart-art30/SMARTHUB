@@ -15,10 +15,16 @@ class SubjectForm(forms.ModelForm):
     def clean_code(self):
         code = self.cleaned_data['code']
 
-        if Subject.objects.filter(
+        qs = Subject.objects.filter(
             school=self.school,
             code__iexact=code
-        ).exists():
+        )
+
+        
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
             raise forms.ValidationError(
                 "A subject with this code already exists in your school."
             )
