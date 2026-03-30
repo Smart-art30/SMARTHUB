@@ -640,7 +640,7 @@ from .models import School
 @role_required('schooladmin', 'teacher')
 def class_report(request, class_id):
     school = request.user.school
-    school_class = get_object_or_404(SchoolClass, id=class_id,school=school)
+    school_class = get_object_or_404(SchoolClass, id=class_id, school=school)
     
     students = Student.objects.filter(student_class=school_class)
 
@@ -648,39 +648,47 @@ def class_report(request, class_id):
         teachersubjectassignment__school_class=school_class
     ).distinct().order_by('name')
 
-    
-    all_exams = Exam.objects.filter(examsubject__subject__in=subjects).distinct()
-    exams_by_term = {}
-    for exam in all_exams:
-        term = getattr(exam, 'term', 'Unknown') 
-        exams_by_term.setdefault(term, []).append(exam)
-    
-    
-    exam_order = ['Opener', 'Mid-term', 'End-term']
-    exams = []
-    for term, term_exams in exams_by_term.items():
-        term_exams.sort(key=lambda x: exam_order.index(x.term) if hasattr(x, 'term') and x.term in exam_order else 99)
-        
-        selected = [e for e in term_exams[:3] if e.term in exam_order]
-        if len(selected) >= 2:  
-            exams = selected
-            break
-    if not exams:
-        exams = sorted(all_exams, key=lambda x: exam_order.index(x.term) if hasattr(x, 'term') and x.term in exam_order else 99)[:3]
+    # -------------------------------
+    # GET EXAMS (ORDERED)
+    # -------------------------------
+    all_exams = Exam.objects.filter(
+        examsubject__subject__in=subjects
+    ).distinct()
 
+    exam_order = ['Opener', 'Mid-term', 'End-term']
+
+    exams = sorted(
+        all_exams,
+        key=lambda x: exam_order.index(x.term)
+        if hasattr(x, 'term') and x.term in exam_order else 99
+    )[:3]
+
+    # -------------------------------
+    # MOST RECENT EXAM INDEX
+    # -------------------------------
+    latest_exam_index = len(exams) - 1 if exams else None
+
+    # -------------------------------
+    # FETCH ALL MARKS
+    # -------------------------------
     all_marks_qs = StudentMark.objects.filter(
         student__in=students,
         subject__in=subjects,
         exam__in=exams
     )
+
     marks_by_student_subject_exam = {
-        (m.student_id, m.subject_id, m.exam_id): m for m in all_marks_qs
+        (m.student_id, m.subject_id, m.exam_id): m
+        for m in all_marks_qs
     }
 
     all_student_reports = []
     class_exam_totals = [0] * len(exams)
     class_exam_counts = [0] * len(exams)
 
+    # -------------------------------
+    # LOOP STUDENTS
+    # -------------------------------
     for student in students:
         report_rows = []
         student_total = 0
@@ -690,36 +698,53 @@ def class_report(request, class_id):
         for subject in subjects:
             marks_with_trends = []
             marks_list = []
-            non_zero_marks = []  
 
+            # -------------------------------
+            # GET MARKS PER EXAM
+            # -------------------------------
             for idx, exam in enumerate(exams):
-                mark_obj = marks_by_student_subject_exam.get((student.id, subject.id, exam.id))
+                mark_obj = marks_by_student_subject_exam.get(
+                    (student.id, subject.id, exam.id)
+                )
                 mark = mark_obj.marks if mark_obj else 0
+
                 marks_list.append(mark)
-                if mark > 0:
-                    non_zero_marks.append(mark)
 
                 student_exam_totals[idx] += mark
                 student_exam_counts[idx] += 1
                 class_exam_totals[idx] += mark
                 class_exam_counts[idx] += 1
 
-            
+            # -------------------------------
+            # CALCULATE TRENDS
+            # -------------------------------
             for idx, mark in enumerate(marks_list):
                 if idx == 0:
                     trend = 'same'
                 else:
                     prev_mark = marks_list[idx - 1]
-                    trend = 'up' if mark > prev_mark else ('down' if mark < prev_mark else 'same')
-                marks_with_trends.append({'mark': mark, 'trend': trend})
+                    trend = 'up' if mark > prev_mark else (
+                        'down' if mark < prev_mark else 'same'
+                    )
 
-            # Remarks: zero does NOT affect (use non-zero only)
-            avg_subject = sum(non_zero_marks) / len(non_zero_marks) if non_zero_marks else 0
-            if avg_subject >= 80:
+                marks_with_trends.append({
+                    'mark': mark,
+                    'trend': trend
+                })
+
+            # -------------------------------
+            # REMARKS (MOST RECENT EXAM)
+            # -------------------------------
+            if latest_exam_index is not None:
+                latest_mark = marks_list[latest_exam_index]
+            else:
+                latest_mark = 0
+
+            if latest_mark >= 80:
                 remark = 'Exceeding Expectation'
-            elif avg_subject >= 60:
+            elif latest_mark >= 60:
                 remark = 'Meeting Expectation'
-            elif avg_subject >= 40:
+            elif latest_mark >= 40:
                 remark = 'Approaching Expectation'
             else:
                 remark = 'Below Expectation'
@@ -732,14 +757,28 @@ def class_report(request, class_id):
 
             student_total += sum(marks_list)
 
+        # -------------------------------
+        # FACILITATOR
+        # -------------------------------
         first_facilitator = next(
-            (m.facilitator for m in all_marks_qs.filter(student=student, facilitator__isnull=False)),
+            (m.facilitator for m in all_marks_qs.filter(
+                student=student,
+                facilitator__isnull=False
+            )),
             None
         )
-        facilitator_name = first_facilitator.get_full_name() if first_facilitator else "N/A"
 
+        facilitator_name = (
+            first_facilitator.get_full_name()
+            if first_facilitator else "N/A"
+        )
+
+        # -------------------------------
+        # EXAM AVERAGES
+        # -------------------------------
         exam_averages = [
-            round(student_exam_totals[i] / student_exam_counts[i], 2) if student_exam_counts[i] else 0
+            round(student_exam_totals[i] / student_exam_counts[i], 2)
+            if student_exam_counts[i] else 0
             for i in range(len(exams))
         ]
 
@@ -752,31 +791,43 @@ def class_report(request, class_id):
             'facilitator': facilitator_name,
         })
 
+    # -------------------------------
+    # CLASS SUMMARY
+    # -------------------------------
     class_grand_total = sum(class_exam_totals)
+
     class_exam_averages = [
-        round(class_exam_totals[i] / class_exam_counts[i], 2) if class_exam_counts[i] else 0
+        round(class_exam_totals[i] / class_exam_counts[i], 2)
+        if class_exam_counts[i] else 0
         for i in range(len(exams))
     ]
 
+    # -------------------------------
+    # RANKING
+    # -------------------------------
     all_student_reports.sort(key=lambda x: x['total'], reverse=True)
+
     rank = 0
     prev_total = None
+
     for idx, report in enumerate(all_student_reports, start=1):
         if report['total'] != prev_total:
             rank = idx
             prev_total = report['total']
         report['rank'] = rank
 
+    # -------------------------------
+    # RENDER
+    # -------------------------------
     return render(request, 'academics/class_report.html', {
         'school_class': school_class,
-        'school': school,  
+        'school': school,
         'exams': exams,
         'all_student_reports': all_student_reports,
         'class_exam_totals': class_exam_totals,
         'class_exam_averages': class_exam_averages,
         'class_grand_total': class_grand_total,
     })
-
 
 
 
