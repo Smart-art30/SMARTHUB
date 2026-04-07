@@ -1,40 +1,79 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+
 {% block content %}
 <div class="container mt-4">
-    <h3 class="mb-4">➕ Add Exam</h3>
-    
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
-    
-    <form method="post">
+    <h2>{{ form.instance.pk|yesno:"Edit Exam,Create Exam" }}</h2>
+    <form method="POST" novalidate>
         {% csrf_token %}
+
+        <!-- Exam Name -->
         <div class="mb-3">
-            <label class="form-label fw-bold">Exam Name</label>
-            <input type="text" name="name" class="form-control" 
-                   value="{{ name|default:'' }}" required>
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="text-danger">{{ form.name.errors }}</div>
+            {% endif %}
         </div>
+
+        <!-- Exam Type -->
         <div class="mb-3">
-            <label class="form-label fw-bold">Term</label>
-            <input type="text" name="term" class="form-control" 
-                   value="{{ term|default:'' }}" required>
+            {{ form.exam_type.label_tag }}
+            {{ form.exam_type }}
+            {% if form.exam_type.errors %}
+                <div class="text-danger">{{ form.exam_type.errors }}</div>
+            {% endif %}
         </div>
+
+        <!-- Term -->
         <div class="mb-3">
-            <label class="form-label fw-bold">Year</label>
-            <input type="number" name="year" class="form-control" min="2000" max="2030"
-                   value="{{ year|default:'' }}" required>
+            {{ form.term.label_tag }}
+            {{ form.term }}
+            {% if form.term.errors %}
+                <div class="text-danger">{{ form.term.errors }}</div>
+            {% endif %}
         </div>
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-success">
-                <i class="bi bi-plus-circle me-1"></i>Create Exam
-            </button>
-            <a href="{% url 'academics:exam_list' %}" class="btn btn-secondary">Cancel</a>
+
+        <!-- Year (readonly) -->
+        <div class="mb-3">
+            {{ form.year.label_tag }}
+            {{ form.year }}
+            {% if form.year.errors %}
+                <div class="text-danger">{{ form.year.errors }}</div>
+            {% endif %}
         </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
     </form>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const termSelect = document.getElementById("id_term");
+    const yearInput = document.getElementById("id_year");
+
+    // Map term IDs to years from Django form
+    const termYears = {
+        {% for term in form.fields.term.queryset %}
+            "{{ term.id }}": "{{ term.year }}",
+        {% endfor %}
+    };
+
+    function updateYear() {
+        const termId = termSelect.value;
+        yearInput.value = termYears[termId] || '';
+    }
+
+    // Initialize on page load
+    updateYear();
+
+    // Update whenever term changes
+    termSelect.addEventListener("change", updateYear);
+
+    // Prevent typing in year field
+    yearInput.addEventListener("keydown", function(e) {
+        e.preventDefault();
+    });
+});
+</script>
 {% endblock %}

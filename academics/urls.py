@@ -35,10 +35,15 @@ urlpatterns = [
 
     # ===== REPORTS =====
     path('reports/class/<int:class_id>/', views.class_report, name='class_report'),
+   
     path('reports/<int:student_id>/', views.student_report, name='student_report'),
     path('dashboard/reports/', views.report_list, name='report_list'),
     path('dashboard/reports/<int:student_id>/<int:exam_id>/', views.student_report, name='student_exam_report'),
 
     path('student/<int:student_id>/results/', views.student_results, name='student_results'),
+    path('ajax/load-terms/', views.load_terms, name='load_terms'),
+    path('load-terms/', views.load_terms, name='load_terms'),
+    path('ajax/load-classes/', views.load_classes, name='load_classes'),
+    
     
 ]

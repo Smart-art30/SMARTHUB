@@ -42,6 +42,7 @@ urlpatterns = [
     path('attendance/', include(('attendance.urls', 'attendance'), namespace='attendance')),
     path('academics/', include(('academics.urls', 'academics'), namespace='academics')),
     path('', dashboard_redirect, name='home'),
+   
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

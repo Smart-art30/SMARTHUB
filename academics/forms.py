@@ -2,6 +2,8 @@ from django import forms
 from .models import Subject
 from schools.models import SchoolClass
 from .models import Exam
+from django import forms
+from .models import Exam, AcademicTerm
 
 class SubjectForm(forms.ModelForm):
     class Meta:
@@ -47,12 +49,46 @@ class AssignSubjectsToExamForm(forms.Form):
             self.fields["school_class"].queryset = SchoolClass.objects.filter(school=school)
             self.fields["subjects"].queryset = Subject.objects.filter(school=school)
 
+
+
 class ExamForm(forms.ModelForm):
+    year = forms.IntegerField(
+        label='Year',
+        required=False,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'readonly': True})
+    )
+
     class Meta:
         model = Exam
-        fields = ['name', 'term', 'year']
+        fields = ['name', 'exam_type', 'term', 'year']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'term': forms.TextInput(attrs={'class': 'form-control'}),
-            'year': forms.NumberInput(attrs={'class': 'form-control', 'min': '2000', 'max': '2030'}),
+            'exam_type': forms.Select(attrs={'class': 'form-control'}),
+            'term': forms.Select(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        school = kwargs.pop('school', None)
+        super().__init__(*args, **kwargs)
+
+        if school:
+            terms = AcademicTerm.objects.filter(school=school).order_by('-year', 'term')
+            self.fields['term'].queryset = terms
+            self.term_year_map = {str(term.id): term.year for term in terms}
+
+        if self.instance and getattr(self.instance, 'term_id', None):
+            self.fields['year'].initial = self.instance.term.year
+
+        term_id = self.data.get('term')
+        if term_id:
+            term = AcademicTerm.objects.filter(id=term_id).first()
+            if term:
+                self.fields['year'].initial = term.year
+
+    def save(self, commit=True):
+        exam = super().save(commit=False)
+        if self.cleaned_data.get('term'):
+            exam.year = self.cleaned_data['term'].year
+        if commit:
+            exam.save()
+        return exam

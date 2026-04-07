@@ -2,43 +2,65 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.db import transaction
+from django.utils import timezone
+import json
+from django.http import JsonResponse
+from .models import AcademicTerm
+from schools.models import School
 
 from accounts.decorators import role_required
-
-from teachers.models import (
-    Teacher,
-    TeacherClass,
-    TeacherSubjectAssignment,
-)
-
-from schools.models import SchoolClass
-from students.models import Student
-
-from .models import (
-    Subject,
-    Exam,
-    ExamSubject,
-    StudentMark,
-)
-
-from .forms import SubjectForm
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from django.db import transaction
-import json
-from django.db import models
+from .models import AcademicTerm, SchoolClass, Subject, Exam, ExamSubject, StudentMark, School
+from .forms import SubjectForm, ExamForm, AssignSubjectsToExamForm
 from schools.forms import AssignExamForm
-from .forms import AssignSubjectsToExamForm
-from .forms import ExamForm
-
-
+from students.models import Student
+from teachers.models import Teacher, TeacherClass, TeacherSubjectAssignment
 from django.contrib.auth import get_user_model
 
-User = get_user_model() 
+User = get_user_model()
+
+from django.http import JsonResponse
+
+def load_terms(request):
+    year = request.GET.get('year')
+    terms = Term.objects.filter(year=year)
+    options = '<option value="">Select Term</option>'
+    for term in terms:
+        options += f'<option value="{term.id}">{term.name}</option>'
+
+    return JsonResponse({'options': options})
+
+
+def load_classes(request):
+    classes = SchoolClass.objects.all()
+
+    options = '<option value="">Select Class</option>'
+    for c in classes:
+        options += f'<option value="{c.id}">{c.name} {c.stream}</option>'
+
+    return JsonResponse({'options': options})
+
+
+def get_selected_term(request):
+    school = request.user.school
+
+    year = request.GET.get('year')
+    term_name = request.GET.get('term')
+
+    if year and term_name:
+        return AcademicTerm.objects.filter(
+            school=school,
+            year=year,
+            term=term_name
+        ).first()
+
+    # fallback → ACTIVE TERM
+    return AcademicTerm.objects.filter(
+        school=school,
+        is_active=True
+    ).first()
+
 
 
 @login_required
@@ -96,15 +118,14 @@ def subject_delete(request, pk):
 @login_required
 @role_required('schooladmin')
 def exam_list(request):
+    school = request.user.school
+
     exams = (
         Exam.objects
-        .filter(school=request.user.school)
-        .exclude(name__isnull=True)
-        .exclude(name__exact='')
-        .order_by('-year', 'term', 'name')
+        .filter(school=school)
+        .order_by('-term__year', '-term__term', 'exam_type')
     )
 
-    
     for exam in exams:
         exam.assigned_classes = (
             SchoolClass.objects.filter(
@@ -112,15 +133,15 @@ def exam_list(request):
             ).distinct()
         )
 
-   
     if request.method == 'POST':
         exam_id = request.POST.get('exam_id')
-        exam = Exam.objects.get(Exam,id=exam_id, school=request.user.school)
+        exam = get_object_or_404(Exam, id=exam_id, school=school)
+
         form = AssignExamForm(request.POST, user=request.user)
         if form.is_valid():
             classes = form.cleaned_data['classes']
             for school_class in classes:
-                for subject in school_class.subjects.filter(school=school):
+                for subject in Subject.objects.filter(school=school):
                     ExamSubject.objects.get_or_create(
                         exam=exam,
                         school_class=school_class,
@@ -139,45 +160,38 @@ def exam_list(request):
 @login_required
 @role_required('schooladmin')
 def exam_add(request):
+    school = request.user.school  
 
     if request.method == 'POST':
-      
-        name = request.POST.get('name', '').strip()
-        term = request.POST.get('term', '').strip()
-        year_str = request.POST.get('year', '').strip()
+        form = ExamForm(request.POST, school=school)
+        if form.is_valid():
+            exam_type = form.cleaned_data['exam_type']
+            term = form.cleaned_data['term']
 
-      
-        if not name or not term or not year_str:
-            messages.error(request, "All fields are required.")
-            return render(request, 'academics/exam_add.html')
+            
+            existing_exam = Exam.objects.filter(
+                school=school,
+                term=term,
+                exam_type=exam_type
+            ).first()
 
-        try:
-            year = int(year_str)
-        except ValueError:
-            messages.error(request, "Year must be a valid number.")
-            return render(request, 'academics/exam_add.html')
-
-        
-        exam, created = Exam.objects.get_or_create(
-            name=name,
-            term=term,
-            year=year,
-            school=request.user.school,
-        )
-
-        if created:
-            messages.success(request, f"Exam '{exam.name}' created successfully!")
+            if existing_exam:
+                messages.error(request, f"{exam_type.capitalize()} exam already exists for {term}.")
+            else:
+                exam = form.save(commit=False)
+                exam.school = school  
+                exam.save()
+                messages.success(request, "Exam saved successfully!")
+                return redirect('academics:exam_list')  
         else:
-            messages.info(request, f"Exam '{exam.name}' already exists.")
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = ExamForm(school=school)
 
-        return redirect('academics:exam_list')
-
-   
-    return render(request, 'academics/exam_add.html')
-
-
-
-
+    context = {
+        'form': form
+    }
+    return render(request, 'academics/exam_add.html', context)
 
 @login_required
 @role_required('schooladmin')
@@ -214,7 +228,7 @@ def exam_edit(request, pk):
     exam = get_object_or_404(Exam, pk=pk, school=request.user.school)
     
     if request.method == 'POST':
-        form = ExamForm(request.POST, instance=exam)
+        form = ExamForm(request.POST, instance=exam, school=request.user.school)
         if form.is_valid():
             form.save()
             messages.success(request, 'Exam updated successfully.')
@@ -283,6 +297,18 @@ def class_overview(request, class_id):
     })
 
 
+def get_term_exams(term):
+ 
+    exam_order = ['Opener', 'Mid-term', 'End-term']
+    exams = Exam.objects.filter(term=term, school=term.school)
+    ordered_exams = []
+
+    for ex_type in exam_order:
+        ex = exams.filter(exam_type=ex_type).first() 
+        if ex:
+            ordered_exams.append(ex)
+    
+    return ordered_exams
 
 @login_required
 @role_required('teacher')
@@ -321,7 +347,7 @@ def select_exam(request, class_id, subject_id):
         school_class=school_class,
         subject=subject,
         exam__school=teacher.school
-    ).select_related('exam').order_by('-exam__year', '-exam__term')
+    ).select_related('exam').order_by('-exam__term__year', '-exam__term__term', 'exam__exam_type')
 
     if not exam_subjects.exists():
         return render(request, 'academics/no_exam.html', {
@@ -414,7 +440,7 @@ def enter_marks(request, class_id, exam_id):
                             defaults={
                                 'marks': mark_float,
                                 'school_class': school_class,
-                                'term': exam.term,
+                                #'term': exam.term,
                                 'facilitator': teacher  
                             }
                         )
@@ -462,7 +488,7 @@ def save_mark_ajax(request):
             defaults={
                 "marks": marks,
                 "school_class": student.student_class,
-                "term": exam.term,
+                #"term": exam.term,
                 "facilitator": request.user
             }
         )
@@ -472,365 +498,364 @@ def save_mark_ajax(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
-
 @login_required
 def student_report(request, student_id):
-    student = get_object_or_404(Student, id=student_id,student_class__school=request.user.school)
-  
+    school = request.user.school
+    student = get_object_or_404(Student, id=student_id, student_class__school=school)
     subjects = Subject.objects.filter(
-        teachersubjectassignment__school_class=student.student_class).distinct().order_by('name')
-    
-    exams = Exam.objects.filter(examsubject__subject__in=subjects).distinct()
-    exam_order = ['Opener', 'Mid-term', 'End-term']
-    exams = list(exams)
-    exams.sort(key=lambda x: exam_order.index(x.term) if x.term in exam_order else 99)
-    marks_qs = StudentMark.objects.filter(student=student,subject__in=subjects,exam__in=exams)
-    marks_by_exam_subject = {(m.exam_id, m.subject_id): m for m in marks_qs}
+        teachersubjectassignment__school_class=student.student_class
+    ).distinct().order_by('name')
 
-  
-    report_rows_with_trends = []
+    term_param = request.GET.get('term')
+    year_param = request.GET.get('year')
+
+    try:
+        term_id = int(term_param) if term_param and term_param != 'None' else None
+    except ValueError:
+        term_id = None
+
+    try:
+        year = int(year_param) if year_param and year_param != 'None' else None
+    except ValueError:
+        year = None
+
+    term_qs = AcademicTerm.objects.filter(school=school).order_by('-year', '-term')
+    if term_id:
+        term_qs = term_qs.filter(id=term_id)
+    elif year:
+        term_qs = term_qs.filter(year=year)
+   
+    term = term_qs.first()
+    if not term:
+        term = AcademicTerm.objects.filter(school=school).order_by('-year', '-term').first()
+    if not term:
+        messages.error(request, "No active term found for this class.")
+        return redirect('academics:report_list')
+
+    exams = Exam.objects.filter(
+        id__in=ExamSubject.objects.filter(
+            school_class=student.student_class,
+            exam__term=term
+        ).values_list('exam_id', flat=True)
+    ).order_by('exam_type')
+
+    no_exams = not exams.exists()  # <-- Flag for template
+
+    marks_qs = StudentMark.objects.filter(student=student, subject__in=subjects, exam__in=exams)
+    marks_map = {(m.exam_id, m.subject_id): m for m in marks_qs}
+
+    report_rows = []
     exam_totals = [0] * len(exams)
     exam_counts = [0] * len(exams)
-    subject_facilitators = {}
 
-  
     for subject in subjects:
         marks_list = []
-        marks_with_trends = []
+        trends = []
         total_marks = 0
         count_marks = 0
 
         for idx, exam in enumerate(exams):
-            mark_obj = marks_by_exam_subject.get((exam.id, subject.id))
+            mark_obj = marks_map.get((exam.id, subject.id))
             mark = mark_obj.marks if mark_obj else 0
             marks_list.append(mark)
-
-           
-            if mark_obj and mark_obj.facilitator:
-                subject_facilitators[subject.name] = mark_obj.facilitator.get_full_name()
-
-           
             exam_totals[idx] += mark
-            if mark:
+            if mark > 0:
                 exam_counts[idx] += 1
 
             total_marks += mark
-            if mark:
+            if mark > 0:
                 count_marks += 1
 
-        
-        for idx, mark in enumerate(marks_list):
-            if idx == 0:
+        for i, mark in enumerate(marks_list):
+            if i == 0:
                 trend = 'same'
             else:
-                prev_mark = marks_list[idx - 1]
-                if mark > prev_mark:
-                    trend = 'up'
-                elif mark < prev_mark:
-                    trend = 'down'
-                else:
-                    trend = 'same'
+                prev = marks_list[i - 1]
+                trend = 'up' if mark > prev else 'down' if mark < prev else 'same'
+            trends.append({'mark': mark, 'trend': trend})
 
-            marks_with_trends.append({
-                'mark': mark,
-                'trend': trend
-            })
-
-   
-        avg_subject = total_marks / count_marks if count_marks else 0
-        if avg_subject >= 80:
+        avg = total_marks / count_marks if count_marks else 0
+        if avg >= 80:
             remark = 'Exceeding Expectation'
-        elif avg_subject >= 60:
+        elif avg >= 60:
             remark = 'Meeting Expectation'
-        elif avg_subject >= 40:
+        elif avg >= 40:
             remark = 'Approaching Expectation'
         else:
             remark = 'Below Expectation'
 
-        report_rows_with_trends.append({
+        report_rows.append({
             'subject': subject.name,
-            'marks': marks_with_trends,
+            'marks': trends,
             'remarks': remark
         })
 
-  
     exam_averages = [
         round(exam_totals[i] / exam_counts[i], 2) if exam_counts[i] else 0
         for i in range(len(exams))
     ]
 
-    
-    first_facilitator = StudentMark.objects.filter(
-        student=student,
-        facilitator__isnull=False
-    ).first()
-    facilitator = (
-        first_facilitator.facilitator.get_full_name()
-        if first_facilitator else "N/A"
-    )
-
-
-    class_students = Student.objects.filter(student_class=student.student_class)
-    student_totals = []
-
-    
-    all_marks = StudentMark.objects.filter(
-        student__in=class_students,
-        subject__in=subjects,
-        exam__in=exams
-    )
-
-   
-    totals_by_student = {}
-    for m in all_marks:
-        totals_by_student[m.student_id] = totals_by_student.get(m.student_id, 0) + (m.marks or 0)
-
-    for s in class_students:
-        total = totals_by_student.get(s.id, 0)
-        student_totals.append({
-            'student': s,
-            'total': total
-        })
-
-    student_totals.sort(key=lambda x: x['total'], reverse=True)
-
-    for idx, entry in enumerate(student_totals, start=1):
-        entry['rank'] = idx
-
-    student_rank = next(
-        (entry['rank'] for entry in student_totals if entry['student'] == student),
-        None
-    )
-
     return render(request, 'academics/student_report.html', {
         'student': student,
+        'term': term,
         'exams': exams,
-        'report_rows_with_trends': report_rows_with_trends,
-        'exam_totals': exam_totals,
+        'report_rows_with_trends': report_rows,
         'exam_averages': exam_averages,
-        'facilitator': facilitator,
-        'subject_facilitators': subject_facilitators,
-        'student_rank': student_rank,
+        'school': school,
+        'no_exams': no_exams,  # <-- Pass flag
     })
-
 
 
 
 @login_required
 @role_required('schooladmin')
 def report_list(request):
-    classes = SchoolClass.objects.filter(
-        school=request.user.school
-    ).prefetch_related('student_set')
+    school = request.user.school
+    classes = SchoolClass.objects.filter(school=school)
 
-    exams = Exam.objects.filter(school=request.user.school)
+    # Available years from AcademicTerm (better than Exam)
+    years = AcademicTerm.objects.filter(school=school).values_list('year', flat=True).distinct().order_by('-year')
+    terms = AcademicTerm.objects.filter(school=school).order_by('-year', 'term')
 
-    return render(
-        request,
-        'academics/report_list.html',
-        {
-            'classes': classes,
-            'exams': exams,
-        }
-    )
+    # Get selected year & term from GET params
+    selected_year = request.GET.get('year')
+    selected_term_id = request.GET.get('term')
 
-from .models import School  
+    selected_term = None
+    if selected_year and selected_term_id:
+        selected_term = AcademicTerm.objects.filter(
+            id=selected_term_id,
+            year=selected_year,
+            school=school
+        ).first()
+
+    return render(request, 'academics/report_list.html', {
+        'classes': classes,
+        'years': years,
+        'terms': terms,
+        'selected_year': selected_year,
+        'selected_term': selected_term,
+    })
+
+
+
+# ===============================
+# 🔹 DYNAMIC REMARK GENERATORS
+# ===============================
+
+def generate_dynamic_remark(subject, marks_list, trends):
+    if not marks_list:
+        return "No assessment data available."
+
+    avg = sum(marks_list) / len(marks_list)
+    latest = marks_list[-1]
+    trend = trends[-1]["trend"] if trends else "same"
+
+    # --- Base performance ---
+    if avg >= 80:
+        remark = "Excellent performance"
+    elif avg >= 65:
+        remark = ""
+    elif avg >= 50:
+        remark = "More effort required."
+    else:
+        remark = "Significant improvement needed."
+
+    # --- Trend insight ---
+    if trend == "up":
+        remark += " Showing improvement."
+    elif trend == "down":
+        remark += " Performance is declining."
+    else:
+        remark += " Performance is consistent."
+
+    subject_lower = subject.lower()
+
+    # --- Subject‑specific feedback ---
+    if subject_lower == "mathematics":
+        if avg < 50:
+            remark += " Needs more practice in calculations and problem‑solving."
+        else:
+            remark += " Demonstrates strong numerical understanding."
+
+    elif subject_lower == "english":
+        if avg < 50:
+            remark += " Should improve reading and writing skills."
+        else:
+            remark += " Shows good language and comprehension skills."
+
+    elif subject_lower == "science":
+        remark += " Continue developing scientific concepts "
+
+    else:
+        # Default for subjects not explicitly configured
+        if avg < 50:
+            remark += " Needs more effort and support."
+        else:
+            remark += " "
+
+    return remark
+
+def generate_overall_remark(avg):
+    if avg >= 80:
+        return " Keep up the excellent work."
+    elif avg >= 65:
+        return "There is room for further improvement."
+    elif avg >= 50:
+        return "More effort and consistency are needed."
+    else:
+        return "Immediate improvement and support required."
+
+
+# ===============================
+# 🔹 MAIN VIEW
+# ===============================
 
 @login_required
 @role_required('schooladmin', 'teacher')
-def class_report(request, class_id):
+def class_report(request, class_id=None):
     school = request.user.school
-    school_class = get_object_or_404(SchoolClass, id=class_id, school=school)
-    
-    students = Student.objects.filter(student_class=school_class)
 
+    # --- Dropdown data ---
+    classes = SchoolClass.objects.filter(school=school).order_by('name')
+    years = AcademicTerm.objects.filter(school=school).values_list('year', flat=True).distinct()
+    terms = AcademicTerm.objects.filter(school=school).order_by('-year', 'term')
+
+    # --- Selected filters ---
+    selected_class_id = class_id or request.GET.get('class')
+    selected_year = request.GET.get('year')
+    selected_term_id = request.GET.get('term')
+
+    if not selected_class_id:
+        messages.error(request, "Please select a class to view reports.")
+        return redirect('academics:report_list')
+
+    school_class = get_object_or_404(SchoolClass, id=selected_class_id, school=school)
+
+    students = Student.objects.filter(student_class=school_class)
     subjects = Subject.objects.filter(
-        teachersubjectassignment__school_class=school_class
+        examsubject__school_class=school_class
     ).distinct().order_by('name')
 
-    # -------------------------------
-    # GET EXAMS (ORDERED)
-    # -------------------------------
-    all_exams = Exam.objects.filter(
-        examsubject__subject__in=subjects
-    ).distinct()
+    # --- Exams ---
+    exams_qs = Exam.objects.filter(
+        id__in=ExamSubject.objects.filter(
+            school_class=school_class
+        ).values_list('exam_id', flat=True)
+    )
 
-    exam_order = ['Opener', 'Mid-term', 'End-term']
+    # --- Filter by term/year ---
+    selected_term = None
+    if selected_term_id:
+        selected_term = get_object_or_404(AcademicTerm, id=selected_term_id, school=school)
+        exams_qs = exams_qs.filter(term=selected_term)
 
-    exams = sorted(
-        all_exams,
-        key=lambda x: exam_order.index(x.term)
-        if hasattr(x, 'term') and x.term in exam_order else 99
-    )[:3]
+    if selected_year:
+        exams_qs = exams_qs.filter(term__year=selected_year)
 
-    # -------------------------------
-    # MOST RECENT EXAM INDEX
-    # -------------------------------
-    latest_exam_index = len(exams) - 1 if exams else None
+    # --- Custom exam ordering ---
+    EXAM_ORDER = ['Opener', 'Mid-term', 'End-term']
+    exam_order_dict = {name: idx for idx, name in enumerate(EXAM_ORDER)}
 
-    # -------------------------------
-    # FETCH ALL MARKS
-    # -------------------------------
-    all_marks_qs = StudentMark.objects.filter(
+    exams = list(exams_qs)
+    exams.sort(key=lambda x: (x.term.year, x.term.term, exam_order_dict.get(x.exam_type, 99)))
+
+    # --- Fetch marks ---
+    all_marks = StudentMark.objects.filter(
         student__in=students,
         subject__in=subjects,
         exam__in=exams
     )
 
-    marks_by_student_subject_exam = {
-        (m.student_id, m.subject_id, m.exam_id): m
-        for m in all_marks_qs
+    marks_map = {
+        (m.student_id, m.subject_id, m.exam_id): m.marks
+        for m in all_marks
     }
 
-    all_student_reports = []
-    class_exam_totals = [0] * len(exams)
-    class_exam_counts = [0] * len(exams)
+    # ===============================
+    # 🔹 BUILD REPORTS
+    # ===============================
+    filtered_reports = []
 
-    # -------------------------------
-    # LOOP STUDENTS
-    # -------------------------------
     for student in students:
         report_rows = []
-        student_total = 0
-        student_exam_totals = [0] * len(exams)
-        student_exam_counts = [0] * len(exams)
+        exam_totals = [0] * len(exams)
+        exam_counts = [0] * len(exams)
 
         for subject in subjects:
-            marks_with_trends = []
             marks_list = []
 
-            # -------------------------------
-            # GET MARKS PER EXAM
-            # -------------------------------
+            # --- Collect marks ---
             for idx, exam in enumerate(exams):
-                mark_obj = marks_by_student_subject_exam.get(
-                    (student.id, subject.id, exam.id)
-                )
-                mark = mark_obj.marks if mark_obj else 0
-
+                mark = marks_map.get((student.id, subject.id, exam.id), 0)
                 marks_list.append(mark)
 
-                student_exam_totals[idx] += mark
-                student_exam_counts[idx] += 1
-                class_exam_totals[idx] += mark
-                class_exam_counts[idx] += 1
+                if mark > 0:
+                    exam_totals[idx] += mark
+                    exam_counts[idx] += 1
 
-            # -------------------------------
-            # CALCULATE TRENDS
-            # -------------------------------
-            for idx, mark in enumerate(marks_list):
-                if idx == 0:
+            # --- Compute trends ---
+            trends = []
+            for i, mark in enumerate(marks_list):
+                if i == 0:
                     trend = 'same'
                 else:
-                    prev_mark = marks_list[idx - 1]
-                    trend = 'up' if mark > prev_mark else (
-                        'down' if mark < prev_mark else 'same'
-                    )
+                    prev = marks_list[i - 1]
+                    if mark > prev:
+                        trend = 'up'
+                    elif mark < prev:
+                        trend = 'down'
+                    else:
+                        trend = 'same'
 
-                marks_with_trends.append({
-                    'mark': mark,
-                    'trend': trend
-                })
+                trends.append({'mark': mark, 'trend': trend})
 
-            # -------------------------------
-            # REMARKS (MOST RECENT EXAM)
-            # -------------------------------
-            if latest_exam_index is not None:
-                latest_mark = marks_list[latest_exam_index]
-            else:
-                latest_mark = 0
-
-            if latest_mark >= 80:
-                remark = 'Exceeding Expectation'
-            elif latest_mark >= 60:
-                remark = 'Meeting Expectation'
-            elif latest_mark >= 40:
-                remark = 'Approaching Expectation'
-            else:
-                remark = 'Below Expectation'
+            # --- Dynamic remark ---
+            remark = generate_dynamic_remark(subject.name, marks_list, trends)
 
             report_rows.append({
                 'subject': subject.name,
-                'marks': marks_with_trends,
-                'remarks': remark
+                'marks': trends,
+                'remarks': remark,
             })
 
-            student_total += sum(marks_list)
-
-        # -------------------------------
-        # FACILITATOR
-        # -------------------------------
-        first_facilitator = next(
-            (m.facilitator for m in all_marks_qs.filter(
-                student=student,
-                facilitator__isnull=False
-            )),
-            None
-        )
-
-        facilitator_name = (
-            first_facilitator.get_full_name()
-            if first_facilitator else "N/A"
-        )
-
-        # -------------------------------
-        # EXAM AVERAGES
-        # -------------------------------
+        # --- Exam averages ---
         exam_averages = [
-            round(student_exam_totals[i] / student_exam_counts[i], 2)
-            if student_exam_counts[i] else 0
+            round(exam_totals[i] / exam_counts[i], 1) if exam_counts[i] else 0
             for i in range(len(exams))
         ]
 
-        all_student_reports.append({
+        # --- Overall average ---
+        overall_avg = round(sum(exam_averages) / len(exam_averages), 1) if exam_averages else 0
+
+        # --- Overall remark ---
+        overall_remark = generate_overall_remark(overall_avg)
+
+        filtered_reports.append({
             'student': student,
             'report_rows_with_trends': report_rows,
-            'exam_totals': student_exam_totals,
+            'exam_totals': exam_totals,
             'exam_averages': exam_averages,
-            'total': student_total,
-            'facilitator': facilitator_name,
+            'overall_avg': overall_avg,
+            'overall_remark': overall_remark,
+            'exam_year': selected_year,
+            'exam_term': selected_term.term if selected_term else None,
+            'facilitator': getattr(student.student_class, 'facilitator', None),
         })
 
-    # -------------------------------
-    # CLASS SUMMARY
-    # -------------------------------
-    class_grand_total = sum(class_exam_totals)
-
-    class_exam_averages = [
-        round(class_exam_totals[i] / class_exam_counts[i], 2)
-        if class_exam_counts[i] else 0
-        for i in range(len(exams))
-    ]
-
-    # -------------------------------
-    # RANKING
-    # -------------------------------
-    all_student_reports.sort(key=lambda x: x['total'], reverse=True)
-
-    rank = 0
-    prev_total = None
-
-    for idx, report in enumerate(all_student_reports, start=1):
-        if report['total'] != prev_total:
-            rank = idx
-            prev_total = report['total']
-        report['rank'] = rank
-
-    # -------------------------------
-    # RENDER
-    # -------------------------------
     return render(request, 'academics/class_report.html', {
+        'classes': classes,
+        'selected_class_id': int(selected_class_id),
+        'selected_year': selected_year,
+        'selected_term': selected_term,
         'school_class': school_class,
-        'school': school,
         'exams': exams,
-        'all_student_reports': all_student_reports,
-        'class_exam_totals': class_exam_totals,
-        'class_exam_averages': class_exam_averages,
-        'class_grand_total': class_grand_total,
+        'filtered_reports': filtered_reports,
+        'years': years,
+        'terms': terms,
+        'school': school,
+        'now': timezone.now(),
     })
-
-
-
 
 @login_required
 @role_required('schooladmin')
@@ -996,35 +1021,79 @@ def get_rubric(mark):
 @login_required
 @role_required('schooladmin')
 def admin_class_marks(request, class_id):
-    school_class = get_object_or_404(SchoolClass, id=class_id, school=request.user.school)
+    school = request.user.school
+
+    school_class = get_object_or_404(
+        SchoolClass,
+        id=class_id,
+        school=school
+    )
+
     students = Student.objects.filter(student_class=school_class)
 
-  
-    subjects = Subject.objects.filter(teachersubjectassignment__school_class=school_class).distinct().order_by('name')
-    exams = Exam.objects.filter(school=school_class.school).order_by('year', 'term')
-    marks_qs = StudentMark.objects.filter(student__in=students,subject__in=subjects,exam__in=exams)
-    marks_map = {(m.student_id, m.subject_id, m.exam_id): m.marks for m in marks_qs}
-    assigned_teachers_qs = TeacherClass.objects.filter(school_class=school_class
-    ).select_related('teacher', 'teacher__user')
-    assigned_teachers = [t.teacher.user.get_full_name() for t in assigned_teachers_qs]
+    subjects = Subject.objects.filter(
+        teachersubjectassignment__school_class=school_class
+    ).distinct().order_by('name')
+
+    # ✅ Term selection
+    term = get_selected_term(request)
+    if not term:
+        messages.error(request, "No term selected.")
+        return redirect('academics:admin_class_list')
+
+    # ✅ Exams (Opener → Mid → End)
+    exams = get_term_exams(term)
+
+    # ✅ Marks
+    marks_qs = StudentMark.objects.filter(
+        student__in=students,
+        subject__in=subjects,
+        exam__in=exams
+    )
+
+    marks_map = {
+        (m.student_id, m.subject_id, m.exam_id): m.marks
+        for m in marks_qs
+    }
+
+    # ✅ Teachers
+    assigned_teachers = [
+        t.teacher.user.get_full_name()
+        for t in TeacherClass.objects.filter(
+            school_class=school_class
+        ).select_related('teacher__user')
+    ]
 
     exam_tables = []
 
     for exam in exams:
         rows = []
-        subject_totals = [{"subject": subj, "total": 0, "count": 0} for subj in subjects]
+        subject_totals = [
+            {"subject": subj, "total": 0, "count": 0}
+            for subj in subjects
+        ]
 
         for student in students:
             student_total = 0
             student_marks = []
+
             for i, subject in enumerate(subjects):
                 mark = marks_map.get((student.id, subject.id, exam.id), 0)
-                student_marks.append({"mark": mark, "rubric": get_rubric(mark)})
+
+                student_marks.append({
+                    "mark": mark,
+                    "rubric": get_rubric(mark)
+                })
+
                 student_total += mark
+
+                # ✅ FIXED counting
                 subject_totals[i]["total"] += mark
-                subject_totals[i]["count"] += 1
+                if mark > 0:
+                    subject_totals[i]["count"] += 1
 
             student_avg = student_total / len(subjects) if subjects else 0
+
             rows.append({
                 "student": student,
                 "marks": student_marks,
@@ -1032,14 +1101,17 @@ def admin_class_marks(request, class_id):
                 "average": round(student_avg, 2)
             })
 
-        # Ranking
+        # ✅ Ranking
         rows.sort(key=lambda x: x['total'], reverse=True)
         for idx, row in enumerate(rows):
             row['rank'] = idx + 1
 
-        # Subject means
+        # ✅ Subject means
         for subj_total in subject_totals:
-            subj_total["mean"] = round(subj_total["total"] / subj_total["count"], 2) if subj_total["count"] else 0
+            subj_total["mean"] = (
+                round(subj_total["total"] / subj_total["count"], 2)
+                if subj_total["count"] else 0
+            )
 
         max_total = len(subjects) * exam.max_mark if subjects else 0
 
@@ -1048,13 +1120,14 @@ def admin_class_marks(request, class_id):
             "subjects": subjects,
             "rows": rows,
             "subject_totals": subject_totals,
-            "teachers": assigned_teachers, 
-            "school": school_class.school,
+            "teachers": assigned_teachers,
+            "school": school,
             "max_total": max_total,
         })
 
     return render(request, "academics/admin_class_marks.html", {
         "school_class": school_class,
+        "term": term,
         "exam_tables": exam_tables
     })
 
@@ -1067,12 +1140,17 @@ def admin_class_list(request):
     return render(request, 'academics/admin_class_list.html', {'classes': classes})
 
 def student_results(request, student_id):
-    student = get_object_or_404(Student, id=student_id,student_class__school=request.user.school)
+    student = get_object_or_404(
+        Student,
+        id=student_id,
+        student_class__school=request.user.school
+    )
+
     marks = StudentMark.objects.filter(student=student).select_related('subject', 'exam')
-    
+
     results_by_exam = {}
     for mark in marks:
-        exam_name = f"{mark.exam.name} ({mark.exam.term} {mark.exam.year})"
+        exam_name = f"{mark.exam.exam_type} ({mark.exam.term.term} {mark.exam.term.year})"
         results_by_exam.setdefault(exam_name, []).append(mark)
 
     return render(request, 'academics/student_results.html', {
