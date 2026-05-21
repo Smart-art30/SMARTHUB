@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load address_filters %}
 
 {% block title %}School Admin Dashboard - SmartHub{% endblock %}
 
@@ -259,49 +260,157 @@
                     </div>
                 </div>
 
+           
+
                 <!-- School Information -->
                 <div class="card mb-4 mb-md-5 shadow-lg dashboard-stat">
-                    <div class="card-header bg-gradient text-white py-3 py-md-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+
+                    <div class="card-header bg-gradient text-white py-3 py-md-4"
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                         <h4 class="mb-0 fw-semibold">
                             <i class="bi bi-building-school me-3"></i>School Information
                         </h4>
                     </div>
+
                     <div class="card-body p-3 p-md-5">
                         <div class="row align-items-center g-3 g-md-4">
+
+                            <!-- Logo -->
                             <div class="col-12 col-lg-3 text-center mb-4 mb-lg-0">
+
                                 {% if school.logo %}
-                                    <img src="{{ school.logo.url }}" class="img-fluid rounded-4 shadow-lg" style="max-height:140px;" alt="School Logo">
+                                    <img src="{{ school.logo.url }}"
+                                        class="img-fluid rounded-4 shadow-lg"
+                                        style="max-height:140px;"
+                                        alt="School Logo">
                                 {% else %}
-                                    <div class="bg-light rounded-4 shadow-lg p-4 mx-auto d-flex align-items-center justify-content-center" style="width: 140px; height: 140px;">
+                                    <div class="bg-light rounded-4 shadow-lg p-4 mx-auto d-flex align-items-center justify-content-center"
+                                        style="width: 140px; height: 140px;">
                                         <i class="bi bi-building text-muted" style="font-size: 3rem;"></i>
                                     </div>
                                 {% endif %}
+
                             </div>
+
+                            <!-- School Details -->
                             <div class="col-12 col-lg-9">
+
                                 <div class="row g-3 g-md-4">
+
+                                    <!-- Left Column -->
                                     <div class="col-12 col-md-6">
-                                        <h3 class="fw-bold mb-2">{{ school.name }}</h3>
-                                        <p class="text-muted mb-1"><i class="bi bi-hash me-2"></i>{{ school.code }}</p>
-                                        <p class="mb-0"><i class="bi bi-geo-alt-fill me-2 text-primary"></i>{{ school.address }}</p>
+
+                                        <!-- School Name -->
+                                        <h3 class="fw-bold mb-2">
+                                            {{ school.name }}
+                                        </h3>
+
+                                        <!-- School Code -->
+                                        <p class="text-muted mb-2">
+                                            <i class="bi bi-hash me-2"></i>
+                                            {{ school.code }}
+                                        </p>
+
+                                        <!-- Motto -->
+                                        {% if school.motto %}
+                                        <p class="fst-italic text-primary mb-3">
+                                            <i class="bi bi-chat-quote me-2"></i>
+                                            “{{ school.motto }}”
+                                        </p>
+                                        {% endif %}
+
+                                        <!-- Address -->
+                                        {% if school.address %}
+                                        <div class="mt-2">
+
+                                            {% for line in school.address|split_lines %}
+
+                                                {% if "P.O" in line or "BOX" in line %}
+
+                                                    <p class="mb-1">
+                                                        <i class="bi bi-mailbox text-success me-2"></i>
+                                                        {{ line }}
+                                                    </p>
+
+                                                {% elif "RUIRU" in line or "JUJA" in line or "NAIROBI" in line or "KIAMBU" in line %}
+
+                                                    <p class="mb-1">
+                                                        <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                                                        {{ line }}
+                                                    </p>
+
+                                                {% else %}
+
+                                                    <p class="mb-1">
+                                                        <i class="bi bi-building text-primary me-2"></i>
+                                                        {{ line }}
+                                                    </p>
+
+                                                {% endif %}
+
+                                            {% endfor %}
+
+                                        </div>
+                                        {% endif %}
+
                                     </div>
+
+                                    <!-- Right Column -->
                                     <div class="col-12 col-md-6">
+
+                                        <!-- Phone -->
+                                        {% if school.phone %}
                                         <div class="d-flex align-items-center mb-2">
                                             <i class="bi bi-telephone-fill text-success me-2 fs-5"></i>
-                                            <span class="fw-medium">{{ school.phone }}</span>
+                                            <span class="fw-medium">
+                                                {{ school.phone }}
+                                            </span>
                                         </div>
+                                        {% endif %}
+
+                                        <!-- Email -->
+                                        {% if school.email %}
                                         <div class="d-flex align-items-center mb-4">
                                             <i class="bi bi-envelope-fill text-info me-2 fs-5"></i>
-                                            <span class="fw-medium">{{ school.email }}</span>
+                                            <span class="fw-medium">
+                                                {{ school.email }}
+                                            </span>
                                         </div>
-                                        <div class="badge fs-6 px-4 py-3 fw-semibold {% if school.subscription and school.subscription.is_active %}bg-success{% else %}bg-danger{% endif %}">
-                                            <i class="bi bi-{% if school.subscription and school.subscription.is_active %}check-circle{% else %}x-circle{% endif %}-fill me-2"></i>
-                                            {% if school.subscription and school.subscription.is_active %}Active Subscription{% else %}Inactive{% endif %}
-                                        </div>
+                                        {% endif %}
+
+                                        <!-- Subscription -->
+                                        <div class="badge fs-6 px-4 py-3 fw-semibold
+                                        {% if school.subscription %}
+                                            {% if school.subscription.name == 'Basic' %}
+                                                bg-secondary
+                                            {% elif school.subscription.name == 'Classic' %}
+                                                bg-primary
+                                            {% elif school.subscription.name == 'Premium' %}
+                                                bg-warning text-dark
+                                            {% else %}
+                                                bg-success
+                                            {% endif %}
+                                        {% else %}
+                                            bg-danger
+                                        {% endif %}">
+
+                                        <i class="bi bi-stars me-2"></i>
+
+                                        {% if school.subscription %}
+                                            {{ school.subscription.name }} Plan
+                                        {% else %}
+                                            No Plan Assigned
+                                        {% endif %}
                                     </div>
+                                    </div>
+
                                 </div>
+
                             </div>
+
                         </div>
                     </div>
+
                 </div>
 
                 <!-- Dashboard Stats -->

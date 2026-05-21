@@ -34,11 +34,20 @@ class SubjectForm(forms.ModelForm):
         return code
 
 
-
 class AssignSubjectsToExamForm(forms.Form):
     exam = forms.ModelChoiceField(queryset=Exam.objects.none())
-    school_class = forms.ModelChoiceField(queryset=SchoolClass.objects.none())
-    subjects = forms.ModelMultipleChoiceField(queryset=Subject.objects.none())
+
+    school_class = forms.ModelMultipleChoiceField(
+        queryset=SchoolClass.objects.none(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
+
+    subjects = forms.ModelMultipleChoiceField(
+        queryset=Subject.objects.none(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
 
     def __init__(self, *args, **kwargs):
         school = kwargs.pop("school", None)
@@ -48,7 +57,6 @@ class AssignSubjectsToExamForm(forms.Form):
             self.fields["exam"].queryset = Exam.objects.filter(school=school)
             self.fields["school_class"].queryset = SchoolClass.objects.filter(school=school)
             self.fields["subjects"].queryset = Subject.objects.filter(school=school)
-
 
 
 class ExamForm(forms.ModelForm):

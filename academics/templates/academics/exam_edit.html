@@ -16,6 +16,12 @@
         </div>
 
         <div class="mb-3">
+            {{ form.exam_type.label_tag }}
+            {{ form.exam_type }}
+            {{ form.exam_type.errors }}
+        </div>
+
+        <div class="mb-3">
             {{ form.term.label_tag }}
             {{ form.term }}
             {{ form.term.errors }}

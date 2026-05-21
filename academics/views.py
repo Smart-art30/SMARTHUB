@@ -9,6 +9,7 @@ import json
 from django.http import JsonResponse
 from .models import AcademicTerm
 from schools.models import School
+import traceback
 
 from accounts.decorators import role_required
 from .models import AcademicTerm, SchoolClass, Subject, Exam, ExamSubject, StudentMark, School
@@ -17,6 +18,13 @@ from schools.forms import AssignExamForm
 from students.models import Student
 from teachers.models import Teacher, TeacherClass, TeacherSubjectAssignment
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.db import transaction
+import json
+
+from students.models import Student
+from academics.models import Exam, Subject, StudentMark
 
 User = get_user_model()
 
@@ -223,20 +231,51 @@ def exam_subject_add(request, exam_id):
     })
 
 
-
+@login_required
 def exam_edit(request, pk):
-    exam = get_object_or_404(Exam, pk=pk, school=request.user.school)
-    
+
+    exam = get_object_or_404(
+        Exam,
+        pk=pk,
+        school=request.user.school
+    )
+
     if request.method == 'POST':
-        form = ExamForm(request.POST, instance=exam, school=request.user.school)
+
+        form = ExamForm(
+            request.POST,
+            instance=exam,
+            school=request.user.school
+        )
+
+        print(form.errors)
+
         if form.is_valid():
+
             form.save()
-            messages.success(request, 'Exam updated successfully.')
+
+            messages.success(
+                request,
+                'Exam updated successfully.'
+            )
+
             return redirect('academics:exam_list')
+
     else:
-        form = ExamForm(instance=exam)
-    
-    return render(request, 'academics/exam_edit.html', {'form': form, 'exam': exam})
+
+        form = ExamForm(
+            instance=exam,
+            school=request.user.school
+        )
+
+    return render(
+        request,
+        'academics/exam_edit.html',
+        {
+            'form': form,
+            'exam': exam
+        }
+    )
 
 
 def exam_delete(request, pk):
@@ -459,44 +498,67 @@ def enter_marks(request, class_id, exam_id):
     })
 
 
+
 @login_required
 @role_required('teacher')
 def save_mark_ajax(request):
-    school = request.user.teacher.school
-
     if request.method != "POST":
         return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
 
     try:
-        data = json.loads(request.body)
+        school = request.user.teacher.school
+        data = json.loads(request.body or "{}")
 
         student_id = data.get("student_id")
         subject_id = data.get("subject_id")
         exam_id = data.get("exam_id")
-        marks = data.get("mark")
+        mark = data.get("mark")
 
-        marks = float(marks)
+        # --- validate required fields
+        if not all([student_id, subject_id, exam_id]):
+            return JsonResponse({"status": "error", "message": "Missing fields"}, status=400)
 
+        # --- safe float conversion
+        try:
+            mark = float(mark) if mark not in [None, "", " "] else 0
+        except (TypeError, ValueError):
+            return JsonResponse({"status": "error", "message": "Invalid mark"}, status=400)
+
+        # --- fetch objects safely
         student = Student.objects.get(id=student_id, student_class__school=school)
-        exam = Exam.objects.get(id=exam_id, school=school)
         subject = Subject.objects.get(id=subject_id, school=school)
+        exam = Exam.objects.get(id=exam_id, school=school)
 
-        StudentMark.objects.update_or_create(
+        # --- IMPORTANT: remove M2M assignment (FIX)
+        obj, created = StudentMark.objects.update_or_create(
             student=student,
             subject=subject,
             exam=exam,
             defaults={
-                "marks": marks,
-                "school_class": student.student_class,
-                #"term": exam.term,
-                "facilitator": request.user
+                "marks": mark,
+                "facilitator": request.user,
+                "school_class": student.student_class  # ONLY works if FK
             }
         )
 
-        return JsonResponse({"status": "ok"})
+        # If school_class is ManyToMany, uncomment this instead:
+        # obj.school_class.set([student.student_class])
+
+        return JsonResponse({"status": "ok", "created": created})
+
+    except Student.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Student not found"}, status=404)
+
+    except Subject.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Subject not found"}, status=404)
+
+    except Exam.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Exam not found"}, status=404)
 
     except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=400)
+        print("AJAX SAVE MARK ERROR:\n", traceback.format_exc())
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
 
 @login_required
 def student_report(request, student_id):
@@ -940,28 +1002,30 @@ def assign_subjects_to_exam(request):
     exam = None
     school_class = None
 
+    classes = SchoolClass.objects.filter(school=school).order_by("name", "stream")
+
     if request.method == "POST":
-        form = AssignSubjectsToExamForm(request.POST,school=school)
+        form = AssignSubjectsToExamForm(request.POST, school=school)
 
         if form.is_valid():
             exam = form.cleaned_data["exam"]
-            school_class = form.cleaned_data["school_class"]
+            school_classes = form.cleaned_data["school_class"]
             subjects = form.cleaned_data["subjects"]
 
-            for subject in subjects:
-                ExamSubject.objects.get_or_create(
-                    exam=exam,
-                    school_class=school_class,
-                    subject=subject,
-                )
+            for cls in school_classes:
+                for subject in subjects:
+                    ExamSubject.objects.get_or_create(
+                        exam=exam,
+                        school_class=cls,
+                        subject=subject,
+                    )
 
+            first_class = school_classes.first()
             messages.success(request, "Subjects assigned successfully.")
 
-           
             return redirect(
-                f"{request.path}?exam={exam.id}&class={school_class.id}"
+                f"{request.path}?exam={exam.id}&class={first_class.id if first_class else ''}"
             )
-
     else:
         form = AssignSubjectsToExamForm(school=school)
         exam_id = request.GET.get("exam")
@@ -976,21 +1040,24 @@ def assign_subjects_to_exam(request):
                 school_class=school_class,
             )
 
-    return render(
-        request,
-        "academics/assign_subjects_to_exam.html",
-        {
-            "form": form,
-            "assigned_subjects": assigned_subjects,
-            "exam": exam,
-            "school_class": school_class,
-        },
-    )
+    return render(request, "academics/assign_subjects_to_exam.html", {
+        "form": form,
+        "classes": classes,
+        "assigned_subjects": assigned_subjects,
+        "exam": exam,
+        "school_class": school_class,
+        "selected_class_ids": [],
+        "assigned_ids": [],
+    })
 
 @login_required
 @role_required("schooladmin")
 def remove_exam_subject(request, pk):
-    exam_subject = get_object_or_404(ExamSubject, pk=pk,exam__school=request.user.school)
+    exam_subject = get_object_or_404(
+        ExamSubject,
+        pk=pk,
+        exam__school=request.user.school
+    )
 
     exam_id = exam_subject.exam.id
     class_id = exam_subject.school_class.id
@@ -1002,8 +1069,6 @@ def remove_exam_subject(request, pk):
     return redirect(
         f"/academics/exams/assign-subjects/?exam={exam_id}&class={class_id}"
     )
-
-
 ###trial####
 
 def get_rubric(mark):

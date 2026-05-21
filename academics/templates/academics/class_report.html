@@ -2,227 +2,605 @@
 {% load static %}
 {% block content %}
 
+
 <style>
-:root {
-    --bg-color: #ffffff;
-    --text-color: #000;
-    --border-color: #e5e7eb;
-    --header-bg: linear-gradient(135deg, #4f46e5, #7c3aed);
-    --primary: #3b82f6;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --shadow: 0 4px 10px rgba(0,0,0,0.08);
+
+
+:root{
+    --bg-color:#ffffff;
+    --text-color:#000;
+    --border-color:#d1d5db;
+    --header-bg:linear-gradient(135deg,#4f46e5,#7c3aed);
+    --primary:#2563eb;
+    --success:#16a34a;
+    --danger:#dc2626;
+    --warning:#d97706;
+    --shadow:0 4px 12px rgba(0,0,0,.08);
 }
 
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f9fafb;
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:#f3f4f6;
+    color:var(--text-color);
 }
 
-/* FILTER */
-.filter-controls {
-    background: var(--header-bg);
-    color: white;
-    border-radius: 12px;
+
+/* ================= FILTER ================= */
+
+
+.filter-controls{
+    background:var(--header-bg);
+    color:#fff;
+    border-radius:14px;
+    box-shadow:var(--shadow);
 }
 
-/* REPORT CARD */
-.a4-report {
-    background: white;
-    border-radius: 14px;
-    margin: 20px auto;
-    max-width: 210mm;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    page-break-after: always;
-    padding: 15px;
+
+/* ================= REPORT ================= */
+
+
+.a4-report{
+    background:#fff;
+    width:210mm;
+    min-height:297mm;
+    margin:20px auto;
+    padding:10mm;
+    box-sizing:border-box;
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
 }
 
-/* HEADER */
-.report-header {
-    background: var(--header-bg);
-    color: white;
-    text-align: center;
-    padding: 18px;
+
+/* ================= HEADER ================= */
+
+
+.report-header{
+    background:var(--header-bg);
+    color:#fff;
+    text-align:center;
+    padding:14px;
+    border-radius:10px;
 }
 
-.school-logo {
-    height: 40px;
-    margin-bottom: 6px;
+
+.school-logo{
+    height:55px;
+    width:auto;
+    margin-bottom:6px;
 }
 
-/* STUDENT */
-.student-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px;
-    border-bottom: 1px solid var(--border-color);
+
+.report-header h4{
+    margin:0;
+    font-size:22px;
+    font-weight:700;
 }
 
-.student-avatar, .no-avatar {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
+
+.report-header p{
+    margin:2px 0;
+    font-size:12px;
 }
 
-.student-avatar { object-fit: cover; }
 
-.no-avatar {
-    background: var(--primary);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
+/* ================= GENERATED INFO ================= */
+
+
+.generated-info{
+    margin-top:6px;
+    font-size:11px;
+    opacity:.95;
 }
 
-/* STATS */
-.stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    padding: 10px 0;
+
+/* ================= STUDENT ================= */
+
+
+.student-header{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:12px 0;
+    border-bottom:1px solid var(--border-color);
 }
 
-.stat-card {
-    background: #f3f4f6;
-    text-align: center;
-    padding: 10px;
-    border-radius: 8px;
+
+.student-avatar,
+.no-avatar{
+    width:65px;
+    height:65px;
+    border-radius:50%;
 }
 
-.stat-value {
-    font-weight: bold;
-    font-size: 16px;
-    color: var(--primary);
+
+.student-avatar{
+    object-fit:cover;
+    border:2px solid #e5e7eb;
 }
 
-/* TABLE */
-.marks-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 9pt;
+
+.no-avatar{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--primary);
+    color:#fff;
+    font-size:24px;
+    font-weight:700;
 }
 
-.marks-table th {
-    background: #374151;
-    color: white;
-    padding: 8px;
+
+.student-name{
+    font-size:18px;
+    font-weight:700;
 }
 
-.marks-table td {
-    padding: 6px;
-    border-bottom: 1px solid var(--border-color);
-    text-align: center;
+
+.student-info p{
+    margin:2px 0;
+    font-size:13px;
 }
 
-.marks-table td:first-child {
-    text-align: left;
-    font-weight: 600;
+
+/* ================= STATS ================= */
+
+
+.stats-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin:12px 0;
 }
 
-/* REMARKS */
-.remark-exceeding { color: var(--success); font-weight: bold; }
-.remark-meeting { color: var(--primary); font-weight: bold; }
-.remark-approaching { color: var(--warning); font-weight: bold; }
-.remark-below { color: var(--danger); font-weight: bold; }
 
-/* RUBRIC COLORS */
-.rb-ee { color: var(--success); font-weight: bold; }
-.rb-me { color: var(--primary); font-weight: bold; }
-.rb-ae { color: var(--warning); font-weight: bold; }
-.rb-be { color: var(--danger); font-weight: bold; }
-
-/* FEEDBACK BOXES */
-.feedback-box {
-    border: 1px dashed #cbd5e1;
-    border-radius: 6px;
-    min-height: 40px;
-    padding: 6px;
-    background: #f9fafb;
-    margin-bottom: 15px;
+.stat-card{
+    background:#f9fafb;
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+    padding:10px;
+    text-align:center;
 }
 
-/* FOOTER */
-.footer {
-    text-align: center;
-    font-size: 9pt;
-    padding: 10px;
-    border-top: 1px solid var(--border-color);
+
+.stat-value{
+    font-size:18px;
+    font-weight:700;
+    color:var(--primary);
 }
 
-/* PRINT - ENHANCED (NO FAVICON/ICONS) */
+
+/* ================= TABLE ================= */
+
+
+.marks-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+    font-size:10pt;
+}
+
+
+.marks-table th{
+    background:#1f2937;
+    color:#fff;
+    padding:8px 5px;
+    border:1px solid #374151;
+    text-align:center;
+}
+
+
+.marks-table td{
+    border:1px solid #d1d5db;
+    padding:6px 4px;
+    text-align:center;
+}
+
+
+/* ================= TREND ARROWS ================= */
+
+
+.trend-arrow{
+    display:inline-block;
+    margin-left:4px;
+    font-size:12px;
+    font-weight:700;
+}
+
+
+.trend-up{
+    color:var(--success);
+}
+
+
+.trend-down{
+    color:var(--danger);
+}
+
+
+.trend-stable{
+    color:var(--warning);
+}
+
+
+.subject-cell{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:4px;
+}
+
+
+/* ================= REMARKS ================= */
+
+
+.remark-exceeding{
+    color:var(--success);
+    font-weight:700;
+}
+
+
+.remark-meeting{
+    color:var(--primary);
+    font-weight:700;
+}
+
+
+.remark-approaching{
+    color:var(--warning);
+    font-weight:700;
+}
+
+
+.remark-below{
+    color:var(--danger);
+    font-weight:700;
+}
+
+
+/* ================= RUBRICS ================= */
+
+
+.rb-ee{
+    color:var(--success);
+    font-weight:700;
+}
+
+
+.rb-me{
+    color:var(--primary);
+    font-weight:700;
+}
+
+
+.rb-ae{
+    color:var(--warning);
+    font-weight:700;
+}
+
+
+.rb-be{
+    color:var(--danger);
+    font-weight:700;
+}
+
+
+/* ================= FEEDBACK ================= */
+
+
+.feedback-section{
+    margin-top:15px;
+}
+
+
+.feedback-box{
+    border:1px dashed #94a3b8;
+    background:#f8fafc;
+    min-height:45px;
+    border-radius:6px;
+    margin-top:5px;
+    margin-bottom:10px;
+    padding:8px;
+}
+
+
+/* ================= DATES ================= */
+
+
+.dates-row{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    margin-top:12px;
+}
+
+
+.date-box{
+    flex:1;
+}
+
+
+.date-line{
+    border-bottom:1px solid #374151;
+    height:20px;
+}
+
+
+/* ================= SIGNATURES ================= */
+
+
+.signature-row{
+    display:flex;
+    justify-content:space-between;
+    gap:30px;
+    margin-top:20px;
+}
+
+
+.signature-box{
+    flex:1;
+    text-align:center;
+}
+
+
+.signature-title{
+    font-size:12px;
+    font-weight:600;
+    margin-bottom:18px;
+}
+
+
+.signature-line{
+    border-bottom:2px solid #111827;
+    height:25px;
+    margin-bottom:5px;
+}
+
+
+.signature-name{
+    font-size:11px;
+    color:#374151;
+}
+
+
+/* ================= DISCLAIMER ================= */
+
+
+.disclaimer{
+    margin-top:16px;
+    background:#f9fafb;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    padding:10px;
+    font-size:10px;
+    text-align:center;
+    color:#374151;
+}
+
+
+/* ================= FOOTER ================= */
+
+
+.footer{
+    margin-top:14px;
+    text-align:center;
+    border-top:1px solid #d1d5db;
+    padding-top:8px;
+    font-size:10px;
+    color:#374151;
+}
+
+
+/* ================= PRINT ================= */
+
+
 @media print {
-    /* HIDE FAVICON & BROWSER ICONS */
-    link[rel*="icon"],
-    link[rel="shortcut icon"],
-    .favicon, [class*="favicon"],
-    img[src*="favicon"],
-    img[alt*="favicon"],
-    img[alt*="icon"],
-    ::-webkit-media-controls-enclosure,
-    #favicon,
-    .site-icon,
-    .browser-icon {
-        display: none !important;
-        visibility: hidden !important;
-        width: 0 !important;
-        height: 0 !important;
-    }
-    
-    /* Hide browser-generated print headers/footers & navbar */
     @page {
-        margin: 0 !important;
-        size: A4 !important;
+        size: A4 portrait;
+        margin: 0;
     }
-    
-    /* Hide base.html navbar/branding elements */
-    .no-print,
-    .navbar,
-    .header,
-    .brand,
-    .navbar-brand img,
-    nav img,
-    header img,
-    body > *:first-child:not(.a4-report),
-    body > *:last-child:not(.a4-report) {
-        display: none !important;
-    }
-    
-    body { 
-        background: white !important; 
+
+    html, body {
         margin: 0 !important;
         padding: 0 !important;
-        font-size: 10pt !important;
+        background: #fff !important;
+        width: 100%;
+        height: auto !important;
     }
-    
+
+    body * {
+        visibility: hidden;
+    }
+
+    .a4-report, .a4-report * {
+        visibility: visible;
+    }
+
     .a4-report {
-        margin: 0 !important;
-        padding: 12mm 10mm !important;
-        box-shadow: none !important;
+        position: relative;
+        width: 210mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        margin: 0 auto !important;
+        padding: 6mm !important;
+        box-sizing: border-box !important;
+
+        background: #fff !important;
         border-radius: 0 !important;
-        max-width: none !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .a4-report:not(:last-child) {
         page-break-after: always !important;
         break-after: page !important;
     }
+
+    .no-print, nav, footer, header, .navbar, .filter-controls {
+        display: none !important;
+    }
+
+    .marks-table {
+        font-size: 7pt !important;
+        margin-top: 6px !important;
+    }
+
+    .marks-table th, .marks-table td {
+        padding: 2px 3px !important;
+    }
+
+    .marks-table thead th {
+        padding: 3px 3px !important;
+    }
+
+    .stats-row {
+        gap: 6px !important;
+        margin: 8px 0 !important;
+    }
+
+    .stat-card {
+        padding: 6px !important;
+        border-radius: 6px !important;
+    }
+
+    .stat-value {
+        font-size: 14px !important;
+    }
+
+    .report-header {
+        padding: 8px !important;
+        border-radius: 6px !important;
+    }
+
+    .school-logo {
+        height: 45px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .report-header h4 {
+        font-size: 18px !important;
+    }
+
+    .report-header p {
+        font-size: 10px !important;
+        margin: 1px 0 !important;
+    }
+
+    .generated-info {
+        font-size: 9px !important;
+        margin-top: 4px !important;
+    }
+
+    .student-header {
+        padding: 8px 0 !important;
+        gap: 10px !important;
+    }
+
+    .student-avatar, .no-avatar {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 18px !important;
+    }
+
+    .student-name {
+        font-size: 15px !important;
+    }
+
+    .student-info p {
+        font-size: 10px !important;
+        margin: 1px 0 !important;
+    }
+
+    .trend-arrow {
+        font-size: 10px !important;
+    }
+
+    .feedback-box {
+        min-height: 20px !important;
+        padding: 4px !important;
+        margin-top: 3px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .feedback-section {
+        margin-top: 8px !important;
+    }
+
+    .dates-row {
+        margin-top: 8px !important;
+        gap: 10px !important;
+    }
+
+    .date-line {
+        height: 16px !important;
+    }
+
+    .signature-row {
+        margin-top: 10px !important;
+        gap: 15px !important;
+    }
+
+    .signature-title {
+        font-size: 9px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .signature-line {
+        height: 20px !important;
+        margin-bottom: 3px !important;
+    }
+
+    .signature-name {
+        font-size: 8px !important;
+    }
+
+    .disclaimer {
+        font-size: 7px !important;
+        padding: 6px !important;
+        margin-top: 8px !important;
+    }
+
+    .footer {
+        font-size: 7px !important;
+        padding-top: 5px !important;
+        margin-top: 8px !important;
+    }
 }
+
+
 </style>
 
-<!-- FILTER -->
+
+<!-- ================= FILTER ================= -->
+
+
 <div class="filter-controls p-4 mb-4 text-center no-print">
+
+
     <h4>📊 Class Reports</h4>
 
-    <form method="get" class="row justify-content-center">
+
+    <form method="get" class="row justify-content-center g-2">
+
+
         <div class="col-md-2">
             <select name="year" id="id_year" class="form-select">
                 <option value="">Year</option>
+
+
                 {% for y in years %}
-                <option value="{{ y }}" {% if selected_year == y %}selected{% endif %}>{{ y }}</option>
+                <option value="{{ y }}" {% if selected_year == y %}selected{% endif %}>
+                    {{ y }}
+                </option>
                 {% endfor %}
             </select>
         </div>
+
 
         <div class="col-md-2">
             <select name="term" id="id_term" class="form-select" disabled>
@@ -230,187 +608,595 @@ body {
             </select>
         </div>
 
+
         <div class="col-md-2">
             <select name="class" id="id_class" class="form-select" disabled>
                 <option value="">Select Class</option>
             </select>
         </div>
 
+
         <div class="col-md-2">
-            <button class="btn btn-light w-100">🔎 Filter</button>
+            <button class="btn btn-light w-100">
+                🔎 Filter
+            </button>
         </div>
+
+
     </form>
 
+
     <div class="mt-3">
-        <button onclick="window.print()" class="btn btn-dark">
-            🖨️ Print Reports
+        <button type="button"
+                onclick="printAllReports()"
+                class="btn btn-dark px-4">
+            🖨️ Print All Reports
         </button>
     </div>
+
+
 </div>
 
 
-<!-- REPORTS -->
+<!-- ================= REPORTS ================= -->
+
+
 {% for report in filtered_reports %}
+
+
 <div class="a4-report">
 
+
     <!-- HEADER -->
+
+
     <div class="report-header">
+
+
         {% if school.logo %}
-        <img src="{{ school.logo.url }}" class="school-logo">
+        <img src="{{ school.logo.url }}"
+             class="school-logo"
+             alt="School Logo">
         {% endif %}
+
 
         <h4>{{ school.name }}</h4>
-        <p><em>{{ school.motto|default:"Beyond Limits For Success" }}</em></p>
-        <p>P.O BOX: 1298-00232 | Tel: 0722-267-382 | Email: annaluciaacademy10@gmail.com</p>
-        <strong>📊 Academic Progress Report</strong>
-        <div style="font-size:10px;">Generated on: {{ now|date:"D, d M Y H:i" }}</div>
+
+
+        <p><em>{{ school.motto }}</em></p>
+
+
+        <p>
+            P.O BOX: {{ school.po_box|default:"________" }} |
+            Tel: {{ school.phone|default:"________" }} |
+            Email: {{ school.email|default:"________" }}
+        </p>
+
+
+        <strong>ACADEMIC PROGRESS REPORT</strong>
+
+
+        <div class="generated-info">
+            Generated on:
+            {{ now|date:"D, d M Y" }}
+            at
+            {{ now|time:"H:i" }}
+        </div>
+
+
     </div>
+
 
     <!-- STUDENT -->
-       <div class="student-header">
+
+
+    <div class="student-header">
+
+
         {% if report.student.photo %}
-            <img src="{{ report.student.photo.url }}" alt="{{ report.student.user.get_full_name }}" class="student-avatar">
+            <img src="{{ report.student.photo.url }}"
+                 alt="{{ report.student.user.get_full_name }}"
+                 class="student-avatar">
         {% else %}
-            <div class="no-avatar">{{ report.student.user.get_full_name|first|upper }}</div>
+            <div class="no-avatar">
+                {{ report.student.user.get_full_name|first|upper }}
+            </div>
         {% endif %}
+
+
         <div class="student-info">
-            <div class="student-name">{{ report.student.user.get_full_name }}</div>
-            <p><strong>Grade:</strong> {{ school_class.name }}</p>
-            <p><strong>Facilitator:</strong> {{ report.facilitator_name|default:"—" }}</p>
+
+
+            <div class="student-name">
+                {{ report.student.user.get_full_name }}
+            </div>
+
+
+            <p>
+                <strong>Admission No:</strong>
+                {{ report.student.admission_number|default:"—" }}
+            </p>
+
+
+            <p>
+                <strong>Grade:</strong>
+                {{ school_class.name }}
+            </p>
+
+
+            <p>
+                <strong>Facilitator:</strong>
+                {{ report.facilitator_name|default:"—" }}
+            </p>
+
+
         </div>
+
+
     </div>
+
 
     <!-- STATS -->
+
+
     <div class="stats-row">
+
+
         <div class="stat-card">
-            <div class="stat-value">{{ report.report_rows_with_trends|length }}</div>
+            <div class="stat-value">
+                {{ report.report_rows_with_trends|length }}
+            </div>
             Subjects
         </div>
+
+
         <div class="stat-card">
-            <div class="stat-value">{{ exams|length }}</div>
+            <div class="stat-value">
+                {{ exams|length }}
+            </div>
             Exams
         </div>
+
+
         <div class="stat-card">
-            <div class="stat-value" style="color:var(--primary);">{{ report.overall_avg|floatformat:1 }}</div>
-            Avg
+            <div class="stat-value">
+                {{ report.overall_avg|floatformat:1 }}
+            </div>
+            Average
         </div>
+
+
         <div class="stat-card">
-            <div class="stat-value">{{ report.student_rank|default:"—" }}</div>
+            <div class="stat-value">
+                {{ report.student_rank|default:"—" }}
+            </div>
             Rank
         </div>
+
+
     </div>
 
-    <!-- MARKS TABLE -->
+
+    <!-- TABLE -->
+
+
     <table class="marks-table">
+
+
         <thead>
             <tr>
+
+
                 <th>Subject</th>
+
+
                 {% for exam in exams %}
                 <th>{{ exam.exam_type }}</th>
                 {% endfor %}
+
+
                 <th>Remark</th>
-                <th>Subject Tr signature</th>
+                <th>Teacher Sign</th>
+
+
             </tr>
         </thead>
+
+
         <tbody>
+
+
             {% for row in report.report_rows_with_trends %}
+
+
             <tr>
-                <td>{{ row.subject }}</td>
-                {% for mark in row.marks %}
+
+
                 <td>
-                    <strong>{{ mark.mark|default:"—" }}</strong>
-                    <span class="{% if mark.mark >= 80 %}rb-ee{% elif mark.mark >= 60 %}rb-me{% elif mark.mark >= 40 %}rb-ae{% else %}rb-be{% endif %}">
-                        {% if mark.mark >= 80 %}E.E{% elif mark.mark >= 60 %}M.E{% elif mark.mark >= 40 %}A.E{% else %}B.E{% endif %}
-                    </span>
-                    {% if mark.trend == 'up' %}<span style="color:#10b981;">↗</span>
-                    {% elif mark.trend == 'down' %}<span style="color:#ef4444;">↘</span>
-                    {% else %}<span style="color:#6b7280;">→</span>{% endif %}
+                    <div class="subject-cell">
+                        {{ row.subject }}
+                        {% if row.trend == 'up' %}
+                            <span class="trend-arrow trend-up">↑</span>
+                        {% elif row.trend == 'down' %}
+                            <span class="trend-arrow trend-down">↓</span>
+                        {% elif row.trend == 'stable' %}
+                            <span class="trend-arrow trend-stable">→</span>
+                        {% endif %}
+                    </div>
                 </td>
+
+
+                {% for mark in row.marks %}
+
+
+                <td>
+
+
+                    <strong>{{ mark.mark|default:"—" }}</strong>
+
+
+                    <br>
+
+
+                    <span class="
+                        {% if mark.mark >= 80 %}
+                            rb-ee
+                        {% elif mark.mark >= 60 %}
+                            rb-me
+                        {% elif mark.mark >= 40 %}
+                            rb-ae
+                        {% else %}
+                            rb-be
+                        {% endif %}
+                    ">
+
+
+                        {% if mark.mark >= 80 %}
+                            E.E
+                        {% elif mark.mark >= 60 %}
+                            M.E
+                        {% elif mark.mark >= 40 %}
+                            A.E
+                        {% else %}
+                            B.E
+                        {% endif %}
+
+
+                    </span>
+
+
+                </td>
+
+
                 {% endfor %}
-                <td class="remark-{{ row.remarks|slugify }}">{{ row.remarks }}</td>
+
+
+                <td class="remark-{{ row.remarks|slugify }}">
+                    {{ row.remarks }}
+                </td>
+
+
+                <td></td>
+
+
             </tr>
+
+
             {% endfor %}
 
-            <!-- TOTALS ROW -->
-            <tr style="font-weight:bold; background:#f3f4f6;">
+
+            <!-- TOTALS -->
+
+
+            <tr style="background:#f3f4f6;font-weight:700;">
+
+
                 <td>Totals</td>
+
+
                 {% for total in report.exam_totals %}
-                <td style="color:var(--primary); font-weight:bold;">{{ total }}</td>
+                <td>{{ total }}</td>
                 {% endfor %}
+
+
                 <td>—</td>
+                <td></td>
+
+
             </tr>
 
-            <!-- AVERAGES ROW -->
-            <tr style="font-weight:bold; background:#e5e7eb;">
+
+            <!-- AVERAGES -->
+
+
+            <tr style="background:#e5e7eb;font-weight:700;">
+
+
                 <td>Averages</td>
+
+
                 {% for avg in report.exam_averages %}
-                <td style="color:var(--primary); font-weight:bold;">{{ avg|floatformat:1 }}</td>
+                <td>{{ avg|floatformat:1 }}</td>
                 {% endfor %}
+
+
                 <td>—</td>
+                <td></td>
+
+
             </tr>
+
+
         </tbody>
+
+
     </table>
 
-    <!-- FEEDBACK & REMARKS -->
-    <div style="margin-top:20px;">
+
+    <!-- FEEDBACK -->
+
+
+    <div class="feedback-section">
+
+
         <div>
-            <strong>Core Competence & Facilitator Feedback:</strong>
+            <strong>Core Competencies & Facilitator Feedback</strong>
             <div class="feedback-box"></div>
         </div>
+
+
         <div>
-            <strong>Headteacher Remarks:</strong>
+            <strong>Headteacher Remarks</strong>
             <div class="feedback-box"></div>
         </div>
-        <div style="display:flex; justify-content:space-between; margin-top:10px;">
-            <div style="width:48%;">
-                <strong>Closing Date:</strong>
-                <div style="border-bottom:1px solid #374151; min-height:20px;"></div>
+
+
+        <!-- DATES -->
+
+
+        <div class="dates-row">
+
+
+            <div class="date-box">
+                <strong>Closing Date</strong>
+                <div class="date-line"></div>
             </div>
-            <div style="width:48%;">
-                <strong>Opening Date:</strong>
-                <div style="border-bottom:1px solid #374151; min-height:20px;"></div>
+
+
+            <div class="date-box">
+                <strong>Opening Date</strong>
+                <div class="date-line"></div>
             </div>
+
+
         </div>
+
+
+        <!-- SIGNATURES -->
+
+
+        <div class="signature-row">
+
+
+            <!-- CLASS TEACHER -->
+
+
+            <div class="signature-box">
+
+
+                <div class="signature-title">
+                    Class Teacher Signature
+                </div>
+
+
+                <div class="signature-line"></div>
+
+
+                {% if school.class_teacher_name %}
+                <div class="signature-name">
+                    {{ school.class_teacher_name }}
+                </div>
+                {% endif %}
+
+
+            </div>
+
+
+            <!-- HEADTEACHER -->
+
+
+            <div class="signature-box">
+
+
+                <div class="signature-title">
+                    Headteacher Signature
+                </div>
+
+
+                <div class="signature-line"></div>
+
+
+                {% if school.headteacher_name %}
+                <div class="signature-name">
+                    {{ school.headteacher_name }}
+                </div>
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- DISCLAIMER -->
+
+
+        <div class="disclaimer">
+
+
+            THIS REPORT FORM IS A PROPERTY OF
+            <strong>{{ school.name }}</strong>.
+
+
+            IF FOUND, PLEASE RETURN TO:
+
+
+            {{ school.po_box|default:"P.O BOX ________" }}
+
+
+            {% if school.phone %}
+            | TEL: {{ school.phone }}
+            {% endif %}
+
+
+            {% if school.email %}
+            | EMAIL: {{ school.email }}
+            {% endif %}
+
+
+        </div>
+
+
     </div>
+
 
     <!-- FOOTER -->
+
+
     <div class="footer">
-        <div>{{ school.motto }}</div>
-        <div>{{ school.name }} • {{ now|date:"Y" }} <br>
-        Powered by SmartHub</div>
+
+
+        <div>
+            <strong>{{ school.motto }}</strong>
+        </div>
+
+
+        <div>
+            {{ school.name }} • {{ now|date:"Y" }}
+        </div>
+
+
+        <div>
+            Powered by SmartHub School Management System
+        </div>
+
+
     </div>
 
+
 </div>
+
+
 {% empty %}
+
+
 <div class="text-center py-5">
     <h5>No reports found</h5>
 </div>
+
+
 {% endfor %}
 
-<!-- JS -->
+
+<!-- ================= JS ================= -->
+
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+
 <script>
-$(document).ready(function() {
-    $('#id_year').change(function() {
+
+
+$(document).ready(function(){
+
+
+    $('#id_year').change(function(){
+
+
         let year = $(this).val();
-        $('#id_term').prop('disabled', true).html('<option>Loading...</option>');
-        $('#id_class').prop('disabled', true).html('<option>Select Class</option>');
-        if (year) {
-            $.get("{% url 'academics:load_terms' %}", {year: year}, function(data) {
-                $('#id_term').html(data.options).prop('disabled', false);
-            });
+
+
+        $('#id_term')
+            .prop('disabled', true)
+            .html('<option>Loading...</option>');
+
+
+        $('#id_class')
+            .prop('disabled', true)
+            .html('<option>Select Class</option>');
+
+
+        if(year){
+
+
+            $.get("{% url 'academics:load_terms' %}",
+                {year:year},
+                function(data){
+
+
+                    $('#id_term')
+                        .html(data.options)
+                        .prop('disabled', false);
+
+
+                }
+            );
         }
     });
-    $('#id_term').change(function() {
+
+
+    $('#id_term').change(function(){
+
+
         let term = $(this).val();
-        $('#id_class').prop('disabled', true).html('<option>Loading...</option>');
-        if (term) {
-            $.get("{% url 'academics:load_classes' %}", function(data) {
-                $('#id_class').html(data.options).prop('disabled', false);
-            });
+
+
+        $('#id_class')
+            .prop('disabled', true)
+            .html('<option>Loading...</option>');
+
+
+        if(term){
+
+
+            $.get("{% url 'academics:load_classes' %}",
+                function(data){
+
+
+                    $('#id_class')
+                        .html(data.options)
+                        .prop('disabled', false);
+
+
+                }
+            );
         }
     });
+
+
 });
+
+
+/* ================= PRINT ================= */
+
+
+function printAllReports(){
+
+
+    const reports = document.querySelectorAll('.a4-report');
+
+
+    reports.forEach(report => {
+        report.style.display = 'block';
+    });
+
+
+    window.print();
+}
+
+
 </script>
+
 
 {% endblock %}

@@ -49,7 +49,7 @@ class SchoolPaymentMethodAdmin(admin.ModelAdmin):
 # =========================
 @admin.register(School)
 class SchoolAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'phone', 'email', 'subscription_active')
+    list_display = ('name', 'code', 'phone', 'email', 'subscription','motto')
     search_fields = ('name', 'code', 'email', 'phone')
     inlines = [SchoolPaymentMethodInline]
 

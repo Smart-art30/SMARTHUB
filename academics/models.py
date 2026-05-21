@@ -75,7 +75,7 @@ class StudentMark(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
 
-    school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE)
+    school_class = models.ForeignKey(SchoolClass,on_delete=models.CASCADE,null=True,blank=True)
     #term = models.CharField(max_length=20)
 
     marks = models.FloatField()

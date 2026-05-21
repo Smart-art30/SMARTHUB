@@ -2,127 +2,282 @@
 {% load static %}
 
 {% block content %}
+
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div>
-            <h1 class="h3 mb-1 fw-bold text-dark">Exams Management</h1>
-            <p class="text-muted mb-0">Manage exams and assigned classes</p>
+
+    <!-- HEADER -->
+    <div class="dashboard-header mb-4">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+            <div>
+                <h1 class="fw-bold mb-1">
+                    <i class="bi bi-journal-text me-2 text-primary"></i>
+                    Exams Dashboard
+                </h1>
+
+                <p class="text-muted mb-0">
+                    Manage exams, assign classes, and enter marks efficiently.
+                </p>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+
+                <a href="{% url 'academics:exam_add' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Add Exam
+                </a>
+
+                <a href="{% url 'academics:assign_subjects_to_exam' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-diagram-3 me-2"></i>
+                    Assign Classes
+                </a>
+
+            </div>
+
         </div>
-        <a href="{% url 'academics:exam_add' %}" class="btn btn-primary btn-lg px-4">
-            <i class="bi bi-plus-circle me-2"></i>Add New Exam
-        </a>
+
     </div>
 
     {% if exams %}
+
+    <!-- GRID -->
     <div class="row g-4">
+
         {% for e in exams %}
-        <div class="col-lg-6 col-xl-4">
-            <div class="card h-100 shadow-sm border-0 hover-lift">
-                <div class="card-header bg-primary text-white py-3">
+
+        <div class="col-12 col-md-6 col-xl-4">
+
+            <div class="card exam-card border-0 shadow-sm">
+
+                <!-- HEADER -->
+                <div class="card-header exam-header text-white">
+
                     <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h3 class="card-title mb-1 fw-semibold">{{ e.name|default:"Unnamed Exam" }}</h3>
-                            <div class="d-flex gap-2 text-white-50 small">
-                                <span class="badge bg-light text-dark">{{ e.term }}</span>
-                                <span class="badge bg-light text-dark">{{ e.year }}</span>
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="exam-icon">
+                                <i class="bi bi-file-earmark-text-fill"></i>
                             </div>
+
+                            <div>
+                                <h5 class="mb-1 fw-bold">
+                                    {{ e.name|default:"Unnamed Exam" }}
+                                </h5>
+
+                                <div class="d-flex gap-2 flex-wrap">
+
+                                    <span class="badge bg-light text-dark">
+                                        {{ e.term }}
+                                    </span>
+
+                                    <span class="badge bg-light text-dark">
+                                        {{ e.year }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
                         </div>
+
+                        <!-- MENU -->
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-light" data-bs-toggle="dropdown">
+
+                            <button class="btn btn-sm btn-light"
+                                    data-bs-toggle="dropdown">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'academics:exam_edit' e.id %}">
-                                    <i class="bi bi-pencil me-2"></i>Edit Exam
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+
                                 <li>
-                                    <a class="dropdown-item text-danger" href="{% url 'academics:exam_delete' e.id %}"
-                                       onclick="return confirm('Delete this exam? This cannot be undone.');">
-                                        <i class="bi bi-trash me-2"></i>Delete Exam
+                                    <a class="dropdown-item"
+                                       href="{% url 'academics:exam_edit' e.id %}">
+                                        Edit
                                     </a>
                                 </li>
+
+                                <li><hr class="dropdown-divider"></li>
+
+                                <li>
+                                    <a class="dropdown-item text-danger"
+                                       href="{% url 'academics:exam_delete' e.id %}"
+                                       onclick="return confirm('Delete exam?');">
+                                        Delete
+                                    </a>
+                                </li>
+
                             </ul>
+
                         </div>
+
                     </div>
+
                 </div>
-                
-                <div class="card-body py-4">
+
+                <!-- BODY -->
+                <div class="card-body">
+
                     {% if e.assigned_classes %}
-                        <h6 class="text-muted mb-3">Assigned Classes <span class="badge bg-success">{{ e.assigned_classes|length }}</span></h6>
-                        <div class="list-group list-group-flush">
-                            {% for sc in e.assigned_classes %}
-                            <div class="list-group-item px-0 border-0 py-2">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <a href="{% url 'academics:enter_marks' class_id=sc.id exam_id=e.id %}" 
-                                           class="btn btn-sm btn-outline-success w-100 text-start mb-1">
-                                            <i class="bi bi-check-circle-fill me-2"></i>{{ sc.name }}
-                                        </a>
-                                        {% if sc.examsubject_set.all %}
-                                        <div class="small text-muted">
-                                            <i class="bi bi-book me-1"></i>
-                                            {% for es in sc.examsubject_set.all %}
-                                                {% if es.exam == e %}
-                                                    {{ es.subject.name }}{% if not forloop.last %}, {% endif %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="text-center py-5">
-                            <i class="bi bi-inbox display-4 text-muted mb-3"></i>
-                            <p class="text-muted mb-2">No classes assigned</p>
-                            <a href="#" class="btn btn-outline-secondary btn-sm">Assign Classes</a>
-                        </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <strong>Assigned Classes</strong>
+
+                        <span class="badge bg-success">
+                            {{ e.assigned_classes|length }}
+                        </span>
+
+                    </div>
+
+                    <!-- FIRST 4 CLASSES -->
+                    {% for sc in e.assigned_classes|slice:":4" %}
+
+                    <a href="{% url 'academics:enter_marks' class_id=sc.id exam_id=e.id %}"
+                       class="class-item d-block mb-2">
+
+                        <i class="bi bi-mortarboard-fill text-primary me-2"></i>
+                        {{ sc.name }}
+
+                    </a>
+
+                    {% endfor %}
+
+                    <!-- COLLAPSE -->
+                    {% if e.assigned_classes|length > 4 %}
+
+                    <div class="collapse" id="cls{{ e.id }}">
+
+                        {% for sc in e.assigned_classes|slice:"4:" %}
+
+                        <a href="{% url 'academics:enter_marks' class_id=sc.id exam_id=e.id %}"
+                           class="class-item d-block mb-2">
+
+                            <i class="bi bi-mortarboard-fill text-primary me-2"></i>
+                            {{ sc.name }}
+
+                        </a>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <button class="btn btn-light border w-100 mt-2"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#cls{{ e.id }}">
+
+                        View More Classes
+
+                    </button>
+
                     {% endif %}
+
+                    {% else %}
+
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-folder-x display-6"></i>
+                        <p class="mt-2 mb-0">No classes assigned</p>
+                    </div>
+
+                    {% endif %}
+
                 </div>
-                
-                <div class="card-footer bg-light border-0 pt-0">
+
+                <!-- FOOTER -->
+                <div class="card-footer bg-light">
+
                     <small class="text-muted">
-                        {% if e.assigned_classes %}
-                            {{ e.assigned_classes|length }} class{{ e.assigned_classes|length|pluralize }}
-                        {% else %}
-                            No assignments
-                        {% endif %}
+                        {{ e.year }}
                     </small>
+
                 </div>
+
             </div>
+
         </div>
+
         {% endfor %}
+
     </div>
+
     {% else %}
-    <div class="text-center py-6">
-        <i class="bi bi-clipboard-x display-1 text-muted mb-4"></i>
-        <h3 class="mb-2 text-muted">No exams created yet</h3>
-        <p class="text-muted mb-4">Get started by creating your first exam.</p>
-        <a href="{% url 'academics:exam_add' %}" class="btn btn-primary btn-lg px-5">
-            <i class="bi bi-plus-lg me-2"></i>Create First Exam
+
+    <!-- EMPTY -->
+    <div class="text-center py-5">
+
+        <i class="bi bi-journal-x display-1 text-muted"></i>
+
+        <h3 class="mt-3">No Exams Yet</h3>
+
+        <p class="text-muted">Create your first exam to get started.</p>
+
+        <a href="{% url 'academics:exam_add' %}" class="btn btn-primary">
+            Create Exam
         </a>
+
     </div>
+
     {% endif %}
+
 </div>
 
 <style>
-.hover-lift {
-    transition: all 0.2s ease-in-out;
+
+.dashboard-header{
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
 }
-.hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.12) !important;
+
+.exam-card{
+    border-radius: 16px;
+    overflow: hidden;
 }
-.card-header {
-    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+
+.exam-header{
+    background: linear-gradient(135deg,#2563eb,#4f46e5);
+    padding: 18px;
 }
-@media (max-width: 768px) {
-    .card {
-        margin-bottom: 1rem;
+
+.exam-icon{
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: #fff;
+}
+
+.class-item{
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #111;
+    transition: 0.2s;
+}
+
+.class-item:hover{
+    background: #eef2ff;
+    transform: translateX(3px);
+}
+
+@media(max-width:768px){
+
+    .dashboard-header{
+        text-align: center;
+    }
+
+    .btn{
+        width: 100%;
     }
 }
+
 </style>
+
 {% endblock %}
