@@ -324,19 +324,37 @@
 
 /* ===== INPUT ===== */
 
+/* ===== INPUT ===== */
+
 .mark-input {
     width: 38px;
     height: 24px;
     border: none;
     background: transparent;
     text-align: center;
-    font-weight: bold;
-    font-size: 11px;
+    font-weight: 700;   /* or 800 */
+    font-size: 12px;
+    color: #000;
+}
+
+/* Remove number input arrows */
+
+/* Chrome, Edge, Safari */
+.mark-input::-webkit-outer-spin-button,
+.mark-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+.mark-input {
+    -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .mark-input:focus {
     background: #d4edda !important;
-    outline: 2px solid #28a745;
+    outline: 2px solid #e1e7e3;
 }
 
 .mark-input.invalid {
@@ -348,7 +366,44 @@
 .student-row:hover td {
     background: #d4edda !important;
 }
+/* Active learner row */
+.student-row.active-row td {
+    background: #fff3cd !important;
+    transition: background 0.3s ease;
+}
 
+/* Animated sweep effect */
+.student-row.active-row td {
+    position: relative;
+    overflow: hidden;
+}
+
+.student-row.active-row td::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(40, 167, 69, 0.25);
+    animation: rowSweep 0.35s forwards;
+    pointer-events: none;
+}
+
+@keyframes rowSweep {
+    from {
+        left: -100%;
+    }
+    to {
+        left: 0;
+    }
+}
+
+/* Current input */
+.mark-input:focus {
+    background: #e5e9e5 !important;
+    outline: 2px solid #ff9800;
+}
 /* ===== TOTALS ===== */
 
 .total-cell,
@@ -567,6 +622,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = [
         ...document.querySelectorAll('.mark-input')
     ];
+    function highlightRow(input) {
+    document
+        .querySelectorAll('.student-row')
+        .forEach(row => row.classList.remove('active-row'));
+
+    const row = input.closest('.student-row');
+
+    if (row) {
+        row.classList.add('active-row');
+    }
+}
 
     const maxMark = {{ exam.max_mark }};
 
@@ -654,11 +720,11 @@ document.addEventListener('DOMContentLoaded', () => {
             row.querySelector('.total-cell')
                 .textContent = total;
 
-            row.querySelector('.avg-cell')
-                .textContent =
-                    rowInputs.length
-                    ? Math.round(total / rowInputs.length)
-                    : 0;
+           row.querySelector('.avg-cell')
+            .textContent =
+                rowInputs.length
+                ? (total / rowInputs.length).toFixed(2)
+                : '0.00';
 
             row.dataset.total = total;
 
@@ -681,9 +747,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const subjId = th.dataset.subjectId;
 
-            th.textContent =
+           th.textContent =
                 subjectTotals[subjId]
-                ? Math.round(subjectTotals[subjId] / numStudents)
+                ? (subjectTotals[subjId] / numStudents).toFixed(2)
                 : '';
 
         });
@@ -694,33 +760,26 @@ document.addEventListener('DOMContentLoaded', () => {
         table.querySelector('.class-avg')
             .textContent =
                 numStudents
-                ? Math.round(classTotal / numStudents)
-                : 0;
+                ? (classTotal / numStudents).toFixed(2)
+                : '0.00';
 
     }
 
     // ===== RANK =====
 
-    function rankStudents() {
-
-        const rows = [...table.tBodies[0].rows]
+function rankStudents() {
+    const rows = [...table.tBodies[0].querySelectorAll('.student-row')]
         .map(row => ({
             row,
             total: parseFloat(row.dataset.total) || 0
-        }));
+        }))
+        .sort((a, b) => b.total - a.total);
 
-        rows.sort((a, b) => b.total - a.total);
-
-        rows.forEach(({row}, i) => {
-
-            row.querySelector('.rank-cell')
-                .textContent = i + 1;
-
-            table.tBodies[0].appendChild(row);
-
-        });
-
-    }
+    rows.forEach(({ row }, i) => {
+        row.querySelector('.rank-cell').textContent = i + 1;
+        table.tBodies[0].appendChild(row);
+    });
+}
 
     // ===== CHART =====
 
@@ -827,101 +886,98 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ===== INPUT EVENTS =====
+// ===== INPUT EVENTS =====
 
-    inputs.forEach((input, index) => {
+inputs.forEach((input) => {
 
-        input.addEventListener('input', () => {
-
-            calculate();
-
-            drawChart();
-
-        });
-
-        // ENTER KEY NAVIGATION
-        input.addEventListener('keydown', (e) => {
-
-            if (e.key === 'Enter') {
-
-                e.preventDefault();
-
-                input.dispatchEvent(new Event('change'));
-
-                const nextInput = inputs[index + 1];
-
-                if (nextInput) {
-
-                    nextInput.focus();
-
-                    nextInput.select();
-
-                }
-
-            }
-
-        });
-
-        // SAVE MARK
-        input.addEventListener('change', () => {
-
-            calculate();
-
-            rankStudents();
-
-            drawChart();
-
-            const parts =
-                input.name.split('_');
-
-            const studentId = parts[1];
-
-            const subjectId = parts[2];
-
-            fetch("{% url 'academics:save_mark_ajax' %}", {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type":
-                        "application/json",
-
-                    "X-CSRFToken":
-                        "{{ csrf_token }}"
-
-                },
-
-                body: JSON.stringify({
-
-                    student_id: studentId,
-
-                    subject_id: subjectId,
-
-                    exam_id: {{ exam.id }},
-
-                    mark: input.value
-
-                })
-
-            })
-            .then(res => res.json())
-            .then(data => {
-
-                if (data.status !== 'ok') {
-
-                    console.error(
-                        'Save failed',
-                        data
-                    );
-
-                }
-
-            })
-            .catch(error => console.error(error));
-
-        });
-
+    input.addEventListener('input', () => {
+        highlightRow(input);
+        calculate();
+        drawChart();
     });
+
+    // ENTER KEY = MOVE DOWN
+ input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+
+        input.dispatchEvent(new Event('change'));
+
+        const currentCell = input.closest('td');
+        const currentRow = input.closest('tr');
+        const cellIndex = currentCell.cellIndex;
+
+        let nextRow = currentRow.nextElementSibling;
+
+        // Search downward for the next blank cell
+        while (nextRow) {
+            if (nextRow.classList.contains('student-row')) {
+                const nextInput =
+                    nextRow.cells[cellIndex]
+                        ?.querySelector('.mark-input');
+
+                if (nextInput && nextInput.value.trim() === '') {
+                    nextInput.focus();
+                    highlightRow(nextInput);
+                    nextInput.select();
+                    return;
+                }
+            }
+            nextRow = nextRow.nextElementSibling;
+        }
+
+        // Optional: wrap to the top if no blank cell below
+        const rows = document.querySelectorAll('.student-row');
+
+        for (const row of rows) {
+            if (row === currentRow) break;
+
+            const nextInput =
+                row.cells[cellIndex]
+                    ?.querySelector('.mark-input');
+
+            if (nextInput && nextInput.value.trim() === '') {
+                nextInput.focus();
+                highlightRow(nextInput);
+                nextInput.select();
+                return;
+            }
+        }
+    }
+});
+    // SAVE MARK
+    input.addEventListener('change', () => {
+
+        calculate();
+        rankStudents();
+        drawChart();
+
+        const parts = input.name.split('_');
+        const studentId = parts[1];
+        const subjectId = parts[2];
+
+        fetch("{% url 'academics:save_mark_ajax' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                student_id: studentId,
+                subject_id: subjectId,
+                exam_id: {{ exam.id }},
+                mark: input.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'ok') {
+                console.error('Save failed', data);
+            }
+        })
+        .catch(error => console.error(error));
+    });
+});
 
     // INITIAL LOAD
     calculate();
@@ -938,6 +994,7 @@ function downloadPDF() {
     window.print();
 
 }
+
 
 </script>
 

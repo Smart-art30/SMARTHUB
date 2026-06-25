@@ -2,6 +2,8 @@ from django.db import models
 from schools.models import School, SchoolClass
 from students.models import Student
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 
 class AcademicTerm(models.Model):
@@ -78,7 +80,14 @@ class StudentMark(models.Model):
     school_class = models.ForeignKey(SchoolClass,on_delete=models.CASCADE,null=True,blank=True)
     #term = models.CharField(max_length=20)
 
-    marks = models.FloatField()
+    marks = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100)
+        ],
+        null=True,
+        blank=True
+    )
 
     facilitator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
