@@ -13,8 +13,11 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
-    default="localhost,127.0.0.1"
+    default=""
 ).split(",")
+
+if config("RENDER", default=False, cast=bool):
+    ALLOWED_HOSTS.append(config("RENDER_EXTERNAL_HOSTNAME", default=""))
 
 
 # =========================================================
