@@ -9,10 +9,9 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 
-
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('accounts:dashboard_redirect')
+        return redirect('dashboard:dashboard_redirect')
 
     register_form = UserRegistrationForm()
 
@@ -20,17 +19,45 @@ def login_view(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
+        print("========== LOGIN DEBUG ==========")
+        print("USERNAME:", username)
+        print("PASSWORD PROVIDED:", bool(password))
 
-        if user is not None:
-            login(request, user)
-            return redirect('accounts:dashboard_redirect')
+        try:
+            user = authenticate(
+                request,
+                username=username,
+                password=password
+            )
 
-        messages.error(request, "Invalid username or password.")
+            print("AUTHENTICATE RESULT:", user)
+
+            if user is not None:
+                print("USER ID:", user.id)
+                print("USER ROLE:", user.role)
+                print("USER SCHOOL:", user.school_id)
+
+                login(request, user)
+
+                print("DJANGO LOGIN SUCCESS")
+
+                return redirect("dashboard:dashboard_redirect")
+
+            print("AUTHENTICATION FAILED")
+            messages.error(request, "Invalid username or password.")
+
+        except Exception as e:
+            print("========== LOGIN ERROR ==========")
+            print("ERROR TYPE:", type(e).__name__)
+            print("ERROR:", str(e))
+            import traceback
+            traceback.print_exc()
+            print("=================================")
+
+            messages.error(
+                request,
+                "A system error occurred during login."
+            )
 
     return render(request, "accounts/login.html", {
         "register_form": register_form
