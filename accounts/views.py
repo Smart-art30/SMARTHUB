@@ -10,10 +10,9 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 
 
-
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard:dashboard_redirect')
+        return redirect('accounts:dashboard_redirect')
 
     register_form = UserRegistrationForm()
 
@@ -21,24 +20,16 @@ def login_view(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-        print("=" * 50)
-        print("Username:", username)
-        print("Password:", password)
-
         user = authenticate(
             request,
             username=username,
             password=password
         )
 
-        print("Authenticated user:", user)
-
-        if user:
+        if user is not None:
             login(request, user)
-            print("LOGIN SUCCESS")
-            return redirect("dashboard:dashboard_redirect")
+            return redirect('accounts:dashboard_redirect')
 
-        print("LOGIN FAILED")
         messages.error(request, "Invalid username or password.")
 
     return render(request, "accounts/login.html", {

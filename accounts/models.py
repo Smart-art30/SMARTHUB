@@ -46,5 +46,5 @@ class CommunicationPreference(models.Model):
     recieve_email = models.BooleanField(default= True)
     recieve_in_app = models.BooleanField(default= True)
 
-    def __str__(seld):
+    def __str__(self):
         return f'{self.user.username} Preferences'
