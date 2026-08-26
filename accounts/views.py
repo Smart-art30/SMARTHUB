@@ -17,25 +17,32 @@ def login_view(request):
 
     register_form = UserRegistrationForm()
 
-    if request.method == 'POST' and 'login_submit' in request.POST:
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+    if request.method == "POST" and "login_submit" in request.POST:
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
+        print("=" * 50)
+        print("Username:", username)
+        print("Password:", password)
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        print("Authenticated user:", user)
+
+        if user:
             login(request, user)
-            messages.success(request, f'Welcome back, {user.username}!')
+            print("LOGIN SUCCESS")
+            return redirect("dashboard:dashboard_redirect")
 
-            next_url = request.GET.get('next')
-            if next_url:
-                return redirect(next_url)
-            return redirect('dashboard:dashboard_redirect')
+        print("LOGIN FAILED")
+        messages.error(request, "Invalid username or password.")
 
-        else:
-            messages.error(request, 'Invalid username or password.')
-
-    return render(request, 'accounts/login.html', {
-        'register_form': register_form
+    return render(request, "accounts/login.html", {
+        "register_form": register_form
     })
 
 @require_POST
@@ -48,15 +55,17 @@ def logout_view(request):
 def register_view(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
+
         if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-            login(request, user) 
-            return redirect('dashboard')
+            user = form.save()
+            login(request, user)
+            return redirect('dashboard:dashboard_redirect')
     else:
         form = UserRegistrationForm()
-    return render(request, 'accounts/register.html', {'form': form})
+
+    return render(request, 'accounts/register.html', {
+        'form': form
+    })
 
 @login_required
 def dashboard_redirect(request):

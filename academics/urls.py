@@ -44,6 +44,9 @@ urlpatterns = [
     path('ajax/load-terms/', views.load_terms, name='load_terms'),
     path('load-terms/', views.load_terms, name='load_terms'),
     path('ajax/load-classes/', views.load_classes, name='load_classes'),
+    path("exam/<int:exam_id>/class/<int:class_id>/unassign/",views.unassign_exam_class,
+    name="unassign_exam_class",
+),
     
     
 ]

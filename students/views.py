@@ -49,23 +49,44 @@ def class_list(request):
 @role_required('schooladmin')
 def class_detail(request, pk):
     school_class = get_object_or_404(
-        SchoolClass,
+        SchoolClass.objects.select_related(
+            'school',
+            'class_teacher'
+        ),
         pk=pk,
         school=request.user.school
     )
 
-    students = Student.objects.filter(
-        student_class=school_class,
-        school=request.user.school
-    ).select_related('user')
+    students = (
+        Student.objects
+        .filter(
+            student_class=school_class,
+            school=request.user.school
+        )
+        .select_related('user')
+        .order_by(
+            'admission_number',
+            'user__last_name',
+            'user__first_name'
+        )
+    )
+
+    boys = students.filter(gender__iexact="male").count()
+    girls = students.filter(gender__iexact="female").count()
+
+    context = {
+        "class": school_class,
+        "school": school_class.school,
+        "students": students,
+        "boys": boys,
+        "girls": girls,
+        "total": students.count(),
+    }
 
     return render(
         request,
-        'students/class_detail.html',
-        {
-            'class': school_class,
-            'students': students
-        }
+        "students/class_detail.html",
+        context,
     )
 
 

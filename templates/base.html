@@ -16,6 +16,13 @@ main {
     padding-top: 80px;
     min-height: calc(100vh - 120px);
 }
+
+@media print {
+    main {
+        padding-top: 0 !important;
+        min-height: auto !important;
+    }
+}
 @media (max-width: 991.98px) {
     main { padding-top: 70px; }
 }
@@ -128,6 +135,88 @@ select.form-control option {
 [data-theme="dark"] .theme-toggle:hover {
     background-color: rgba(0,0,0,0.2);
 }
+
+/* ===========================
+   PRINT SETTINGS
+=========================== */
+@media print{
+
+    @page{
+        size: A4;
+        margin:10mm;
+    }
+
+    .no-print{
+        display:none !important;
+    }
+
+    .class-card{
+        display:block !important;
+        page-break-before:always !important;
+        break-before:page !important;
+        page-break-after:always !important;
+        break-after:page !important;
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
+
+        border:1px solid #000 !important;
+        margin:0 !important;
+        box-shadow:none !important;
+    }
+
+    .class-card:first-child{
+        page-break-before:auto !important;
+        break-before:auto !important;
+    }
+
+    .table-responsive{
+        overflow:visible !important;
+    }
+
+    table{
+        width:100% !important;
+        border-collapse:collapse !important;
+    }
+
+    th,
+    td{
+        border:1px solid #000 !important;
+        padding:5px !important;
+    }
+
+    img{
+        width:30px !important;
+        height:30px !important;
+    }
+
+ 
+}
+
+/* GLOBAL PRINT SETTINGS */
+@media print {
+
+    /* Hide everything that should never be printed */
+    nav,
+    .navbar,
+    .navbar *,
+    footer,
+    .theme-toggle,
+    .alert {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Remove the top space left by the fixed navbar */
+    main {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+
+    body {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+}
 </style>
 </head>
 <body data-theme="light">
@@ -188,7 +277,7 @@ select.form-control option {
 </nav>
 
 <!-- MAIN CONTENT -->
-<main class="container-fluid px-3 px-md-4">
+<main id="main-content" class="container-fluid px-3 px-md-4">
     {% if messages %}
         {% for message in messages %}
             {% if message.tags == "error" %}
@@ -211,44 +300,40 @@ select.form-control option {
 <footer class="mt-5 py-3 bg-light text-center">
     &copy; 2026 SmartHub
 </footer>
-
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+{% block extra_js %}
+{% endblock %}
 
 <script>
 // Theme toggle functionality
 document.addEventListener('DOMContentLoaded', function() {
     const body = document.body;
     const toggles = document.querySelectorAll('.theme-toggle');
-    
-    // Load saved theme or default to light
+
     const savedTheme = localStorage.getItem('theme') || 'light';
     body.setAttribute('data-theme', savedTheme);
     updateToggleIcons(savedTheme);
-    
-    // Toggle theme function
+
     function toggleTheme() {
         const currentTheme = body.getAttribute('data-theme');
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        
+
         body.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         updateToggleIcons(newTheme);
     }
-    
-    // Update toggle icons (sun/moon)
+
     function updateToggleIcons(theme) {
         const icons = document.querySelectorAll('.theme-toggle i');
         icons.forEach(icon => {
-            if (theme === 'dark') {
-                icon.className = 'fas fa-sun';
-            } else {
-                icon.className = 'fas fa-moon';
-            }
+            icon.className = theme === 'dark'
+                ? 'fas fa-sun'
+                : 'fas fa-moon';
         });
     }
-    
-    // Add event listeners to all toggle buttons
+
     toggles.forEach(toggle => {
         toggle.addEventListener('click', toggleTheme);
     });

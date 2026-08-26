@@ -426,107 +426,219 @@ def select_exam(request, class_id, subject_id):
 def enter_marks(request, class_id, exam_id):
     user = request.user
 
-   
-    if not hasattr(user, 'teacher'):
-        messages.error(request, "Teacher profile required to enter marks.")
-        return redirect('academics:class_overview', class_id=class_id)
-    teacher = user.teacher
-    school = teacher.school
+    teacher = None
 
-    school_class = get_object_or_404(SchoolClass,id=class_id,school=school)
+    # --------------------------------------------------
+    # Determine school based on logged-in user's role
+    # --------------------------------------------------
+    if user.role == "teacher":
+        if not hasattr(user, "teacher"):
+            messages.error(request, "Teacher profile required.")
+            return redirect("academics:class_overview", class_id=class_id)
 
-    exam = get_object_or_404(Exam,id=exam_id,school=school)
+        teacher = user.teacher
+        school = teacher.school
 
-    exam_subjects = ExamSubject.objects.filter(exam=exam,school_class=school_class)
+    elif user.role == "schooladmin":
+        if not hasattr(user, "school"):
+            messages.error(request, "School administrator is not linked to a school.")
+            return redirect("academics:exam_list")
+
+        school = user.school
+
+    else:
+        raise PermissionDenied
+
+    # --------------------------------------------------
+    # Fetch class and exam
+    # --------------------------------------------------
+    school_class = get_object_or_404(
+        SchoolClass,
+        id=class_id,
+        school=school
+    )
+
+    exam = get_object_or_404(
+        Exam,
+        id=exam_id,
+        school=school
+    )
+
+    # --------------------------------------------------
+    # Ensure the exam is assigned to this class
+    # --------------------------------------------------
+    exam_subjects = ExamSubject.objects.filter(
+        exam=exam,
+        school_class=school_class
+    )
 
     if not exam_subjects.exists():
-        raise Http404("This exam is not assigned to this class")
+        raise Http404("This exam is not assigned to this class.")
 
-    students = Student.objects.filter(student_class=school_class).order_by('user__last_name', 'user__first_name')
+    # --------------------------------------------------
+    # Students and subjects
+    # --------------------------------------------------
+    students = Student.objects.filter(
+        student_class=school_class
+    ).order_by(
+        "user__last_name",
+        "user__first_name"
+    )
 
-    subjects = Subject.objects.filter(examsubject__exam=exam,examsubject__school_class=school_class).distinct()
+    subjects = Subject.objects.filter(
+        examsubject__exam=exam,
+        examsubject__school_class=school_class
+    ).distinct()
 
+    # --------------------------------------------------
+    # Existing marks
+    # --------------------------------------------------
     existing_marks = {}
-    for m in StudentMark.objects.filter(exam=exam,school_class=school_class):
-        existing_marks.setdefault(m.student_id, {})[m.subject_id] = m.marks
 
+    for mark in StudentMark.objects.filter(
+        exam=exam,
+        school_class=school_class
+    ):
+        existing_marks.setdefault(mark.student_id, {})[mark.subject_id] = mark.marks
+
+    # --------------------------------------------------
+    # Prepare marks for display
+    # --------------------------------------------------
     for student in students:
+
         student.marks_list = []
         total = 0
 
         for subject in subjects:
-            mark_val = existing_marks.get(student.id, {}).get(subject.id, '')
-            grade = ''
 
-            if mark_val != '':
+            mark_value = existing_marks.get(student.id, {}).get(subject.id, "")
+            grade = ""
+
+            if mark_value != "":
                 temp = StudentMark(
                     student=student,
                     subject=subject,
                     exam=exam,
-                    marks=mark_val
+                    marks=mark_value
                 )
+
                 grade = temp.grade()
-                total += float(mark_val)
+                total += float(mark_value)
 
             student.marks_list.append({
-                'subject': subject,
-                'mark': mark_val,
-                'grade': grade
+                "subject": subject,
+                "mark": mark_value,
+                "grade": grade,
             })
 
         student.total = total
-        student.average = round(total / len(subjects), 2) if subjects else 0
+        student.average = round(
+            total / len(subjects), 2
+        ) if subjects else 0
 
-    if request.method == 'POST':
+    # --------------------------------------------------
+    # Save marks
+    # --------------------------------------------------
+    if request.method == "POST":
+
         with transaction.atomic():
+
             for student in students:
+
                 for subject in subjects:
+
                     value = request.POST.get(
-                        f'marks_{student.id}_{subject.id}', ''
+                        f"marks_{student.id}_{subject.id}",
+                        ""
                     ).strip()
 
-                    if value:
-                        try:
-                            mark_float = float(value)
-                            mark_float = max(0, min(mark_float, exam.max_mark))
-                        except ValueError:
-                            mark_float = 0
+                    if not value:
+                        continue
 
-                        StudentMark.objects.update_or_create(
-                            student=student,
-                            subject=subject,
-                            exam=exam,
-                            defaults={
-                                'marks': mark_float,
-                                'school_class': school_class,
-                                #'term': exam.term,
-                                'facilitator': teacher  
-                            }
-                        )
+                    try:
+                        mark = float(value)
+                        mark = max(0, min(mark, exam.max_mark))
+                    except ValueError:
+                        mark = 0
+
+                    StudentMark.objects.update_or_create(
+                        student=student,
+                        subject=subject,
+                        exam=exam,
+                        defaults={
+                            "marks": mark,
+                            "school_class": school_class,
+                            "facilitator": teacher if teacher else None,
+                        },
+                    )
 
         messages.success(request, "Marks saved successfully.")
-        return redirect('academics:class_overview', class_id=class_id)
+        return redirect(
+            "academics:class_overview",
+            class_id=class_id
+        )
 
+    # --------------------------------------------------
+    # School logo
+    # --------------------------------------------------
     school_logo_url = school.logo.url if school.logo else None
 
-    return render(request, 'academics/enter_marks.html', {
-        'exam': exam,
-        'school_class': school_class,
-        'students': students,
-        'subjects': subjects,
-        'school_logo_url': school_logo_url,
-    })
-
+    return render(
+        request,
+        "academics/enter_marks.html",
+        {
+            "exam": exam,
+            "school_class": school_class,
+            "students": students,
+            "subjects": subjects,
+            "school_logo_url": school_logo_url,
+        },
+    )
 
 
 @login_required
-@role_required('teacher')
+@role_required("teacher", "schooladmin")
 def save_mark_ajax(request):
+
     if request.method != "POST":
-        return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+        return JsonResponse(
+            {"status": "error", "message": "Invalid request"},
+            status=400
+        )
 
     try:
-        school = request.user.teacher.school
+        user = request.user
+
+        # ------------------------------------
+        # Determine school
+        # ------------------------------------
+        if user.role == "teacher":
+            if not hasattr(user, "teacher"):
+                return JsonResponse(
+                    {"status": "error", "message": "Teacher profile not found"},
+                    status=403
+                )
+
+            school = user.teacher.school
+
+        elif user.role == "schooladmin":
+            if not hasattr(user, "school"):
+                return JsonResponse(
+                    {"status": "error", "message": "School not linked"},
+                    status=403
+                )
+
+            school = user.school
+
+        else:
+            return JsonResponse(
+                {"status": "error", "message": "Permission denied"},
+                status=403
+            )
+
+        # ------------------------------------
+        # Read JSON
+        # ------------------------------------
         data = json.loads(request.body or "{}")
 
         student_id = data.get("student_id")
@@ -534,50 +646,88 @@ def save_mark_ajax(request):
         exam_id = data.get("exam_id")
         mark = data.get("mark")
 
-        # --- validate required fields
         if not all([student_id, subject_id, exam_id]):
-            return JsonResponse({"status": "error", "message": "Missing fields"}, status=400)
+            return JsonResponse(
+                {"status": "error", "message": "Missing fields"},
+                status=400
+            )
 
-        # --- safe float conversion
+        # ------------------------------------
+        # Convert mark
+        # ------------------------------------
         try:
             mark = float(mark) if mark not in [None, "", " "] else 0
         except (TypeError, ValueError):
-            return JsonResponse({"status": "error", "message": "Invalid mark"}, status=400)
+            return JsonResponse(
+                {"status": "error", "message": "Invalid mark"},
+                status=400
+            )
 
-        # --- fetch objects safely
-        student = Student.objects.get(id=student_id, student_class__school=school)
-        subject = Subject.objects.get(id=subject_id, school=school)
-        exam = Exam.objects.get(id=exam_id, school=school)
+        # ------------------------------------
+        # Fetch objects
+        # ------------------------------------
+        student = Student.objects.get(
+            id=student_id,
+            student_class__school=school
+        )
 
-        # --- IMPORTANT: remove M2M assignment (FIX)
+        subject = Subject.objects.get(
+            id=subject_id,
+            school=school
+        )
+
+        exam = Exam.objects.get(
+            id=exam_id,
+            school=school
+        )
+
+        # Limit mark to exam maximum
+        mark = max(0, min(mark, exam.max_mark))
+
+        # ------------------------------------
+        # Save mark
+        # ------------------------------------
         obj, created = StudentMark.objects.update_or_create(
             student=student,
             subject=subject,
             exam=exam,
             defaults={
-                "marks": mark,
-                "facilitator": request.user,
-                "school_class": student.student_class  # ONLY works if FK
+                "marks": int(mark),
+                "school_class": student.student_class,
+                "facilitator": user,   # teacher OR schooladmin
             }
         )
 
-        # If school_class is ManyToMany, uncomment this instead:
-        # obj.school_class.set([student.student_class])
-
-        return JsonResponse({"status": "ok", "created": created})
+        return JsonResponse({
+            "status": "ok",
+            "created": created,
+            "mark": obj.marks,
+        })
 
     except Student.DoesNotExist:
-        return JsonResponse({"status": "error", "message": "Student not found"}, status=404)
+        return JsonResponse(
+            {"status": "error", "message": "Student not found"},
+            status=404
+        )
 
     except Subject.DoesNotExist:
-        return JsonResponse({"status": "error", "message": "Subject not found"}, status=404)
+        return JsonResponse(
+            {"status": "error", "message": "Subject not found"},
+            status=404
+        )
 
     except Exam.DoesNotExist:
-        return JsonResponse({"status": "error", "message": "Exam not found"}, status=404)
+        return JsonResponse(
+            {"status": "error", "message": "Exam not found"},
+            status=404
+        )
 
-    except Exception as e:
-        print("AJAX SAVE MARK ERROR:\n", traceback.format_exc())
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    except Exception:
+        print(traceback.format_exc())
+        return JsonResponse(
+            {"status": "error", "message": "Internal server error"},
+            status=500
+        )
 
 
 @login_required
@@ -724,70 +874,86 @@ def report_list(request):
 # ===============================
 # 🔹 DYNAMIC REMARK GENERATORS
 # ===============================
-
 def generate_dynamic_remark(subject, marks_list, trends):
     if not marks_list:
-        return "No assessment data available."
+        return "No assessment data."
 
     avg = sum(marks_list) / len(marks_list)
-    latest = marks_list[-1]
     trend = trends[-1]["trend"] if trends else "same"
 
-    # --- Base performance ---
+    # Base remark
     if avg >= 80:
-        remark = "Excellent performance"
+        remark = "Excellent performance."
     elif avg >= 65:
-        remark = ""
+        remark = "Good performance."
     elif avg >= 50:
-        remark = "More effort required."
+        remark = "Fair performance."
     else:
-        remark = "Significant improvement needed."
+        remark = "Needs improvement."
 
-    # --- Trend insight ---
+    # Trend
     if trend == "up":
-        remark += " Showing improvement."
+        remark += " Improving."
     elif trend == "down":
-        remark += " Performance is declining."
+        remark += " Declining."
     else:
-        remark += " Performance is consistent."
+        remark += " Consistent."
 
-    subject_lower = subject.lower()
+    # Subject-specific advice
+    subject = subject.lower()
 
-    # --- Subject‑specific feedback ---
-    if subject_lower == "mathematics":
-        if avg < 50:
-            remark += " Needs more practice in calculations and problem‑solving."
-        else:
-            remark += " Demonstrates strong numerical understanding."
+    subject_feedback = {
+        "mathematics": {
+            "high": "Strong problem-solving.",
+            "low": "Practise calculations."
+        },
+        "english": {
+            "high": "Good communication skills.",
+            "low": "Improve reading and writing."
+        },
+        "science": {
+            "high": "Good scientific understanding.",
+            "low": "Strengthen scientific concepts."
+        },
+        "kiswahili": {
+            "high": "Good language skills.",
+            "low": "Improve grammar and vocabulary."
+        },
+        "social studies": {
+            "high": "Good understanding of concepts.",
+            "low": "Revise key concepts."
+        },
+        "creative arts": {
+            "high": "Shows creativity.",
+            "low": "Participate more actively."
+        },
+        "agriculture": {
+            "high": "Good practical understanding.",
+            "low": "Improve practical application."
+        },
+        "pre-technical studies": {
+            "high": "Good technical skills.",
+            "low": "Practise practical skills."
+        }
+    }
 
-    elif subject_lower == "english":
-        if avg < 50:
-            remark += " Should improve reading and writing skills."
-        else:
-            remark += " Shows good language and comprehension skills."
+    feedback = subject_feedback.get(subject)
 
-    elif subject_lower == "science":
-        remark += " Continue developing scientific concepts "
-
-    else:
-        # Default for subjects not explicitly configured
-        if avg < 50:
-            remark += " Needs more effort and support."
-        else:
-            remark += " "
+    if feedback:
+        remark += " " + (feedback["high"] if avg >= 50 else feedback["low"])
 
     return remark
 
+
 def generate_overall_remark(avg):
     if avg >= 80:
-        return " Keep up the excellent work."
+        return "Excellent performance. Keep it up."
     elif avg >= 65:
-        return "There is room for further improvement."
+        return "Good performance. Aim higher."
     elif avg >= 50:
-        return "More effort and consistency are needed."
+        return "Fair performance. More effort needed."
     else:
-        return "Immediate improvement and support required."
-
+        return "Needs significant improvement."
 
 # ===============================
 # 🔹 MAIN VIEW
@@ -1364,3 +1530,44 @@ def student_results(request, student_id):
         'student': student,
         'results_by_exam': results_by_exam
     })
+
+@login_required
+@role_required("schooladmin")
+def unassign_exam_class(request, exam_id, class_id):
+    exam = get_object_or_404(
+        Exam,
+        id=exam_id,
+        school=request.user.school
+    )
+
+    school_class = get_object_or_404(
+        SchoolClass,
+        id=class_id,
+        school=request.user.school
+    )
+
+    if request.method == "POST":
+
+        # Prevent removing an exam if marks already exist
+        if StudentMark.objects.filter(
+            exam=exam,
+            school_class=school_class
+        ).exists():
+
+            messages.error(
+                request,
+                "Marks have already been entered for this class. Delete the marks first."
+            )
+            return redirect("academics:exam_list")
+
+        ExamSubject.objects.filter(
+            exam=exam,
+            school_class=school_class
+        ).delete()
+
+        messages.success(
+            request,
+            f"{school_class.name} has been removed from the exam."
+        )
+
+    return redirect("academics:exam_list")

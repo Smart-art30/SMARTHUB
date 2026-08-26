@@ -3,43 +3,125 @@
 
 {% block extra_css %}
 <style>
+@media screen {
+    .print-only {
+        display: none !important;
+    }
+}
+
 @media print {
-    .no-print { display: none !important; }
-    body * { visibility: hidden; }
-    .printable, .printable * { visibility: visible; }
-    .printable { position: absolute; left: 0; top: 0; width: 100%; }
-    .class-card { break-inside: avoid; margin-bottom: 20px; page-break-inside: avoid; }
-    .table { font-size: 12px !important; width: 100%; }
-    img { max-width: 30px !important; height: auto !important; }
+
+    @page{
+        margin:10mm;
+    }
+    html,
+    body{
+        margin:0 !important;
+        padding:0 !important;
+        background:#fff !important;
+    }
+
+    nav,
+    footer,
+    .no-print,
+    #studentSearch,
+    #classJump,
+    .btn,
+    button,
+    input,
+    select{
+        display:none !important;
+    }
+
+    html,
+    body,
+    .container,
+    .container-fluid,
+    .print-area{
+
+        width:100% !important;
+        max-width:none !important;
+
+        margin:0 !important;
+        padding:0 !important;
+    }
+    .class-card{
+        page-break-before:always;
+        break-before:page;
+        page-break-inside:avoid;
+        break-inside:avoid;
+
+        margin:0 !important;
+        margin-bottom:10mm !important;
+
+        box-shadow:none !important;
+        border:1px solid #000 !important;
+    }
+
+    .class-card:first-child{
+        page-break-before:auto;
+        break-before:auto;
+    }
+
+    .table-responsive{
+        overflow:visible !important;
+    }
+
+    .class-card{
+        width:100% !important;
+    }
+
+    .table-responsive{
+        width:100% !important;
+        overflow:visible !important;
+    }
+
+    table{
+        width:100% !important;
+        table-layout:fixed;
+    }
+    th,
+    td{
+        border:1px solid #000 !important;
+        padding:5px !important;
+    }
+
+    .card-header{
+        background:#343a40 !important;
+        color:#fff !important;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+    }
+
+    img{
+        width:30px !important;
+        height:30px !important;
+        border-radius:50%;
+    }
+
+    th:last-child,
+    td:last-child{
+        display:none !important;
+    }
 }
-.print-iframe { 
-    position: fixed; 
-    top: -9999px; 
-    left: -9999px; 
-    width: 0; 
-    height: 0; 
-    border: none; 
-}
-.student-row:hover { background-color: #f8f9fa; }
-.table-sm th, .table-sm td { padding: 0.5rem; }
-.loading { opacity: 0.6; pointer-events: none; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <!-- HEADER + SEARCH + JUMP -->
-    <div class="row g-2 align-items-center mb-4">
+<div class="container mt-4 print-area">
+    <div class="row g-2 align-items-center mb-4 no-print">
         <div class="col-12 col-md-4">
             <h4 class="mb-0">
                 <i class="bi bi-people me-2"></i>
                 Students – {{ request.user.school.name }}
             </h4>
         </div>
+
         <div class="col-12 col-md-3">
-            <input type="text" id="studentSearch" class="form-control" 
+            <input type="text" id="studentSearch" class="form-control"
                    placeholder="Search name or admission number...">
         </div>
+
         <div class="col-12 col-md-3">
             <select class="form-select" onchange="jumpToClass(this.value)" id="classJump">
                 <option value="">📍 Jump to class</option>
@@ -48,11 +130,12 @@
                 {% endfor %}
             </select>
         </div>
+
         <div class="col-12 col-md-2 d-grid gap-2">
             <a href="{% url 'students:student_add' %}" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-circle"></i> Add Learner
             </a>
-            <button class="btn btn-secondary btn-sm" onclick="printAllClasses()">
+            <button class="btn btn-secondary btn-sm" type="button" onclick="printAllClasses()">
                 <i class="bi bi-printer"></i> Print All
             </button>
         </div>
@@ -60,24 +143,20 @@
 
     {% for class in classes %}
     <div class="card mb-4 shadow-sm class-card" id="class-{{ class.id }}">
-        <!-- CLASS HEADER -->
         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
             <div>
-                <strong>{{ class.name }}</strong> 
+                <strong>{{ class.name }}</strong>
                 <span class="badge bg-light text-dark ms-2">{{ class.student_set.count }}</span>
             </div>
+
             <div class="no-print">
-                <button class="btn btn-sm btn-secondary me-1" onclick="printClass('{{ class.id }}')" title="Print class">
-                    <i class="bi bi-printer"></i>
-                </button>
-                <a href="{% url 'students:class_download' class.id %}" class="btn btn-sm btn-success" title="Download">
+                <a href="{% url 'students:class_download' class.id %}" class="btn btn-sm btn-success">
                     <i class="bi bi-download"></i>
                 </a>
             </div>
         </div>
 
-        <!-- DESKTOP TABLE -->
-        <div class="table-responsive d-none d-md-block">
+        <div class="table-responsive">
             <table class="table table-bordered table-hover table-sm align-middle mb-0">
                 <thead class="table-secondary text-center">
                     <tr>
@@ -88,20 +167,20 @@
                         <th style="width: 15%;">Admission</th>
                         <th style="width: 10%;">Gender</th>
                         <th style="width: 12%;">DOB</th>
-                        <th style="width: 12%;">Action</th>
+                        <th class="no-print" style="width:12%;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for s in class.student_set.all %}
-                    <tr class="student-row" data-name="{{ s.user.first_name|lower }} {{ s.user.last_name|lower }}" 
+                    <tr class="student-row" data-name="{{ s.user.first_name|lower }} {{ s.user.last_name|lower }}"
                         data-admission="{{ s.admission_number|lower }}">
                         <td>{{ forloop.counter }}</td>
                         <td class="text-center">
                             {% if s.photo %}
-                                <img src="{{ s.photo.url }}" width="40" height="40" class="rounded-circle" 
-                                     alt="{{ s.user.first_name }} photo" loading="lazy">
+                                <img src="{{ s.photo.url }}" width="40" height="40" class="rounded-circle"
+                                     alt="{{ s.user.first_name }} photo">
                             {% else %}
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" 
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center"
                                      style="width:40px;height:40px;font-size:10px;color:#6c757d;">
                                     {{ s.user.first_name.0|upper }}
                                 </div>
@@ -118,15 +197,13 @@
                             {% endif %}
                         </td>
                         <td class="text-nowrap">{{ s.date_of_birth|date:"d M Y"|default:"N/A" }}</td>
-                        <td class="text-center">
-                            <div class="no-print">
-                                <a href="{% url 'students:student_detail' s.id %}" 
-                                   class="btn btn-sm btn-outline-primary" title="View details">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
+                       <td class="text-center no-print">
+                        <a href="{% url 'students:student_detail' s.id %}"
+                        class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
+                                        </tr>
                     {% empty %}
                     <tr>
                         <td colspan="8" class="text-center text-muted py-4">
@@ -139,56 +216,10 @@
             </table>
         </div>
 
-        <!-- MOBILE CARD VIEW -->
-        <div class="d-md-none p-3">
-            {% for s in class.student_set.all %}
-            <div class="card mb-3 student-row shadow-sm" 
-                 data-name="{{ s.user.first_name|lower }} {{ s.user.last_name|lower }}"
-                 data-admission="{{ s.admission_number|lower }}">
-                <div class="card-body p-3">
-                    <div class="row align-items-center g-3">
-                        <div class="col-3 text-center">
-                            {% if s.photo %}
-                                <img src="{{ s.photo.url }}" width="60" height="60" class="rounded-circle" 
-                                     alt="{{ s.user.first_name }} photo" loading="lazy">
-                            {% else %}
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" 
-                                     style="width:60px;height:60px;font-size:12px;color:#6c757d;">
-                                    {{ s.user.first_name.0|upper }}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="col-6">
-                            <h6 class="mb-1 fw-bold">{{ s.user.first_name }} {{ s.user.last_name }}</h6>
-                            <p class="mb-1 small text-muted">ID: {{ s.admission_number }}</p>
-                            <div class="d-flex flex-wrap gap-1">
-                                {% if s.gender %}
-                                    <span class="badge bg-info text-dark">{{ s.gender|title }}</span>
-                                {% endif %}
-                                {% if s.date_of_birth %}
-                                    <span class="badge bg-secondary">{{ s.date_of_birth|date:"d MMM" }}</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-3 text-end">
-                            <a href="{% url 'students:student_detail' s.id %}" 
-                               class="btn btn-sm btn-primary no-print">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="text-center py-5 text-muted">
-                <i class="bi bi-people fs-1 opacity-50 mb-3"></i>
-                <p class="mb-0">No students in this class</p>
-            </div>
-            {% endfor %}
-        </div>
+   
     </div>
     {% empty %}
-    <div class="text-center py-5 text-muted">
+    <div class="text-center py-5 text-muted no-print">
         <i class="bi bi-building-school fs-1 opacity-50 mb-3 d-block"></i>
         <h5>No classes found</h5>
         <p class="mb-0">Add your first class to get started</p>
@@ -201,161 +232,43 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('studentSearch');
-    const body = document.body;
-    
-    searchInput.addEventListener('input', function() {
-        const value = this.value.toLowerCase().trim();
-        body.classList.add('loading');
-        
-        setTimeout(() => {
-            document.querySelectorAll('.student-row').forEach(row => {
-                const name = row.dataset.name || '';
-                const admission = row.dataset.admission || '';
-                const matches = name.includes(value) || admission.includes(value);
-                row.style.display = matches ? '' : 'none';
-            });
-            
-            // Handle empty states
-            document.querySelectorAll('.class-card').forEach(card => {
-                const rows = card.querySelectorAll('.student-row');
-                const hasVisible = Array.from(rows).some(r => r.style.display !== 'none');
-                const emptyMsg = card.querySelector('.text-muted');
-                if (emptyMsg) {
-                    emptyMsg.style.display = hasVisible || !value ? 'none' : '';
-                }
-            });
-            
-            body.classList.remove('loading');
-        }, 100);
-    });
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const value = this.value.toLowerCase().trim();
+            document.body.classList.add('loading');
+
+            setTimeout(() => {
+                document.querySelectorAll('.student-row').forEach(row => {
+                    const name = row.dataset.name || '';
+                    const admission = row.dataset.admission || '';
+                    row.style.display = (name.includes(value) || admission.includes(value)) ? '' : 'none';
+                });
+
+                document.querySelectorAll('.class-card').forEach(card => {
+                    const rows = card.querySelectorAll('.student-row');
+                    const visibleRows = Array.from(rows).some(r => r.style.display !== 'none');
+                    const emptyMsg = card.querySelector('.text-center.text-muted.py-4, .text-center.py-5.text-muted');
+                    if (emptyMsg) emptyMsg.style.display = visibleRows || !value ? 'none' : '';
+                });
+
+                document.body.classList.remove('loading');
+            }, 100);
+        });
+    }
 });
 
 function jumpToClass(id) {
     const target = document.getElementById(id);
     if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        document.getElementById('classJump').value = '';
+        const jump = document.getElementById('classJump');
+        if (jump) jump.value = '';
     }
 }
 
-function printClass(classId) {
-    printDiv('class-' + classId);
-}
+window.printAllClasses = function () {
+    window.print();
+};
 
-function printAllClasses() {
-    const printContainer = document.createElement('div');
-    printContainer.id = 'all-classes-print';
-    printContainer.className = 'printable container-fluid px-3';
-    
-    document.querySelectorAll('.class-card').forEach(card => {
-        const clone = card.cloneNode(true);
-        clone.querySelectorAll('.no-print').forEach(el => el.remove());
-        clone.classList.add('mb-4');
-        printContainer.appendChild(clone);
-    });
-    
-    document.body.appendChild(printContainer);
-    printDiv('all-classes-print');
-}
-
-function printDiv(printId) {
-    const printContent = document.getElementById(printId);
-    if (!printContent) {
-        alert('Print content not found');
-        return;
-    }
-    
-    // Clone and clean
-    const cleanContent = printContent.cloneNode(true);
-    cleanContent.querySelectorAll('.no-print').forEach(el => el.remove());
-    cleanContent.querySelectorAll('img').forEach(img => {
-        img.style.maxWidth = '30px';
-        img.style.height = 'auto';
-    });
-    
-    // Create iframe
-    const iframe = document.createElement('iframe');
-    iframe.className = 'print-iframe';
-    document.body.appendChild(iframe);
-    
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    iframeDoc.open();
-    
-    iframeDoc.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>${printId.includes('all') ? 'All Classes' : 'Class Print'}</title>
-            <meta charset="utf-8">
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { 
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
-                    margin: 20px; 
-                    font-size: 12px; 
-                    line-height: 1.4; 
-                }
-                .class-card { 
-                    margin-bottom: 25px; 
-                    border: 1px solid #dee2e6; 
-                    box-shadow: none; 
-                }
-                .card-header { 
-                    background: #343a40 !important; 
-                    color: white; 
-                    padding: 12px 16px; 
-                    font-weight: 600; 
-                }
-                .table { 
-                    margin: 0; 
-                    font-size: 11px; 
-                    width: 100%; 
-                }
-                .table th, .table td { 
-                    padding: 8px 6px; 
-                    border: 1px solid #dee2e6; 
-                    text-align: left; 
-                }
-                .table th { 
-                    background: #f8f9fa; 
-                    font-weight: 600; 
-                    font-size: 10px; 
-                    text-transform: uppercase; 
-                }
-                .text-center { text-align: center; }
-                .text-nowrap { white-space: nowrap; }
-                img { 
-                    max-width: 30px !important; 
-                    height: 30px !important; 
-                    border-radius: 50%; 
-                }
-                .badge { font-size: 9px; padding: 3px 6px; }
-                @media print { body { margin: 0; } }
-            </style>
-        </head>
-        <body>${cleanContent.innerHTML}</body>
-        </html>
-    `);
-    
-    iframeDoc.close();
-    
-    iframe.onload = function() {
-        setTimeout(() => {
-            try {
-                iframe.contentWindow.focus();
-                iframe.contentWindow.print();
-            } catch (e) {
-                console.warn('Print failed:', e);
-            } finally {
-                // Cleanup
-                document.body.removeChild(iframe);
-                if (printId === 'all-classes-print') {
-                    const temp = document.getElementById(printId);
-                    if (temp) temp.remove();
-                }
-            }
-        }, 500);
-    };
-}
 </script>
 {% endblock %}
