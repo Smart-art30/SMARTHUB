@@ -1,7 +1,9 @@
 from pathlib import Path
 from decouple import config
 import dj_database_url
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 # =========================================================
 # SECURITY
@@ -9,15 +11,61 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("SECRET_KEY")
 
-DEBUG = config("DEBUG", default=False, cast=bool)
+DEBUG = config(
+    "DEBUG",
+    default=False,
+    cast=bool
+)
 
-ALLOWED_HOSTS = config(
-    "ALLOWED_HOSTS",
-    default=""
-).split(",")
+
+# =========================================================
+# HOSTS
+# =========================================================
+
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in config(
+        "ALLOWED_HOSTS",
+        default="localhost,127.0.0.1"
+    ).split(",")
+    if host.strip()
+]
 
 if config("RENDER", default=False, cast=bool):
-    ALLOWED_HOSTS.append(config("RENDER_EXTERNAL_HOSTNAME", default=""))
+    render_host = config(
+        "RENDER_EXTERNAL_HOSTNAME",
+        default=""
+    ).strip()
+
+    if render_host:
+        ALLOWED_HOSTS.append(render_host)
+
+
+# =========================================================
+# CSRF
+# =========================================================
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in config(
+        "CSRF_TRUSTED_ORIGINS",
+        default=""
+    ).split(",")
+    if origin.strip()
+]
+
+# Automatically trust the Render HTTPS domain
+if config("RENDER", default=False, cast=bool):
+    render_host = config(
+        "RENDER_EXTERNAL_HOSTNAME",
+        default=""
+    ).strip()
+
+    if render_host:
+        render_origin = f"https://{render_host}"
+
+        if render_origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(render_origin)
 
 
 # =========================================================
@@ -30,7 +78,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-
     'django.contrib.staticfiles',
 
     'accounts',
@@ -56,9 +103,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+
+    # IMPORTANT: CSRF protection
     'django.middleware.csrf.CsrfViewMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -93,14 +144,14 @@ WSGI_APPLICATION = 'smarthub.wsgi.application'
 # DATABASE
 # =========================================================
 
-
-
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
+        conn_health_checks=True,
     )
 }
+
 
 # =========================================================
 # PASSWORD VALIDATION
@@ -163,9 +214,12 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND":
+            "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
+
 # =========================================================
 # CUSTOM USER
 # =========================================================
@@ -218,22 +272,3 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
 SECURE_REFERRER_POLICY = 'same-origin'
-
-
-SECURE_SSL_REDIRECT = config(
-    "SECURE_SSL_REDIRECT",
-    default=False,
-    cast=bool
-)
-
-SESSION_COOKIE_SECURE = config(
-    "SESSION_COOKIE_SECURE",
-    default=False,
-    cast=bool
-)
-
-CSRF_COOKIE_SECURE = config(
-    "CSRF_COOKIE_SECURE",
-    default=False,
-    cast=bool
-)

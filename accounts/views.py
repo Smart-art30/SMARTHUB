@@ -102,26 +102,29 @@ def dashboard_redirect(request):
     else:
         raise PermissionDenied
 
-def student_report(Student, exam):
+def student_report(student, exam):
     marks = StudentMark.objects.filter(
-        student =  student,
-        exam_subject__exam  =  exam
+        student=student,
+        exam_subject__exam=exam
     )
-    total = sum(m.marks for m in marks)
-    average =  total/ marks.count() if marks.exists() else 0
 
-    return{
+    total = sum(m.marks for m in marks)
+    average = total / marks.count() if marks.exists() else 0
+
+    return {
         'marks': marks,
         'total': total,
         'average': average,
     }
-def student_attendance_summary(student):
-    reords = student_attendance.objects.filter(student = student)
-    present = records.filter(status='prsent').count()
-    absent = records.filter(status='absent').count()
-    late = records.filter(satus= 'late').count()
 
-    return{
+def student_attendance_summary(student):
+    records = StudentAttendance.objects.filter(student=student)
+
+    present = records.filter(status='present').count()
+    absent = records.filter(status='absent').count()
+    late = records.filter(status='late').count()
+
+    return {
         'present': present,
         'absent': absent,
         'late': late,
