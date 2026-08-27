@@ -1,146 +1,243 @@
 from django.shortcuts import render, redirect
-from academics.models import StudentMark
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from attendance.models import StudentAttendance
-from .forms import UserRegistrationForm
-from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
+
+from academics.models import StudentMark
+from attendance.models import StudentAttendance
+from .forms import UserRegistrationForm
+
+
+# =========================================================
+# LOGIN
+# =========================================================
 
 def login_view(request):
+
+    # Already logged in
     if request.user.is_authenticated:
-        return redirect('dashboard:dashboard_redirect')
+        return redirect("dashboard:dashboard_redirect")
 
-    register_form = UserRegistrationForm()
+    if request.method == "POST":
 
-    if request.method == "POST" and "login_submit" in request.POST:
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
 
-        print("========== LOGIN DEBUG ==========")
-        print("USERNAME:", username)
-        print("PASSWORD PROVIDED:", bool(password))
+        if not username or not password:
+
+            messages.error(
+                request,
+                "Please enter both username and password."
+            )
+
+            return render(
+                request,
+                "accounts/login.html",
+                {
+                    "username": username,
+                }
+            )
 
         try:
+
             user = authenticate(
                 request,
                 username=username,
                 password=password
             )
 
-            print("AUTHENTICATE RESULT:", user)
-
             if user is not None:
-                print("USER ID:", user.id)
-                print("USER ROLE:", user.role)
-                print("USER SCHOOL:", user.school_id)
 
                 login(request, user)
 
-                print("DJANGO LOGIN SUCCESS")
-
-                return redirect("dashboard:dashboard_redirect")
-
-            print("AUTHENTICATION FAILED")
-            messages.error(request, "Invalid username or password.")
-
-        except Exception as e:
-            print("========== LOGIN ERROR ==========")
-            print("ERROR TYPE:", type(e).__name__)
-            print("ERROR:", str(e))
-            import traceback
-            traceback.print_exc()
-            print("=================================")
+                return redirect(
+                    "dashboard:dashboard_redirect"
+                )
 
             messages.error(
                 request,
-                "A system error occurred during login."
+                "Invalid username or password. Please check your details and try again."
             )
 
-    return render(request, "accounts/login.html", {
-        "register_form": register_form
-    })
+        except Exception as e:
 
-@require_POST
-def logout_view(request):
-    logout(request)
-    
-    return redirect('accounts:login')
+            print("LOGIN ERROR:", type(e).__name__, str(e))
 
+            messages.error(
+                request,
+                "A system error occurred during login. Please try again."
+            )
+
+    return render(
+        request,
+        "accounts/login.html"
+    )
+
+
+# =========================================================
+# REGISTER
+# =========================================================
 
 def register_view(request):
-    if request.method == 'POST':
+
+    # Don't allow an already logged-in user to register
+    if request.user.is_authenticated:
+        return redirect("dashboard:dashboard_redirect")
+
+    if request.method == "POST":
+
         form = UserRegistrationForm(request.POST)
 
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('dashboard:dashboard_redirect')
+
+            try:
+
+                user = form.save()
+
+                # Automatically log the new user in
+                login(request, user)
+
+                messages.success(
+                    request,
+                    "Account created successfully. Welcome to SmartHub!"
+                )
+
+                return redirect(
+                    "dashboard:dashboard_redirect"
+                )
+
+            except Exception as e:
+
+                print("REGISTRATION ERROR:")
+                print(type(e).__name__)
+                print(str(e))
+
+                messages.error(
+                    request,
+                    "Unable to create the account. Please check your details and try again."
+                )
+
+        else:
+
+            messages.error(
+                request,
+                "Please correct the errors below."
+            )
+
     else:
+
         form = UserRegistrationForm()
 
-    return render(request, 'accounts/register.html', {
-        'form': form
-    })
+    return render(
+        request,
+        "accounts/register.html",
+        {
+            "form": form
+        }
+    )
+
+
+# =========================================================
+# LOGOUT
+# =========================================================
+
+@require_POST
+def logout_view(request):
+
+    logout(request)
+
+    messages.success(
+        request,
+        "You have been logged out successfully."
+    )
+
+    return redirect(
+        "accounts:login"
+    )
+
+
+# =========================================================
+# DASHBOARD REDIRECT
+# =========================================================
 
 @login_required
 def dashboard_redirect(request):
+
     user = request.user
 
-    if user.role == 'superadmin':
-        return redirect('superadmin_dashboard')
-    elif user.role == 'schooladmin':
-        return redirect('schooladmin_dashboard')
-    elif user.role == 'teacher':
-        return redirect('teacher_dashboard')
-    elif user.role == 'student':
-        return redirect('student_dashboard')
-    elif user.role == 'parent':
-        return redirect('parent_dashboard')
+    if user.role == "superadmin":
+        return redirect("superadmin_dashboard")
+
+    elif user.role == "schooladmin":
+        return redirect("schooladmin_dashboard")
+
+    elif user.role == "teacher":
+        return redirect("teacher_dashboard")
+
+    elif user.role == "student":
+        return redirect("student_dashboard")
+
+    elif user.role == "parent":
+        return redirect("parent_dashboard")
+
     else:
-        raise PermissionDenied
+        raise PermissionDenied(
+            "Your account does not have a valid role."
+        )
+
+
+# =========================================================
+# STUDENT REPORT
+# =========================================================
 
 def student_report(student, exam):
+
     marks = StudentMark.objects.filter(
         student=student,
         exam_subject__exam=exam
     )
 
     total = sum(m.marks for m in marks)
-    average = total / marks.count() if marks.exists() else 0
 
-    return {
-        'marks': marks,
-        'total': total,
-        'average': average,
-    }
-
-def student_attendance_summary(student):
-    records = StudentAttendance.objects.filter(student=student)
-
-    present = records.filter(status='present').count()
-    absent = records.filter(status='absent').count()
-    late = records.filter(status='late').count()
-
-    return {
-        'present': present,
-        'absent': absent,
-        'late': late,
-    }
-    StudentAttendance.objects.filter(
-        student_class=class_obj,
-        date__month = 6
+    average = (
+        total / marks.count()
+        if marks.exists()
+        else 0
     )
 
-def student_fee_statement(student):
-    invoices = Invoices.objects.filter(student=student)
-    total_billed = sum(invoice.total_amount() for invoice in invoices)
-    total_paid = sum(invoice.total_paid() for inv in invoices)
+    return {
+        "marks": marks,
+        "total": total,
+        "average": average,
+    }
+
+
+# =========================================================
+# STUDENT ATTENDANCE
+# =========================================================
+
+def student_attendance_summary(student):
+
+    records = StudentAttendance.objects.filter(
+        student=student
+    )
+
+    present = records.filter(
+        status="present"
+    ).count()
+
+    absent = records.filter(
+        status="absent"
+    ).count()
+
+    late = records.filter(
+        status="late"
+    ).count()
 
     return {
-        'total_billed': total_billed,
-        'total_paid ': total_paid,
-        'balance' :total_billed - total_paid
+        "present": present,
+        "absent": absent,
+        "late": late,
     }
