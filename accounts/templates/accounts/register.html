@@ -1,0 +1,1531 @@
+```html
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<div class="register-page">
+
+    <!-- Background decoration -->
+    <div class="background-shapes" aria-hidden="true">
+        <div class="shape shape-one"></div>
+        <div class="shape shape-two"></div>
+        <div class="shape shape-three"></div>
+    </div>
+
+    <div class="register-container">
+
+        <!-- Registration Card -->
+        <div class="register-card">
+
+            <!-- Header -->
+            <div class="register-header">
+
+                <div class="brand-icon">
+                    <svg
+                        viewBox="0 0 48 48"
+                        fill="none"
+                        aria-hidden="true"
+                    >
+                        <circle
+                            cx="24"
+                            cy="24"
+                            r="21"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        />
+
+                        <path
+                            d="M24 14v20M14 24h20"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                        />
+                    </svg>
+                </div>
+
+                <div class="welcome-badge">
+                    🚀 Get Started
+                </div>
+
+                <h1>
+                    Create Your Account
+                </h1>
+
+                <p>
+                    Join EduPortal and access your school management
+                    dashboard.
+                </p>
+
+            </div>
+
+
+            <!-- Registration Form -->
+            <form
+                method="post"
+                class="register-form"
+                id="registerForm"
+                autocomplete="on"
+                novalidate
+            >
+
+                {% csrf_token %}
+
+
+                <!-- Non-field errors -->
+                {% if form.non_field_errors %}
+
+                    <div
+                        class="form-alert"
+                        role="alert"
+                    >
+                        <strong>Please correct the following:</strong>
+
+                        {{ form.non_field_errors|striptags }}
+                    </div>
+
+                {% endif %}
+
+
+                <!-- Username -->
+                {% if form.username %}
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.username.id_for_label }}"
+                        >
+                            Username
+                        </label>
+
+                        <div class="input-container">
+
+                            <span
+                                class="input-icon"
+                                aria-hidden="true"
+                            >
+                                👤
+                            </span>
+
+                            {{ form.username|add_class:"form-input" }}
+
+                        </div>
+
+                        {% if form.username.help_text %}
+                            <small class="help-text">
+                                {{ form.username.help_text|safe }}
+                            </small>
+                        {% endif %}
+
+                        {% if form.username.errors %}
+                            <div class="field-error" role="alert">
+                                {{ form.username.errors|striptags }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- Email -->
+                {% if form.email %}
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.email.id_for_label }}"
+                        >
+                            Email Address
+                        </label>
+
+                        <div class="input-container">
+
+                            <span
+                                class="input-icon"
+                                aria-hidden="true"
+                            >
+                                ✉️
+                            </span>
+
+                            {{ form.email|add_class:"form-input" }}
+
+                        </div>
+
+                        {% if form.email.help_text %}
+                            <small class="help-text">
+                                {{ form.email.help_text|safe }}
+                            </small>
+                        {% endif %}
+
+                        {% if form.email.errors %}
+                            <div class="field-error" role="alert">
+                                {{ form.email.errors|striptags }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- Role -->
+                {% if form.role %}
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.role.id_for_label }}"
+                        >
+                            Account Role
+                        </label>
+
+                        <div class="input-container">
+
+                            <span
+                                class="input-icon"
+                                aria-hidden="true"
+                            >
+                                🎓
+                            </span>
+
+                            {{ form.role|add_class:"form-input form-select" }}
+
+                        </div>
+
+                        {% if form.role.help_text %}
+                            <small class="help-text">
+                                {{ form.role.help_text|safe }}
+                            </small>
+                        {% endif %}
+
+                        {% if form.role.errors %}
+                            <div class="field-error" role="alert">
+                                {{ form.role.errors|striptags }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- School -->
+                {% if form.school %}
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.school.id_for_label }}"
+                        >
+                            School
+                        </label>
+
+                        <div class="input-container">
+
+                            <span
+                                class="input-icon"
+                                aria-hidden="true"
+                            >
+                                🏫
+                            </span>
+
+                            {{ form.school|add_class:"form-input form-select" }}
+
+                        </div>
+
+                        {% if form.school.help_text %}
+                            <small class="help-text">
+                                {{ form.school.help_text|safe }}
+                            </small>
+                        {% endif %}
+
+                        {% if form.school.errors %}
+                            <div class="field-error" role="alert">
+                                {{ form.school.errors|striptags }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- Password -->
+                {% if form.password %}
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.password.id_for_label }}"
+                        >
+                            Password
+                        </label>
+
+                        <div class="input-container">
+
+                            <span
+                                class="input-icon"
+                                aria-hidden="true"
+                            >
+                                🔒
+                            </span>
+
+                            {{ form.password|add_class:"form-input password-input" }}
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-target="{{ form.password.id_for_label }}"
+                                aria-label="Show password"
+                            >
+                                👁️
+                            </button>
+
+                        </div>
+
+                        {% if form.password.help_text %}
+                            <small class="help-text">
+                                {{ form.password.help_text|safe }}
+                            </small>
+                        {% endif %}
+
+                        {% if form.password.errors %}
+                            <div class="field-error" role="alert">
+                                {{ form.password.errors|striptags }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- Confirm Password -->
+                {% if form.password2 %}
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.password2.id_for_label }}"
+                        >
+                            Confirm Password
+                        </label>
+
+                        <div class="input-container">
+
+                            <span
+                                class="input-icon"
+                                aria-hidden="true"
+                            >
+                                🔐
+                            </span>
+
+                            {{ form.password2|add_class:"form-input password-input" }}
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-target="{{ form.password2.id_for_label }}"
+                                aria-label="Show password"
+                            >
+                                👁️
+                            </button>
+
+                        </div>
+
+                        {% if form.password2.help_text %}
+                            <small class="help-text">
+                                {{ form.password2.help_text|safe }}
+                            </small>
+                        {% endif %}
+
+                        {% if form.password2.errors %}
+                            <div class="field-error" role="alert">
+                                {{ form.password2.errors|striptags }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- Terms -->
+                <div class="terms-box">
+
+                    <label class="terms-label">
+
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            required
+                        >
+
+                        <span class="custom-checkbox"></span>
+
+                        <span>
+                            I agree to the platform's
+                            <a href="#" class="terms-link">
+                                Terms &amp; Conditions
+                            </a>
+                            and
+                            <a href="#" class="terms-link">
+                                Privacy Policy
+                            </a>.
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- Submit -->
+                <button
+                    type="submit"
+                    class="register-btn"
+                    id="registerButton"
+                >
+
+                    <span class="button-text">
+                        Create Account
+                    </span>
+
+                    <span
+                        class="button-loader"
+                        aria-hidden="true"
+                    ></span>
+
+                </button>
+
+
+            </form>
+
+
+            <!-- Footer -->
+            <div class="register-footer">
+
+                <p>
+                    Already have an account?
+
+                    <a
+                        href="{% url 'accounts:login' %}"
+                        class="login-link"
+                    >
+                        Sign in
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+
+    --register-primary: #667eea;
+
+    --register-secondary: #764ba2;
+
+    --register-text: #f8fafc;
+
+    --register-muted: #cbd5e1;
+
+    --register-border:
+        rgba(255, 255, 255, 0.16);
+
+    --register-card:
+        rgba(255, 255, 255, 0.12);
+
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.register-page {
+
+    min-height: 100vh;
+
+    position: relative;
+
+    overflow: hidden;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 2rem;
+
+    background:
+
+        radial-gradient(
+            circle at 10% 10%,
+            rgba(102, 126, 234, 0.35),
+            transparent 35%
+        ),
+
+        radial-gradient(
+            circle at 90% 90%,
+            rgba(118, 75, 162, 0.35),
+            transparent 35%
+        ),
+
+        linear-gradient(
+            135deg,
+            #0f0f23 0%,
+            #1a1a2e 50%,
+            #16213e 100%
+        );
+
+}
+
+
+/* =========================================================
+   BACKGROUND SHAPES
+   ========================================================= */
+
+.background-shapes {
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+}
+
+.shape {
+
+    position: absolute;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.05);
+
+    filter: blur(2px);
+
+    animation:
+        registerFloat
+        15s
+        ease-in-out
+        infinite;
+
+}
+
+.shape-one {
+
+    width: 250px;
+    height: 250px;
+
+    top: -80px;
+    left: -80px;
+
+}
+
+.shape-two {
+
+    width: 350px;
+    height: 350px;
+
+    right: -120px;
+    bottom: -120px;
+
+    animation-delay: -5s;
+
+}
+
+.shape-three {
+
+    width: 120px;
+    height: 120px;
+
+    left: 65%;
+    top: 15%;
+
+    animation-delay: -9s;
+
+}
+
+@keyframes registerFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-25px);
+    }
+
+}
+
+
+/* =========================================================
+   CONTAINER
+   ========================================================= */
+
+.register-container {
+
+    width: 100%;
+
+    max-width: 520px;
+
+    position: relative;
+
+    z-index: 10;
+
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.register-card {
+
+    width: 100%;
+
+    padding:
+        2.5rem 2.25rem;
+
+    border-radius: 28px;
+
+    background:
+        var(--register-card);
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.2
+        );
+
+    backdrop-filter:
+        blur(25px)
+        saturate(150%);
+
+    -webkit-backdrop-filter:
+        blur(25px)
+        saturate(150%);
+
+    box-shadow:
+        0 35px 80px
+        rgba(
+            0,
+            0,
+            0,
+            0.35
+        );
+
+    animation:
+        registerAppear
+        0.7s
+        ease;
+
+}
+
+@keyframes registerAppear {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(30px)
+            scale(0.97);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.register-header {
+
+    text-align: center;
+
+    margin-bottom: 2rem;
+
+}
+
+.brand-icon {
+
+    width: 60px;
+
+    height: 60px;
+
+    margin:
+        0 auto 1rem;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #a5b4fc;
+
+}
+
+.brand-icon svg {
+
+    width: 60px;
+
+    height: 60px;
+
+}
+
+.welcome-badge {
+
+    display: inline-block;
+
+    padding:
+        5px 14px;
+
+    border-radius: 30px;
+
+    background:
+        rgba(
+            102,
+            126,
+            234,
+            0.15
+        );
+
+    border:
+        1px solid
+        rgba(
+            165,
+            180,
+            252,
+            0.3
+        );
+
+    color: #c7d2fe;
+
+    font-size: 0.8rem;
+
+    margin-bottom: 0.9rem;
+
+}
+
+.register-header h1 {
+
+    color:
+        var(--register-text);
+
+    font-size:
+        clamp(
+            1.7rem,
+            4vw,
+            2.1rem
+        );
+
+    margin:
+        0 0 0.6rem;
+
+    font-weight: 750;
+
+}
+
+.register-header p {
+
+    color:
+        var(--register-muted);
+
+    margin: 0;
+
+    font-size: 0.92rem;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.register-form {
+
+    width: 100%;
+
+}
+
+.form-group {
+
+    margin-bottom: 1.2rem;
+
+}
+
+.form-group > label {
+
+    display: block;
+
+    color:
+        var(--register-text);
+
+    font-size: 0.86rem;
+
+    font-weight: 600;
+
+    margin-bottom: 0.5rem;
+
+}
+
+.input-container {
+
+    position: relative;
+
+}
+
+.form-input {
+
+    width: 100%;
+
+    min-height: 52px;
+
+    padding:
+        0.85rem
+        3rem
+        0.85rem
+        3rem;
+
+    border:
+        1px solid
+        var(--register-border);
+
+    border-radius: 14px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.07
+        );
+
+    color:
+        var(--register-text);
+
+    font-size: 0.92rem;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+.form-input:focus {
+
+    border-color:
+        rgba(
+            165,
+            180,
+            252,
+            0.7
+        );
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.11
+        );
+
+    box-shadow:
+        0 0 0 4px
+        rgba(
+            102,
+            126,
+            234,
+            0.12
+        );
+
+}
+
+.form-input::placeholder {
+
+    color:
+        rgba(
+            203,
+            213,
+            225,
+            0.55
+        );
+
+}
+
+.input-icon {
+
+    position: absolute;
+
+    left: 1rem;
+
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    pointer-events: none;
+
+    z-index: 2;
+
+}
+
+.password-toggle {
+
+    position: absolute;
+
+    right: 0.75rem;
+
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    cursor: pointer;
+
+    padding: 0.35rem;
+
+    z-index: 3;
+
+}
+
+
+/* =========================================================
+   SELECT
+   ========================================================= */
+
+select.form-input {
+
+    appearance: auto;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   HELP / ERRORS
+   ========================================================= */
+
+.help-text {
+
+    display: block;
+
+    margin-top: 0.35rem;
+
+    color:
+        rgba(
+            203,
+            213,
+            225,
+            0.7
+        );
+
+    font-size: 0.72rem;
+
+    line-height: 1.5;
+
+}
+
+.field-error {
+
+    margin-top: 0.4rem;
+
+    color: #fca5a5;
+
+    font-size: 0.78rem;
+
+}
+
+.form-alert {
+
+    margin-bottom: 1.25rem;
+
+    padding:
+        0.9rem 1rem;
+
+    border-radius: 14px;
+
+    background:
+        rgba(
+            239,
+            68,
+            68,
+            0.14
+        );
+
+    border:
+        1px solid
+        rgba(
+            239,
+            68,
+            68,
+            0.3
+        );
+
+    color: #fecaca;
+
+    font-size: 0.85rem;
+
+}
+
+
+/* =========================================================
+   TERMS
+   ========================================================= */
+
+.terms-box {
+
+    margin:
+        0.5rem 0 1.4rem;
+
+}
+
+.terms-label {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 0.7rem;
+
+    color:
+        var(--register-muted);
+
+    font-size: 0.78rem;
+
+    line-height: 1.5;
+
+    cursor: pointer;
+
+}
+
+.terms-label input {
+
+    position: absolute;
+
+    opacity: 0;
+
+}
+
+.custom-checkbox {
+
+    width: 20px;
+
+    height: 20px;
+
+    min-width: 20px;
+
+    border:
+        2px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.3
+        );
+
+    border-radius: 6px;
+
+    margin-top: 1px;
+
+    position: relative;
+
+    transition:
+        all 0.2s ease;
+
+}
+
+.terms-label input:checked
++ .custom-checkbox {
+
+    background:
+        #667eea;
+
+    border-color:
+        #667eea;
+
+}
+
+.terms-label input:checked
++ .custom-checkbox::after {
+
+    content: "✓";
+
+    position: absolute;
+
+    color: white;
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    left: 50%;
+
+    top: 50%;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        );
+
+}
+
+.terms-link {
+
+    color: #a5b4fc;
+
+    text-decoration: none;
+
+}
+
+.terms-link:hover {
+
+    text-decoration: underline;
+
+}
+
+
+/* =========================================================
+   REGISTER BUTTON
+   ========================================================= */
+
+.register-btn {
+
+    width: 100%;
+
+    min-height: 54px;
+
+    border: none;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #667eea,
+            #764ba2
+        );
+
+    color: white;
+
+    font-size: 0.98rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    position: relative;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+
+}
+
+.register-btn:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 15px 30px
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
+
+}
+
+.register-btn:active {
+
+    transform:
+        translateY(0);
+
+}
+
+.register-btn:disabled {
+
+    opacity: 0.7;
+
+    cursor: not-allowed;
+
+}
+
+.button-loader {
+
+    display: none;
+
+    position: absolute;
+
+    width: 20px;
+
+    height: 20px;
+
+    border:
+        2px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.3
+        );
+
+    border-top-color: white;
+
+    border-radius: 50%;
+
+    left: 50%;
+
+    top: 50%;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        );
+
+    animation:
+        spin
+        0.8s
+        linear
+        infinite;
+
+}
+
+.register-btn.loading
+.button-text {
+
+    opacity: 0;
+
+}
+
+.register-btn.loading
+.button-loader {
+
+    display: block;
+
+}
+
+@keyframes spin {
+
+    to {
+
+        transform:
+            translate(
+                -50%,
+                -50%
+            )
+            rotate(360deg);
+
+    }
+
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.register-footer {
+
+    margin-top: 1.7rem;
+
+    padding-top: 1.3rem;
+
+    border-top:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.1
+        );
+
+    text-align: center;
+
+}
+
+.register-footer p {
+
+    margin: 0;
+
+    color:
+        var(--register-muted);
+
+    font-size: 0.86rem;
+
+}
+
+.login-link {
+
+    color: #a5b4fc;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    margin-left: 4px;
+
+}
+
+.login-link:hover {
+
+    color: white;
+
+    text-decoration: underline;
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 576px) {
+
+    .register-page {
+
+        padding:
+            1rem;
+
+    }
+
+    .register-card {
+
+        padding:
+            2rem 1.2rem;
+
+        border-radius:
+            22px;
+
+    }
+
+    .register-header h1 {
+
+        font-size:
+            1.6rem;
+
+    }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.form-input:focus-visible,
+.register-btn:focus-visible,
+.password-toggle:focus-visible,
+.login-link:focus-visible,
+.terms-link:focus-visible {
+
+    outline:
+        2px solid
+        #a5b4fc;
+
+    outline-offset:
+        3px;
+
+}
+
+</style>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        /* =====================================================
+           PASSWORD VISIBILITY
+           ===================================================== */
+
+        const passwordButtons =
+            document.querySelectorAll(
+                ".password-toggle"
+            );
+
+        passwordButtons.forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const targetId =
+                            this.dataset.target;
+
+                        const input =
+                            document.getElementById(
+                                targetId
+                            );
+
+                        if (!input) {
+                            return;
+                        }
+
+                        if (
+                            input.type ===
+                            "password"
+                        ) {
+
+                            input.type =
+                                "text";
+
+                            this.textContent =
+                                "🙈";
+
+                            this.setAttribute(
+                                "aria-label",
+                                "Hide password"
+                            );
+
+                        } else {
+
+                            input.type =
+                                "password";
+
+                            this.textContent =
+                                "👁️";
+
+                            this.setAttribute(
+                                "aria-label",
+                                "Show password"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           REGISTRATION FORM
+           ===================================================== */
+
+        const form =
+            document.getElementById(
+                "registerForm"
+            );
+
+        const button =
+            document.getElementById(
+                "registerButton"
+            );
+
+        const terms =
+            document.getElementById(
+                "terms"
+            );
+
+
+        if (
+            form &&
+            button &&
+            terms
+        ) {
+
+            form.addEventListener(
+                "submit",
+                function (event) {
+
+                    /*
+                     * Require Terms & Conditions.
+                     */
+
+                    if (!terms.checked) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Please agree to the Terms & Conditions and Privacy Policy."
+                        );
+
+                        terms.focus();
+
+                        return;
+
+                    }
+
+
+                    /*
+                     * Allow Django to receive
+                     * the POST request.
+                     */
+
+                    button.classList.add(
+                        "loading"
+                    );
+
+                    button.disabled = true;
+
+                }
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}
+```
