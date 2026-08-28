@@ -1,0 +1,587 @@
+[
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 12,
+    "fields": {
+      "teacher": 2,
+      "school_class": 4,
+      "subject": 10
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 13,
+    "fields": {
+      "teacher": 2,
+      "school_class": 4,
+      "subject": 11
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 14,
+    "fields": {
+      "teacher": 2,
+      "school_class": 4,
+      "subject": 12
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 15,
+    "fields": {
+      "teacher": 2,
+      "school_class": 5,
+      "subject": 10
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 16,
+    "fields": {
+      "teacher": 2,
+      "school_class": 5,
+      "subject": 11
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 17,
+    "fields": {
+      "teacher": 2,
+      "school_class": 5,
+      "subject": 12
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 18,
+    "fields": {
+      "teacher": 3,
+      "school_class": 6,
+      "subject": 7
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 19,
+    "fields": {
+      "teacher": 3,
+      "school_class": 6,
+      "subject": 3
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 20,
+    "fields": {
+      "teacher": 3,
+      "school_class": 6,
+      "subject": 9
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 21,
+    "fields": {
+      "teacher": 3,
+      "school_class": 6,
+      "subject": 13
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 22,
+    "fields": {
+      "teacher": 3,
+      "school_class": 6,
+      "subject": 5
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 23,
+    "fields": {
+      "teacher": 3,
+      "school_class": 6,
+      "subject": 6
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 24,
+    "fields": {
+      "teacher": 4,
+      "school_class": 7,
+      "subject": 2
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 25,
+    "fields": {
+      "teacher": 4,
+      "school_class": 7,
+      "subject": 3
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 26,
+    "fields": {
+      "teacher": 4,
+      "school_class": 7,
+      "subject": 4
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 27,
+    "fields": {
+      "teacher": 4,
+      "school_class": 7,
+      "subject": 5
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 28,
+    "fields": {
+      "teacher": 4,
+      "school_class": 7,
+      "subject": 6
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 29,
+    "fields": {
+      "teacher": 4,
+      "school_class": 7,
+      "subject": 7
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 30,
+    "fields": {
+      "teacher": 4,
+      "school_class": 7,
+      "subject": 8
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 31,
+    "fields": {
+      "teacher": 4,
+      "school_class": 7,
+      "subject": 9
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 32,
+    "fields": {
+      "teacher": 5,
+      "school_class": 9,
+      "subject": 1
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 33,
+    "fields": {
+      "teacher": 5,
+      "school_class": 9,
+      "subject": 8
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 34,
+    "fields": {
+      "teacher": 5,
+      "school_class": 9,
+      "subject": 9
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 35,
+    "fields": {
+      "teacher": 5,
+      "school_class": 9,
+      "subject": 2
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 36,
+    "fields": {
+      "teacher": 5,
+      "school_class": 9,
+      "subject": 3
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 37,
+    "fields": {
+      "teacher": 5,
+      "school_class": 9,
+      "subject": 4
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 38,
+    "fields": {
+      "teacher": 5,
+      "school_class": 9,
+      "subject": 5
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 39,
+    "fields": {
+      "teacher": 5,
+      "school_class": 9,
+      "subject": 6
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 40,
+    "fields": {
+      "teacher": 5,
+      "school_class": 9,
+      "subject": 7
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 41,
+    "fields": {
+      "teacher": 6,
+      "school_class": 10,
+      "subject": 1
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 42,
+    "fields": {
+      "teacher": 6,
+      "school_class": 10,
+      "subject": 2
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 43,
+    "fields": {
+      "teacher": 6,
+      "school_class": 10,
+      "subject": 3
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 44,
+    "fields": {
+      "teacher": 6,
+      "school_class": 10,
+      "subject": 4
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 45,
+    "fields": {
+      "teacher": 6,
+      "school_class": 10,
+      "subject": 5
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 46,
+    "fields": {
+      "teacher": 6,
+      "school_class": 10,
+      "subject": 6
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 47,
+    "fields": {
+      "teacher": 6,
+      "school_class": 10,
+      "subject": 7
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 48,
+    "fields": {
+      "teacher": 6,
+      "school_class": 10,
+      "subject": 8
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 49,
+    "fields": {
+      "teacher": 6,
+      "school_class": 10,
+      "subject": 9
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 50,
+    "fields": {
+      "teacher": 8,
+      "school_class": 2,
+      "subject": 3
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 51,
+    "fields": {
+      "teacher": 8,
+      "school_class": 2,
+      "subject": 2
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 52,
+    "fields": {
+      "teacher": 8,
+      "school_class": 2,
+      "subject": 4
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 53,
+    "fields": {
+      "teacher": 8,
+      "school_class": 2,
+      "subject": 5
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 54,
+    "fields": {
+      "teacher": 8,
+      "school_class": 2,
+      "subject": 6
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 55,
+    "fields": {
+      "teacher": 8,
+      "school_class": 2,
+      "subject": 7
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 56,
+    "fields": {
+      "teacher": 8,
+      "school_class": 2,
+      "subject": 8
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 57,
+    "fields": {
+      "teacher": 8,
+      "school_class": 2,
+      "subject": 9
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 58,
+    "fields": {
+      "teacher": 9,
+      "school_class": 1,
+      "subject": 1
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 59,
+    "fields": {
+      "teacher": 9,
+      "school_class": 1,
+      "subject": 2
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 60,
+    "fields": {
+      "teacher": 9,
+      "school_class": 1,
+      "subject": 3
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 61,
+    "fields": {
+      "teacher": 9,
+      "school_class": 1,
+      "subject": 4
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 62,
+    "fields": {
+      "teacher": 9,
+      "school_class": 1,
+      "subject": 5
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 63,
+    "fields": {
+      "teacher": 9,
+      "school_class": 1,
+      "subject": 6
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 64,
+    "fields": {
+      "teacher": 9,
+      "school_class": 1,
+      "subject": 7
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 65,
+    "fields": {
+      "teacher": 9,
+      "school_class": 1,
+      "subject": 8
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 66,
+    "fields": {
+      "teacher": 9,
+      "school_class": 1,
+      "subject": 9
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 69,
+    "fields": {
+      "teacher": 10,
+      "school_class": 14,
+      "subject": 5
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 70,
+    "fields": {
+      "teacher": 11,
+      "school_class": 3,
+      "subject": 8
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 71,
+    "fields": {
+      "teacher": 12,
+      "school_class": 8,
+      "subject": 13
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 72,
+    "fields": {
+      "teacher": 13,
+      "school_class": 11,
+      "subject": 13
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 73,
+    "fields": {
+      "teacher": 14,
+      "school_class": 13,
+      "subject": 13
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 75,
+    "fields": {
+      "teacher": 15,
+      "school_class": 12,
+      "subject": 13
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 76,
+    "fields": {
+      "teacher": 15,
+      "school_class": 12,
+      "subject": 9
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 77,
+    "fields": {
+      "teacher": 15,
+      "school_class": 12,
+      "subject": 5
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 78,
+    "fields": {
+      "teacher": 15,
+      "school_class": 12,
+      "subject": 14
+    }
+  },
+  {
+    "model": "teachers.teachersubjectassignment",
+    "pk": 79,
+    "fields": {
+      "teacher": 15,
+      "school_class": 12,
+      "subject": 16
+    }
+  }
+]

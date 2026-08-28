@@ -1,0 +1,189 @@
+[
+  {
+    "model": "academics.subject",
+    "pk": 1,
+    "fields": {
+      "school": 1,
+      "name": "PRE-TECHNICAL STUDIES",
+      "code": "001",
+      "short_name": "PRE-",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 2,
+    "fields": {
+      "school": 1,
+      "name": "AGRICULTURE & NUTRITION",
+      "code": "002",
+      "short_name": "AGRI",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 3,
+    "fields": {
+      "school": 1,
+      "name": "ENGLISH",
+      "code": "003",
+      "short_name": "ENGL",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 4,
+    "fields": {
+      "school": 1,
+      "name": "SCIENCE",
+      "code": "004",
+      "short_name": "SCIE",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 5,
+    "fields": {
+      "school": 1,
+      "name": "C/A",
+      "code": "008",
+      "short_name": "C/A",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 6,
+    "fields": {
+      "school": 1,
+      "name": "CRE",
+      "code": "0990",
+      "short_name": "CRE",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 7,
+    "fields": {
+      "school": 1,
+      "name": "MATHEMATICS",
+      "code": "9090",
+      "short_name": "MATH",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 8,
+    "fields": {
+      "school": 1,
+      "name": "SS/T",
+      "code": "90900",
+      "short_name": "SS/T",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 9,
+    "fields": {
+      "school": 1,
+      "name": "KISWAHILI",
+      "code": "7193",
+      "short_name": "KISW",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 10,
+    "fields": {
+      "school": 2,
+      "name": "E-1",
+      "code": "001",
+      "short_name": "E-1",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 11,
+    "fields": {
+      "school": 2,
+      "name": "E-2",
+      "code": "E-2",
+      "short_name": "E-2",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 12,
+    "fields": {
+      "school": 2,
+      "name": "E-3",
+      "code": "E-3",
+      "short_name": "E-3",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 13,
+    "fields": {
+      "school": 1,
+      "name": "ENVIRONMENTAL",
+      "code": "00233",
+      "short_name": "ENVI",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 14,
+    "fields": {
+      "school": 1,
+      "name": "LANGUAGE",
+      "code": "90",
+      "short_name": "LANG",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 15,
+    "fields": {
+      "school": 1,
+      "name": "READING",
+      "code": "45454",
+      "short_name": "READ",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 16,
+    "fields": {
+      "school": 1,
+      "name": "NUMBERS",
+      "code": "876543",
+      "short_name": "NUMB",
+      "assigned_teacher": []
+    }
+  },
+  {
+    "model": "academics.subject",
+    "pk": 17,
+    "fields": {
+      "school": 1,
+      "name": "LITERACY",
+      "code": "001PO",
+      "short_name": "LITE",
+      "assigned_teacher": []
+    }
+  }
+]

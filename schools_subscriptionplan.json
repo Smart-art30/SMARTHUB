@@ -1,0 +1,32 @@
+[
+  {
+    "model": "schools.subscriptionplan",
+    "pk": 1,
+    "fields": {
+      "name": "Basic",
+      "max_students": 500,
+      "max_teachers": 50,
+      "price_per_month": "3500.00"
+    }
+  },
+  {
+    "model": "schools.subscriptionplan",
+    "pk": 2,
+    "fields": {
+      "name": "Classic",
+      "max_students": 1000,
+      "max_teachers": 55,
+      "price_per_month": "13000.00"
+    }
+  },
+  {
+    "model": "schools.subscriptionplan",
+    "pk": 3,
+    "fields": {
+      "name": "Premium",
+      "max_students": 5000,
+      "max_teachers": 200,
+      "price_per_month": "40000.00"
+    }
+  }
+]

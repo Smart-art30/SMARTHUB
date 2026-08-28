@@ -1,0 +1,5570 @@
+[
+  {
+    "model": "students.student",
+    "pk": 3,
+    "fields": {
+      "user": [
+        "chenga"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "chenga001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "female",
+      "created_at": "2026-04-03T05:22:33.819Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 4,
+    "fields": {
+      "user": [
+        "Briella"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "Bri002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "female",
+      "created_at": "2026-04-03T05:24:19.181Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 5,
+    "fields": {
+      "user": [
+        "collo"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "collo003",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-04-03T05:25:58.173Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 6,
+    "fields": {
+      "user": [
+        "tm"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "tm11",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-04-03T05:27:14.221Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 7,
+    "fields": {
+      "user": [
+        "ian"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "bbsina",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:33:09.881Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 8,
+    "fields": {
+      "user": [
+        "bbsgitau"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "bbsgitau",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:33:58.763Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 9,
+    "fields": {
+      "user": [
+        "aai"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "bbsaai",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "male",
+      "created_at": "2026-05-06T16:34:37.172Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 10,
+    "fields": {
+      "user": [
+        "bbsnjoki"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "bbsnjoki",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:35:14.689Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 11,
+    "fields": {
+      "user": [
+        "lele"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "lele",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:35:40.765Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 12,
+    "fields": {
+      "user": [
+        "pd"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "pd",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:36:15.782Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 13,
+    "fields": {
+      "user": [
+        "wema"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "wema",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:37:02.901Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 14,
+    "fields": {
+      "user": [
+        "an"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "anbbs",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:37:53.500Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 15,
+    "fields": {
+      "user": [
+        "bg"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "bgbbs",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:38:33.659Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 16,
+    "fields": {
+      "user": [
+        "eum"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "eum",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:39:01.319Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 17,
+    "fields": {
+      "user": [
+        "aggie"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "Aggie",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:39:31.235Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 18,
+    "fields": {
+      "user": [
+        "timoo"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "tomoo",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:39:59.981Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 19,
+    "fields": {
+      "user": [
+        "LK1"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "LK1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:40:33.797Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 20,
+    "fields": {
+      "user": [
+        "bk"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "bk",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:40:59.749Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 21,
+    "fields": {
+      "user": [
+        "Am"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "am1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:41:40.514Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 22,
+    "fields": {
+      "user": [
+        "Natatinia"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "natania",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:42:25.529Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 23,
+    "fields": {
+      "user": [
+        "hk"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "hk",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:42:54.596Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 24,
+    "fields": {
+      "user": [
+        "greg"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "greg3868636632",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:43:26.344Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 25,
+    "fields": {
+      "user": [
+        "amk"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "amk",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:43:57.199Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 26,
+    "fields": {
+      "user": [
+        "nawa"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "nawa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:44:28.138Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 27,
+    "fields": {
+      "user": [
+        "steph"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "Steph",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:45:07.882Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 28,
+    "fields": {
+      "user": [
+        "vic"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "vic",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:45:37.193Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 29,
+    "fields": {
+      "user": [
+        "ann"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "ann",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:46:01.138Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 30,
+    "fields": {
+      "user": [
+        "jojo"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "jojo",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:46:28.752Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 31,
+    "fields": {
+      "user": [
+        "ashso"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "ashso",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:47:30.615Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 32,
+    "fields": {
+      "user": [
+        "Gabuu"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "gabyy",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:48:08.282Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 33,
+    "fields": {
+      "user": [
+        "pre"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "pre",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:48:50.267Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 34,
+    "fields": {
+      "user": [
+        "max"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "max",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:49:17.702Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 35,
+    "fields": {
+      "user": [
+        "hm"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "hm",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:49:49.863Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 36,
+    "fields": {
+      "user": [
+        "cmk"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "cmk",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:50:18.025Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 37,
+    "fields": {
+      "user": [
+        "ammm"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "ammm",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:50:49.100Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 38,
+    "fields": {
+      "user": [
+        "dave"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "dave",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:51:21.374Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 39,
+    "fields": {
+      "user": [
+        "janicewah"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "janjan",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:51:48.153Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 40,
+    "fields": {
+      "user": [
+        "gape"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "gape",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:52:15.692Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 41,
+    "fields": {
+      "user": [
+        "juhu"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "juhu",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:52:45.499Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 42,
+    "fields": {
+      "user": [
+        "dadad"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "dadda",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:53:16.598Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 43,
+    "fields": {
+      "user": [
+        "Angie"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "angie6276732632",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:53:46.332Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 44,
+    "fields": {
+      "user": [
+        "bkk"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "bkk",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:54:27.317Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 45,
+    "fields": {
+      "user": [
+        "ivawa"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "ivawa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:55:26.993Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 46,
+    "fields": {
+      "user": [
+        "essss"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "esssss",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:56:34.352Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 47,
+    "fields": {
+      "user": [
+        "tym"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "tym",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:57:51.573Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 48,
+    "fields": {
+      "user": [
+        "beng"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "beng",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:58:23.915Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 49,
+    "fields": {
+      "user": [
+        "joek"
+      ],
+      "school": 2,
+      "student_class": 4,
+      "admission_number": "joelk",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-06T16:59:02.507Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 50,
+    "fields": {
+      "user": [
+        "Emmah"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "emmah34",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:23:11.141Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 51,
+    "fields": {
+      "user": [
+        "zw"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "zw",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:23:53.510Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 52,
+    "fields": {
+      "user": [
+        "ciwa"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "ciwa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:24:28.205Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 53,
+    "fields": {
+      "user": [
+        "timnjo"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "timnjo",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:25:12.771Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 54,
+    "fields": {
+      "user": [
+        "abindu"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "abindu",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:26:10.403Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 55,
+    "fields": {
+      "user": [
+        "aumu"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "aumu",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:26:52.022Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 56,
+    "fields": {
+      "user": [
+        "maggieee"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "maggieee",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:27:41.140Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 57,
+    "fields": {
+      "user": [
+        "jowa"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "jowa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:28:15.397Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 58,
+    "fields": {
+      "user": [
+        "chmwa"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "chmwa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:28:58.290Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 59,
+    "fields": {
+      "user": [
+        "stacyyyy"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "stacyyyy",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:29:42.594Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 60,
+    "fields": {
+      "user": [
+        "hehema"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "hehema",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:30:23.384Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 61,
+    "fields": {
+      "user": [
+        "mimila"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "mimila",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:31:12.401Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 62,
+    "fields": {
+      "user": [
+        "abinja"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "abijah",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:32:20.369Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 63,
+    "fields": {
+      "user": [
+        "fewa"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "fewa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:33:06.672Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 64,
+    "fields": {
+      "user": [
+        "ntiii"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "ntiii",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:33:44.187Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 65,
+    "fields": {
+      "user": [
+        "shelm"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "shelmi",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:34:43.290Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 66,
+    "fields": {
+      "user": [
+        "caka"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "caka",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:35:16.859Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 67,
+    "fields": {
+      "user": [
+        "kka"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "kka",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:35:47.417Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 68,
+    "fields": {
+      "user": [
+        "nicandu"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "nicandu",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:36:35.559Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 69,
+    "fields": {
+      "user": [
+        "eduuuu"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "eduu",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:37:25.116Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 70,
+    "fields": {
+      "user": [
+        "miki"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "miki",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:38:06.364Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 71,
+    "fields": {
+      "user": [
+        "wanguuuuu"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "wanguuuuu",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:38:46.963Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 72,
+    "fields": {
+      "user": [
+        "tamwa"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "tamwa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:39:37.104Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 73,
+    "fields": {
+      "user": [
+        "shannn"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "shannn",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:40:29.561Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 74,
+    "fields": {
+      "user": [
+        "nasiiii"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "nasiiiiii",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:41:03.703Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 75,
+    "fields": {
+      "user": [
+        "chwa"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "chwa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:41:54.167Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 76,
+    "fields": {
+      "user": [
+        "tmb"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "tmb",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:42:31.745Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 77,
+    "fields": {
+      "user": [
+        "mewa"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "mewa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:43:15.654Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 78,
+    "fields": {
+      "user": [
+        "vaaaaa"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "vaaaaaaaa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:44:04.955Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 79,
+    "fields": {
+      "user": [
+        "jaka"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "jaka",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:44:50.949Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 80,
+    "fields": {
+      "user": [
+        "ramoo"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "ramooo",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:45:33.442Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 81,
+    "fields": {
+      "user": [
+        "lesha"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "lesha",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:46:22.478Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 82,
+    "fields": {
+      "user": [
+        "LOLOLO"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "lololo",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:47:14.720Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 83,
+    "fields": {
+      "user": [
+        "maka"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "maka",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:47:48.440Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 84,
+    "fields": {
+      "user": [
+        "steku"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "steku",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:48:43.332Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 85,
+    "fields": {
+      "user": [
+        "leles"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "leles",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:49:27.906Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 86,
+    "fields": {
+      "user": [
+        "jomu"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "jomu",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:50:16.264Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 87,
+    "fields": {
+      "user": [
+        "sawaaa"
+      ],
+      "school": 2,
+      "student_class": 5,
+      "admission_number": "sawaaaa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-08T19:51:00.196Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 88,
+    "fields": {
+      "user": [
+        "shirleen"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "shir01",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T18:42:21.908Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 89,
+    "fields": {
+      "user": [
+        "jay001"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "jay001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T18:43:11.296Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 90,
+    "fields": {
+      "user": [
+        "Innocentk"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "innocent",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T18:56:09.117Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 91,
+    "fields": {
+      "user": [
+        "maryw"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "mary001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T18:56:42.685Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 92,
+    "fields": {
+      "user": [
+        "lavinew"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "lavin001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T18:57:18.006Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 93,
+    "fields": {
+      "user": [
+        "marymu"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "mmm",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T18:59:59.500Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 94,
+    "fields": {
+      "user": [
+        "vin"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "vin001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:01:04.491Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 95,
+    "fields": {
+      "user": [
+        "Gk"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "Gk001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:03:54.762Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 96,
+    "fields": {
+      "user": [
+        "brandonnji"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "brandon001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:05:26.813Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 97,
+    "fields": {
+      "user": [
+        "jayde"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "jade001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:06:25.668Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 98,
+    "fields": {
+      "user": [
+        "evewa"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "eve001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:07:54.951Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 99,
+    "fields": {
+      "user": [
+        "ezzy"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "ezra001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:08:26.227Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 100,
+    "fields": {
+      "user": [
+        "elvis"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "el001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:10:13.419Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 101,
+    "fields": {
+      "user": [
+        "jama"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "javan001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:11:40.800Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 102,
+    "fields": {
+      "user": [
+        "vinkim"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "vinkim001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:15:00.817Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 103,
+    "fields": {
+      "user": [
+        "janenje"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "janenje001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:16:22.414Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 104,
+    "fields": {
+      "user": [
+        "alvo"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "alvinm001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:18:11.094Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 105,
+    "fields": {
+      "user": [
+        "jk"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "jk001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:19:48.716Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 106,
+    "fields": {
+      "user": [
+        "enos"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "enos001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:22:49.034Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 107,
+    "fields": {
+      "user": [
+        "leah"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "leah001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:23:31.661Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 108,
+    "fields": {
+      "user": [
+        "jn"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "jn001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:24:24.851Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 109,
+    "fields": {
+      "user": [
+        "cm"
+      ],
+      "school": 1,
+      "student_class": 6,
+      "admission_number": "cm001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-19T19:26:05.619Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 110,
+    "fields": {
+      "user": [
+        "natwa"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "nat001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "female",
+      "created_at": "2026-05-21T15:09:14.206Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 111,
+    "fields": {
+      "user": [
+        "teph"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "steph001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:11:18.352Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 112,
+    "fields": {
+      "user": [
+        "abiwa"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "abiwa001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:12:22.313Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 113,
+    "fields": {
+      "user": [
+        "jb"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "jb001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:13:17.109Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 114,
+    "fields": {
+      "user": [
+        "shawa"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "shawa001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:13:57.144Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 115,
+    "fields": {
+      "user": [
+        "luwa"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "luwa001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:14:22.633Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 116,
+    "fields": {
+      "user": [
+        "sumu"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "smu001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:14:59.683Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 117,
+    "fields": {
+      "user": [
+        "en"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "en001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:15:21.805Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 118,
+    "fields": {
+      "user": [
+        "bn"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "bn001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:18:06.351Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 119,
+    "fields": {
+      "user": [
+        "jma"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "jma001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:18:54.124Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 120,
+    "fields": {
+      "user": [
+        "jkb"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "jkb001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "male",
+      "created_at": "2026-05-21T15:19:58.190Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 121,
+    "fields": {
+      "user": [
+        "bema"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "bema001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:20:27.747Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 122,
+    "fields": {
+      "user": [
+        "bropo"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "bropo001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:21:10.138Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 123,
+    "fields": {
+      "user": [
+        "kyga"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "kyga001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:21:45.049Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 124,
+    "fields": {
+      "user": [
+        "coma"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "c0ma001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:22:26.817Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 125,
+    "fields": {
+      "user": [
+        "samn"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "samn001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:22:51.529Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 126,
+    "fields": {
+      "user": [
+        "emu"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "emu001`",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:23:18.549Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 127,
+    "fields": {
+      "user": [
+        "wami"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "wami001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:23:43.326Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 128,
+    "fields": {
+      "user": [
+        "pwa"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "pwa001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:24:19.688Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 129,
+    "fields": {
+      "user": [
+        "jkm"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "jkma001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:26:13.947Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 130,
+    "fields": {
+      "user": [
+        "len"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "len001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:27:04.502Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 131,
+    "fields": {
+      "user": [
+        "allm"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "allam001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:27:43.688Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 132,
+    "fields": {
+      "user": [
+        "iska"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "iska001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:28:22.389Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 133,
+    "fields": {
+      "user": [
+        "jayka"
+      ],
+      "school": 1,
+      "student_class": 7,
+      "admission_number": "jayka001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:31:18.267Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 134,
+    "fields": {
+      "user": [
+        "runy"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "runy002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:34:54.072Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 135,
+    "fields": {
+      "user": [
+        "anwa"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "anwa002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:35:24.604Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 136,
+    "fields": {
+      "user": [
+        "jamu"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "jamu001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:36:02.293Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 137,
+    "fields": {
+      "user": [
+        "miwa"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "mitwa002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:37:24.098Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 138,
+    "fields": {
+      "user": [
+        "igg"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "igg002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:37:46.692Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 139,
+    "fields": {
+      "user": [
+        "anmu"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "anmu002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:38:13.296Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 140,
+    "fields": {
+      "user": [
+        "gmu"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "gmu001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:38:41.636Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 141,
+    "fields": {
+      "user": [
+        "jkr"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "jkr002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:39:37.121Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 142,
+    "fields": {
+      "user": [
+        "amuu"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "amuu002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:40:26.845Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 143,
+    "fields": {
+      "user": [
+        "framu"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "framu002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:41:27.508Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 144,
+    "fields": {
+      "user": [
+        "mamu"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "mamu002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:41:58.784Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 145,
+    "fields": {
+      "user": [
+        "gwa"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "gwa001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:42:26.329Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 146,
+    "fields": {
+      "user": [
+        "heka"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "heka002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:43:13.362Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 147,
+    "fields": {
+      "user": [
+        "shenje"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "shenja002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:43:42.975Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 148,
+    "fields": {
+      "user": [
+        "gma"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "gma002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:44:11.514Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 149,
+    "fields": {
+      "user": [
+        "namwi"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "namwi002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:44:40.667Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 150,
+    "fields": {
+      "user": [
+        "eliwa"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "eliwa002",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:45:05.314Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 151,
+    "fields": {
+      "user": [
+        "shsh"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "shsh003",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "female",
+      "created_at": "2026-05-21T15:46:49.604Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 152,
+    "fields": {
+      "user": [
+        "lwa"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "lwa003",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:49:13.496Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 153,
+    "fields": {
+      "user": [
+        "sawe"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "sawe003",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:49:40.849Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 154,
+    "fields": {
+      "user": [
+        "banzi"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "banzi003",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:50:13.161Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 155,
+    "fields": {
+      "user": [
+        "scarnje"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "scarnje003",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:50:44.169Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 156,
+    "fields": {
+      "user": [
+        "wanga"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "wanga009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:52:26.246Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 157,
+    "fields": {
+      "user": [
+        "mboyoka"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "mboyoka009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:52:54.789Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 158,
+    "fields": {
+      "user": [
+        "bka"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "bka009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:53:29.921Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 159,
+    "fields": {
+      "user": [
+        "giomk"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "giomki009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:54:22.186Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 160,
+    "fields": {
+      "user": [
+        "tawa"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "tawa009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:54:50.877Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 161,
+    "fields": {
+      "user": [
+        "samo"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "samo009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:56:08.420Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 162,
+    "fields": {
+      "user": [
+        "mank"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "majn009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:56:53.842Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 163,
+    "fields": {
+      "user": [
+        "rach"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "rach009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:57:23.806Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 164,
+    "fields": {
+      "user": [
+        "aln"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "aln009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:58:08.783Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 165,
+    "fields": {
+      "user": [
+        "nyak"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "nyak009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:58:36.698Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 166,
+    "fields": {
+      "user": [
+        "zemu"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "zemu009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T15:59:27.221Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 167,
+    "fields": {
+      "user": [
+        "jayga"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "jayga009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:33:48.228Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 168,
+    "fields": {
+      "user": [
+        "demwa"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "demwa009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:34:15.124Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 169,
+    "fields": {
+      "user": [
+        "gika"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "gika009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:34:45.249Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 170,
+    "fields": {
+      "user": [
+        "jondu"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "jonduoo9",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:35:23.416Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 171,
+    "fields": {
+      "user": [
+        "jawa"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "jawa009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:37:14.429Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 172,
+    "fields": {
+      "user": [
+        "roka"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "roka009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:37:51.861Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 173,
+    "fields": {
+      "user": [
+        "clemoo"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "clemoo009",
+      "date_of_birth": null,
+      "photo": "students/photos/ckemo_hvcxLcW.jpeg",
+      "gender": "male",
+      "created_at": "2026-05-21T17:38:21.822Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 174,
+    "fields": {
+      "user": [
+        "irenya"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "ire009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:38:54.052Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 175,
+    "fields": {
+      "user": [
+        "feki"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "feki009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:39:14.614Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 176,
+    "fields": {
+      "user": [
+        "mawa"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "mawa009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:39:37.762Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 177,
+    "fields": {
+      "user": [
+        "mweni"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "mweni009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:40:03.286Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 178,
+    "fields": {
+      "user": [
+        "saka"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "saka009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T17:40:26.125Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 179,
+    "fields": {
+      "user": [
+        "im"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "im008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "male",
+      "created_at": "2026-05-21T18:26:58.255Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 180,
+    "fields": {
+      "user": [
+        "fawa"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "fawa008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:27:54.853Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 181,
+    "fields": {
+      "user": [
+        "fanja"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "njambi008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:29:20.444Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 182,
+    "fields": {
+      "user": [
+        "lewa"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "lewis008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:32:44.577Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 183,
+    "fields": {
+      "user": [
+        "chka"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "chka008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:37:07.600Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 184,
+    "fields": {
+      "user": [
+        "thowa"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "thomas008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:37:40.811Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 185,
+    "fields": {
+      "user": [
+        "lulu"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "lulu008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:40:13.345Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 186,
+    "fields": {
+      "user": [
+        "fai"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "fai008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:40:40.474Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 187,
+    "fields": {
+      "user": [
+        "mbzikz"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "mbaika008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:41:21.912Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 188,
+    "fields": {
+      "user": [
+        "sagi"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "sam008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:41:47.415Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 189,
+    "fields": {
+      "user": [
+        "eljo"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "eljo008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:47:39.391Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 190,
+    "fields": {
+      "user": [
+        "moba"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "moba008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:49:26.020Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 191,
+    "fields": {
+      "user": [
+        "abi"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "abi008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:49:58.455Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 192,
+    "fields": {
+      "user": [
+        "wm"
+      ],
+      "school": 1,
+      "student_class": 10,
+      "admission_number": "wm008",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-21T18:57:40.780Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 193,
+    "fields": {
+      "user": [
+        "kk"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "kk004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T16:49:42.119Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 194,
+    "fields": {
+      "user": [
+        "rn"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "rn004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T16:50:22.527Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 195,
+    "fields": {
+      "user": [
+        "tw"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "tw004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T16:51:44.757Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 196,
+    "fields": {
+      "user": [
+        "mk"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "mk004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T16:52:43.566Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 197,
+    "fields": {
+      "user": [
+        "anju004"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "anju004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T16:54:24.871Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 198,
+    "fields": {
+      "user": [
+        "nemu"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "nemu004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T16:54:57.314Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 199,
+    "fields": {
+      "user": [
+        "vini"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "vini004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T16:55:26.021Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 200,
+    "fields": {
+      "user": [
+        "jong"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "jong004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T16:55:59.570Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 201,
+    "fields": {
+      "user": [
+        "lema"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "lema001",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T16:56:52.594Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 202,
+    "fields": {
+      "user": [
+        "kywa"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "kywa004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:02:55.400Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 203,
+    "fields": {
+      "user": [
+        "gacha"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "gachagua004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:03:50.664Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 204,
+    "fields": {
+      "user": [
+        "washa"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "washa004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:06:58.745Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 205,
+    "fields": {
+      "user": [
+        "rymi"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "rymi004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:07:33.974Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 206,
+    "fields": {
+      "user": [
+        "stepnjo"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "stepnjo004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:08:51.293Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 207,
+    "fields": {
+      "user": [
+        "shaka"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "shaka004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:09:25.242Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 208,
+    "fields": {
+      "user": [
+        "jombu"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "jombu004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:16:09.085Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 209,
+    "fields": {
+      "user": [
+        "reuma"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "reuma004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:16:46.909Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 210,
+    "fields": {
+      "user": [
+        "loth"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "loth004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:17:23.256Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 212,
+    "fields": {
+      "user": [
+        "jenwa"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "jenwa004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:19:29.930Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 213,
+    "fields": {
+      "user": [
+        "blemu"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "blemu004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:20:08.812Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 214,
+    "fields": {
+      "user": [
+        "jokas"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "jokas004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:20:57.136Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 215,
+    "fields": {
+      "user": [
+        "mutho"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "mutho004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:21:32.762Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 216,
+    "fields": {
+      "user": [
+        "waima"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "waima004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:22:13.247Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 217,
+    "fields": {
+      "user": [
+        "kimaru"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "kimaru004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:23:31.725Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 218,
+    "fields": {
+      "user": [
+        "godwa"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "godwa",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:24:17.740Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 219,
+    "fields": {
+      "user": [
+        "penje"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "penje004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:25:03.916Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 220,
+    "fields": {
+      "user": [
+        "naoa"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "naoa004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:26:50.762Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 221,
+    "fields": {
+      "user": [
+        "katho"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "katho004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:28:09.419Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 222,
+    "fields": {
+      "user": [
+        "joywa"
+      ],
+      "school": 1,
+      "student_class": 2,
+      "admission_number": "joywa004",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T17:28:42.738Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 223,
+    "fields": {
+      "user": [
+        "keke"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "keke007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T20:55:50.641Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 224,
+    "fields": {
+      "user": [
+        "iinka"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "inka007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T20:56:19.326Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 225,
+    "fields": {
+      "user": [
+        "dandi"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "dandi007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T20:57:41.372Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 226,
+    "fields": {
+      "user": [
+        "blewa"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "blewa007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T20:58:15.423Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 227,
+    "fields": {
+      "user": [
+        "roo"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "roo007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T20:58:40.715Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 228,
+    "fields": {
+      "user": [
+        "newma"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "newt007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T20:59:23.149Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 229,
+    "fields": {
+      "user": [
+        "juskim"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "juskim007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T20:59:50.132Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 230,
+    "fields": {
+      "user": [
+        "doph"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "doph007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T21:00:32.391Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 231,
+    "fields": {
+      "user": [
+        "cyga"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "cyga007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T21:00:55.181Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 232,
+    "fields": {
+      "user": [
+        "ellwa"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "ellwa007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T21:02:00.313Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 233,
+    "fields": {
+      "user": [
+        "annmba"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "anmba007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T21:03:03.286Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 234,
+    "fields": {
+      "user": [
+        "desga"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "desga",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T21:03:27.607Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 235,
+    "fields": {
+      "user": [
+        "manya"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "many007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T21:04:00.185Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 236,
+    "fields": {
+      "user": [
+        "jonzi"
+      ],
+      "school": 1,
+      "student_class": 1,
+      "admission_number": "jonzi007",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-22T21:04:42.583Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 237,
+    "fields": {
+      "user": [
+        "femwa"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "femwapp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "male",
+      "created_at": "2026-05-24T08:17:32.243Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 238,
+    "fields": {
+      "user": [
+        "bry"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "brypp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:19:53.942Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 239,
+    "fields": {
+      "user": [
+        "mika"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "mikapp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:20:35.949Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 240,
+    "fields": {
+      "user": [
+        "shanwa"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "shanwapp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:21:59.084Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 241,
+    "fields": {
+      "user": [
+        "kakape"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "kakakapepp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:22:38.458Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 242,
+    "fields": {
+      "user": [
+        "abes"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "abespp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:25:47.391Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 243,
+    "fields": {
+      "user": [
+        "mura"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "murapp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:26:15.867Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 244,
+    "fields": {
+      "user": [
+        "jakas"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "jakaspp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:27:21.000Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 245,
+    "fields": {
+      "user": [
+        "bangu"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "bangupp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:27:55.347Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 246,
+    "fields": {
+      "user": [
+        "giopp1"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "giopp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:28:24.640Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 247,
+    "fields": {
+      "user": [
+        "tatpp1"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "tatpp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:29:37.493Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 248,
+    "fields": {
+      "user": [
+        "rypp1"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "ryapp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:30:03.624Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 249,
+    "fields": {
+      "user": [
+        "mitpp1"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "mitpp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:30:52.960Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 250,
+    "fields": {
+      "user": [
+        "alexpp1"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "alexpp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:31:35.087Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 251,
+    "fields": {
+      "user": [
+        "nickpp1"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "nickpp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:32:49.780Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 252,
+    "fields": {
+      "user": [
+        "eukapp1"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "euckapp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:33:40.584Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 253,
+    "fields": {
+      "user": [
+        "jaypp1"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "jaypp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:34:16.199Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 254,
+    "fields": {
+      "user": [
+        "robbiepp1"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "robbiepp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:34:55.215Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 255,
+    "fields": {
+      "user": [
+        "olverpp1"
+      ],
+      "school": 1,
+      "student_class": 11,
+      "admission_number": "oliverpp1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:36:00.922Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 256,
+    "fields": {
+      "user": [
+        "slypp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "slypp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:37:47.100Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 257,
+    "fields": {
+      "user": [
+        "emepp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "emepp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "male",
+      "created_at": "2026-05-24T08:38:19.967Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 258,
+    "fields": {
+      "user": [
+        "angelpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "angelpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:38:50.993Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 259,
+    "fields": {
+      "user": [
+        "schopp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "schopp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:41:36.241Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 260,
+    "fields": {
+      "user": [
+        "ianpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "ianpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:43:06.628Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 261,
+    "fields": {
+      "user": [
+        "tamarapp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "tamarapp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:43:56.493Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 262,
+    "fields": {
+      "user": [
+        "branpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "branpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:44:23.335Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 263,
+    "fields": {
+      "user": [
+        "daripp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "daripp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:45:17.288Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 264,
+    "fields": {
+      "user": [
+        "hattiepp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "hattiepp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:45:45.419Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 265,
+    "fields": {
+      "user": [
+        "danpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "danpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:46:08.664Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 266,
+    "fields": {
+      "user": [
+        "glopp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "glopp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:46:34.462Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 267,
+    "fields": {
+      "user": [
+        "joypp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "joypp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:47:02.390Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 268,
+    "fields": {
+      "user": [
+        "omap2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "omapp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:47:35.172Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 269,
+    "fields": {
+      "user": [
+        "shapp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "shapp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:48:09.691Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 270,
+    "fields": {
+      "user": [
+        "jerepp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "jerepp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:48:49.303Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 271,
+    "fields": {
+      "user": [
+        "mokayapp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "mokayapp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:49:24.556Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 272,
+    "fields": {
+      "user": [
+        "giftpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "giftpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:49:50.196Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 273,
+    "fields": {
+      "user": [
+        "haronpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "haronpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:51:14.877Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 274,
+    "fields": {
+      "user": [
+        "khloe"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "khloepp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:52:04.317Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 275,
+    "fields": {
+      "user": [
+        "isaackpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "isackpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:52:35.789Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 276,
+    "fields": {
+      "user": [
+        "josephpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "josephpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:53:06.619Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 277,
+    "fields": {
+      "user": [
+        "johnpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "johnpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:53:55.147Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 278,
+    "fields": {
+      "user": [
+        "michpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "mickpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:55:51.648Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 279,
+    "fields": {
+      "user": [
+        "nillanpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "nillanpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:56:27.245Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 280,
+    "fields": {
+      "user": [
+        "blessedpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "blessedpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:57:02.595Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 281,
+    "fields": {
+      "user": [
+        "alvinpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "alvinpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:57:33.547Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 282,
+    "fields": {
+      "user": [
+        "jaydenpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "jaydenpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:57:55.514Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 283,
+    "fields": {
+      "user": [
+        "sampp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "sampp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:58:20.261Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 284,
+    "fields": {
+      "user": [
+        "divinepp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "divinepp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:58:52.594Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 285,
+    "fields": {
+      "user": [
+        "mayapp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "mayapp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:59:21.095Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 286,
+    "fields": {
+      "user": [
+        "rampp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "rampp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T08:59:59.875Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 287,
+    "fields": {
+      "user": [
+        "delvinpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "delvinpp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:00:26.483Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 288,
+    "fields": {
+      "user": [
+        "kylanpp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "kylapp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:00:53.474Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 289,
+    "fields": {
+      "user": [
+        "shadyypp2"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "shaddypp2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:01:17.649Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 290,
+    "fields": {
+      "user": [
+        "meadlynG1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "meadG1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:05:56.663Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 291,
+    "fields": {
+      "user": [
+        "angelg1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "angelg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:06:30.120Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 292,
+    "fields": {
+      "user": [
+        "alving1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "alving1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:06:55.295Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 293,
+    "fields": {
+      "user": [
+        "naila"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "naila",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:07:56.399Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 294,
+    "fields": {
+      "user": [
+        "graceg1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "graceg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:08:39.619Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 295,
+    "fields": {
+      "user": [
+        "angelg12"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "angelg12",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:09:36.255Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 296,
+    "fields": {
+      "user": [
+        "reubeng1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "reubeng1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "male",
+      "created_at": "2026-05-24T09:10:10.599Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 297,
+    "fields": {
+      "user": [
+        "preg1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "preG1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:10:48.065Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 298,
+    "fields": {
+      "user": [
+        "alekkkihee"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "alleg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:11:40.528Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 299,
+    "fields": {
+      "user": [
+        "liveg1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "liveg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:12:22.434Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 300,
+    "fields": {
+      "user": [
+        "simong1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "simong1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:12:48.653Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 301,
+    "fields": {
+      "user": [
+        "chloeg1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "chloeg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:13:29.005Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 302,
+    "fields": {
+      "user": [
+        "mbogog1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "mgogog1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:13:58.482Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 303,
+    "fields": {
+      "user": [
+        "roang1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "roang1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:14:23.132Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 304,
+    "fields": {
+      "user": [
+        "prug1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "prug1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:15:22.020Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 305,
+    "fields": {
+      "user": [
+        "jaydeng1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "jaydeng1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:16:16.178Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 306,
+    "fields": {
+      "user": [
+        "nyamburag1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "nyambug1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:18:06.935Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 307,
+    "fields": {
+      "user": [
+        "kyleg1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "kylg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:19:47.880Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 308,
+    "fields": {
+      "user": [
+        "mwangipg1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "mwangipg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:20:31.135Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 309,
+    "fields": {
+      "user": [
+        "Kungug1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "kungug1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:21:05.620Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 310,
+    "fields": {
+      "user": [
+        "gaving1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "gaving1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:21:59.462Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 311,
+    "fields": {
+      "user": [
+        "elvisg1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "elvisg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:22:40.705Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 312,
+    "fields": {
+      "user": [
+        "sylviag1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "sylviakig1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:23:25.229Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 313,
+    "fields": {
+      "user": [
+        "tyricg1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "tyricg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:23:58.934Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 314,
+    "fields": {
+      "user": [
+        "leong1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "leong1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:24:26.038Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 315,
+    "fields": {
+      "user": [
+        "mwasg1"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "mwasg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:24:51.416Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 316,
+    "fields": {
+      "user": [
+        "amy"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "amyg1",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:25:16.644Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 317,
+    "fields": {
+      "user": [
+        "mashg2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "mashg2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:27:42.138Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 318,
+    "fields": {
+      "user": [
+        "roberg2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "roberg2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:28:22.074Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 319,
+    "fields": {
+      "user": [
+        "benjag2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "benjag2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:28:47.815Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 320,
+    "fields": {
+      "user": [
+        "prig2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "prig2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:29:13.902Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 321,
+    "fields": {
+      "user": [
+        "sebag2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "sebag2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:29:47.775Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 322,
+    "fields": {
+      "user": [
+        "alg2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "alg2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:30:10.826Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 323,
+    "fields": {
+      "user": [
+        "ethang2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "ethang2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:30:32.448Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 324,
+    "fields": {
+      "user": [
+        "steg2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "steg2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:30:59.041Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 325,
+    "fields": {
+      "user": [
+        "leog2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "leog2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:31:32.386Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 326,
+    "fields": {
+      "user": [
+        "daveg2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "daveg2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:31:56.636Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 327,
+    "fields": {
+      "user": [
+        "damasg2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "damasg2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:32:24.171Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 328,
+    "fields": {
+      "user": [
+        "pmg2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "pmg2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:33:53.483Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 329,
+    "fields": {
+      "user": [
+        "pig2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "pisg2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:34:41.058Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 330,
+    "fields": {
+      "user": [
+        "mugig2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "mugig2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:35:15.135Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 331,
+    "fields": {
+      "user": [
+        "steaag2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "steag2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:35:53.732Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 332,
+    "fields": {
+      "user": [
+        "zawag2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "zawag2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:36:27.820Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 333,
+    "fields": {
+      "user": [
+        "valg2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "valg2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:37:00.093Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 334,
+    "fields": {
+      "user": [
+        "yveg2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "yveg2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:37:43.416Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 335,
+    "fields": {
+      "user": [
+        "jojog2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "jojog2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:38:42.703Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 336,
+    "fields": {
+      "user": [
+        "cng2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "cng2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:39:16.307Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 337,
+    "fields": {
+      "user": [
+        "gitutog2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "gitutog2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:40:06.769Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 338,
+    "fields": {
+      "user": [
+        "vawag2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "vawag2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:40:32.605Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 339,
+    "fields": {
+      "user": [
+        "prewag2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "prewag2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:41:00.014Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 340,
+    "fields": {
+      "user": [
+        "abiwag2"
+      ],
+      "school": 1,
+      "student_class": 14,
+      "admission_number": "abiewag2",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-05-24T09:41:33.120Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 341,
+    "fields": {
+      "user": [
+        "gloglo"
+      ],
+      "school": 1,
+      "student_class": 9,
+      "admission_number": "glo009",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-06-23T20:53:29.350Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 342,
+    "fields": {
+      "user": [
+        "mhhhdd"
+      ],
+      "school": 1,
+      "student_class": 3,
+      "admission_number": "2324f2ef",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-06-24T17:31:28.475Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 343,
+    "fields": {
+      "user": [
+        "ajskahsa"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "AHSAHSs",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-06-25T13:48:41.490Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 344,
+    "fields": {
+      "user": [
+        "saff"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "sagg682",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-06-25T13:49:03.784Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 345,
+    "fields": {
+      "user": [
+        "nrama\\"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "quhwqyw6",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-06-25T13:49:28.194Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 346,
+    "fields": {
+      "user": [
+        "`jwg1`"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "9`22`gsb",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-06-25T13:49:50.758Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 347,
+    "fields": {
+      "user": [
+        "q762w"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "13431gvdd",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-06-25T13:50:13.747Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 348,
+    "fields": {
+      "user": [
+        "2u832b2737"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "138423hrf",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-06-25T13:50:48.133Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 349,
+    "fields": {
+      "user": [
+        "1rgyh1vg3161"
+      ],
+      "school": 1,
+      "student_class": 8,
+      "admission_number": "13e787ye3v",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-06-25T13:51:13.038Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 350,
+    "fields": {
+      "user": [
+        "shannnuat"
+      ],
+      "school": 1,
+      "student_class": 12,
+      "admission_number": "aygwduvw",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": null,
+      "created_at": "2026-06-25T14:17:52.971Z"
+    }
+  },
+  {
+    "model": "students.student",
+    "pk": 351,
+    "fields": {
+      "user": [
+        "ghsdhhdaha"
+      ],
+      "school": 1,
+      "student_class": 13,
+      "admission_number": "adhdnqdqudq",
+      "date_of_birth": null,
+      "photo": "",
+      "gender": "female",
+      "created_at": "2026-07-25T06:24:50.014Z"
+    }
+  }
+]

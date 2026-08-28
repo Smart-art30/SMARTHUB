@@ -1,0 +1,452 @@
+[
+  {
+    "model": "admin.logentry",
+    "pk": 1,
+    "fields": {
+      "action_time": "2026-04-02T05:17:09.593Z",
+      "user": [
+        "Smart"
+      ],
+      "content_type": [
+        "schools",
+        "subscriptionplan"
+      ],
+      "object_id": "1",
+      "object_repr": "Basic",
+      "action_flag": 1,
+      "change_message": "[{\"added\": {}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 2,
+    "fields": {
+      "action_time": "2026-04-02T05:17:35.695Z",
+      "user": [
+        "Smart"
+      ],
+      "content_type": [
+        "schools",
+        "school"
+      ],
+      "object_id": "1",
+      "object_repr": "ANNALUCIA MS ACADEMY & JSS",
+      "action_flag": 1,
+      "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"school payment method\", \"object\": \"ANNALUCIA MS ACADEMY & JSS - MPESA\"}}, {\"added\": {\"name\": \"school payment method\", \"object\": \"ANNALUCIA MS ACADEMY & JSS - MPESA\"}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 3,
+    "fields": {
+      "action_time": "2026-04-02T05:18:38.464Z",
+      "user": [
+        "Smart"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "2",
+      "object_repr": "Admin (schooladmin)",
+      "action_flag": 1,
+      "change_message": "[{\"added\": {}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 4,
+    "fields": {
+      "action_time": "2026-04-02T05:21:21.835Z",
+      "user": [
+        "Smart"
+      ],
+      "content_type": [
+        "schools",
+        "school"
+      ],
+      "object_id": "1",
+      "object_repr": "ANNALUCIA MS ACADEMY & JSS",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"Logo\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 5,
+    "fields": {
+      "action_time": "2026-05-06T16:25:30.908Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "schools",
+        "school"
+      ],
+      "object_id": "2",
+      "object_repr": "SMART MIND ACADEMY",
+      "action_flag": 1,
+      "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"school payment method\", \"object\": \"SMART MIND ACADEMY - MPESA\"}}, {\"added\": {\"name\": \"school payment method\", \"object\": \"SMART MIND ACADEMY - PAYBILL\"}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 6,
+    "fields": {
+      "action_time": "2026-05-06T16:27:19.926Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "11",
+      "object_repr": "SmartMind (schooladmin)",
+      "action_flag": 1,
+      "change_message": "[{\"added\": {}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 7,
+    "fields": {
+      "action_time": "2026-05-06T17:03:21.920Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "academics",
+        "exam"
+      ],
+      "object_id": "4",
+      "object_repr": "Opener - Term 2 - 2026",
+      "action_flag": 1,
+      "change_message": "[{\"added\": {}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 8,
+    "fields": {
+      "action_time": "2026-05-15T19:12:34.143Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "3",
+      "object_repr": "@George (student)",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 9,
+    "fields": {
+      "action_time": "2026-05-15T19:14:06.907Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "2",
+      "object_repr": "Admin (schooladmin)",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 10,
+    "fields": {
+      "action_time": "2026-05-15T19:51:23.082Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "schools",
+        "school"
+      ],
+      "object_id": "1",
+      "object_repr": "ANNALUCIA MS ACADEMY & JSS",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"Motto\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 11,
+    "fields": {
+      "action_time": "2026-05-15T21:04:49.465Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "schools",
+        "subscriptionplan"
+      ],
+      "object_id": "2",
+      "object_repr": "Classic",
+      "action_flag": 1,
+      "change_message": "[{\"added\": {}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 12,
+    "fields": {
+      "action_time": "2026-05-15T21:04:57.140Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "schools",
+        "school"
+      ],
+      "object_id": "1",
+      "object_repr": "ANNALUCIA MS ACADEMY & JSS",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"Subscription\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 13,
+    "fields": {
+      "action_time": "2026-05-15T21:05:57.448Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "schools",
+        "subscriptionplan"
+      ],
+      "object_id": "3",
+      "object_repr": "Premium",
+      "action_flag": 1,
+      "change_message": "[{\"added\": {}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 14,
+    "fields": {
+      "action_time": "2026-05-15T21:06:00.686Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "schools",
+        "school"
+      ],
+      "object_id": "1",
+      "object_repr": "ANNALUCIA MS ACADEMY & JSS",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"Subscription\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 15,
+    "fields": {
+      "action_time": "2026-05-20T19:26:37.930Z",
+      "user": [
+        "Smart"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "116",
+      "object_repr": "estherk@annlucia.com (teacher)",
+      "action_flag": 2,
+      "change_message": "[]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 16,
+    "fields": {
+      "action_time": "2026-05-21T16:07:16.088Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "174",
+      "object_repr": "mark@annalucia.com (teacher)",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 17,
+    "fields": {
+      "action_time": "2026-05-22T17:36:27.928Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "234",
+      "object_repr": "veetone@annalucia.com (teacher)",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 18,
+    "fields": {
+      "action_time": "2026-05-24T10:56:30.734Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "356",
+      "object_repr": "carista@annalucia.com (teacher)",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 19,
+    "fields": {
+      "action_time": "2026-05-24T11:44:13.405Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "358",
+      "object_repr": "estherm@annalucia.oom (teacher)",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 20,
+    "fields": {
+      "action_time": "2026-07-22T18:08:44.288Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "3",
+      "object_repr": "@George (student)",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 21,
+    "fields": {
+      "action_time": "2026-07-22T18:09:18.911Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "3",
+      "object_repr": "@George (schooladmin)",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 22,
+    "fields": {
+      "action_time": "2026-07-23T13:46:16.441Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "schools",
+        "school"
+      ],
+      "object_id": "1",
+      "object_repr": "ANNALUCIA MS ACADEMY & JSS",
+      "action_flag": 2,
+      "change_message": "[]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 23,
+    "fields": {
+      "action_time": "2026-07-23T13:47:35.627Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "schools",
+        "school"
+      ],
+      "object_id": "1",
+      "object_repr": "ANNALUCIA MS ACADEMY & JSS",
+      "action_flag": 2,
+      "change_message": "[]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 24,
+    "fields": {
+      "action_time": "2026-07-25T16:37:50.672Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "371",
+      "object_repr": "Head_Teacher (schooladmin)",
+      "action_flag": 1,
+      "change_message": "[{\"added\": {}}]"
+    }
+  },
+  {
+    "model": "admin.logentry",
+    "pk": 25,
+    "fields": {
+      "action_time": "2026-07-27T10:12:06.217Z",
+      "user": [
+        "4w"
+      ],
+      "content_type": [
+        "accounts",
+        "user"
+      ],
+      "object_id": "371",
+      "object_repr": "Head_Teacher (student)",
+      "action_flag": 2,
+      "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+    }
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "model": "academics.exam",
+    "pk": 4,
+    "fields": {
+      "school": 2,
+      "term": 2,
+      "exam_type": "Opener",
+      "name": "MATHS",
+      "max_mark": 100,
+      "created_at": "2026-05-06T17:03:21.918Z"
+    }
+  },
+  {
+    "model": "academics.exam",
+    "pk": 5,
+    "fields": {
+      "school": 1,
+      "term": 2,
+      "exam_type": "Opener",
+      "name": "Superb",
+      "max_mark": 100,
+      "created_at": "2026-05-19T19:47:30.830Z"
+    }
+  },
+  {
+    "model": "academics.exam",
+    "pk": 8,
+    "fields": {
+      "school": 1,
+      "term": 2,
+      "exam_type": "Mid-term",
+      "name": "Targeter wings",
+      "max_mark": 100,
+      "created_at": "2026-05-25T18:22:46.920Z"
+    }
+  },
+  {
+    "model": "academics.exam",
+    "pk": 10,
+    "fields": {
+      "school": 1,
+      "term": 2,
+      "exam_type": "End-term",
+      "name": "SUPREME ASSESSMENT TEST",
+      "max_mark": 100,
+      "created_at": "2026-07-22T18:11:26.757Z"
+    }
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "model": "schools.school",
+    "pk": 1,
+    "fields": {
+      "name": "ANNALUCIA MS ACADEMY & JSS",
+      "code": "11206230",
+      "address": "Annalucia ms academy & JSS\r\nP.O BOX 1298-00232\r\nRUIRU.JUJA",
+      "phone": "0702-628-740",
+      "email": "annaluciaacademy10@gmail.com",
+      "logo": "school_logos/logo_kest2Iv.jpeg",
+      "motto": "Beyond Limits For Success",
+      "created_at": "2026-04-02T05:17:35.692Z",
+      "subscription": 3
+    }
+  },
+  {
+    "model": "schools.school",
+    "pk": 2,
+    "fields": {
+      "name": "SMART MIND ACADEMY",
+      "code": "0720593081",
+      "address": "Virtual learning",
+      "phone": "0720593081",
+      "email": "smartmind@smart.com",
+      "logo": "",
+      "motto": null,
+      "created_at": "2026-05-06T16:25:30.899Z",
+      "subscription": 1
+    }
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "model": "finance.schoolpaymentmethod",
+    "pk": 1,
+    "fields": {
+      "school": 1,
+      "method": "MPESA",
+      "details": "247247",
+      "notes": ""
+    }
+  },
+  {
+    "model": "finance.schoolpaymentmethod",
+    "pk": 2,
+    "fields": {
+      "school": 1,
+      "method": "MPESA",
+      "details": "Equity",
+      "notes": ""
+    }
+  },
+  {
+    "model": "finance.schoolpaymentmethod",
+    "pk": 3,
+    "fields": {
+      "school": 2,
+      "method": "MPESA",
+      "details": "0000000",
+      "notes": "00000000"
+    }
+  },
+  {
+    "model": "finance.schoolpaymentmethod",
+    "pk": 4,
+    "fields": {
+      "school": 2,
+      "method": "PAYBILL",
+      "details": "0000000",
+      "notes": "0000000"
+    }
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "model": "academics.academicterm",
+    "pk": 1,
+    "fields": {
+      "school": 1,
+      "year": 2026,
+      "term": "Term 1",
+      "is_active": true,
+      "start_date": "2026-01-01",
+      "end_date": "2026-04-01"
+    }
+  },
+  {
+    "model": "academics.academicterm",
+    "pk": 2,
+    "fields": {
+      "school": 1,
+      "year": 2026,
+      "term": "Term 2",
+      "is_active": false,
+      "start_date": "2026-05-01",
+      "end_date": "2026-08-01"
+    }
+  },
+  {
+    "model": "academics.academicterm",
+    "pk": 3,
+    "fields": {
+      "school": 1,
+      "year": 2026,
+      "term": "Term 3",
+      "is_active": false,
+      "start_date": "2026-09-01",
+      "end_date": "2026-12-01"
+    }
+  }
+]

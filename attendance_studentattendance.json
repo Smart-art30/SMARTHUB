@@ -1,0 +1,128 @@
+[
+  {
+    "model": "attendance.studentattendance",
+    "pk": 1,
+    "fields": {
+      "student": 4,
+      "school": 1,
+      "student_class": 1,
+      "date": "2026-04-04",
+      "status": "Excused",
+      "marked_by": null,
+      "marked_at": "2026-04-04T21:05:01.407Z",
+      "remarks": "sick"
+    }
+  },
+  {
+    "model": "attendance.studentattendance",
+    "pk": 2,
+    "fields": {
+      "student": 3,
+      "school": 1,
+      "student_class": 1,
+      "date": "2026-04-04",
+      "status": "Absent",
+      "marked_by": null,
+      "marked_at": "2026-04-04T21:05:16.548Z",
+      "remarks": "apology"
+    }
+  },
+  {
+    "model": "attendance.studentattendance",
+    "pk": 3,
+    "fields": {
+      "student": 5,
+      "school": 1,
+      "student_class": 1,
+      "date": "2026-04-04",
+      "status": "Late",
+      "marked_by": null,
+      "marked_at": "2026-04-04T21:05:22.859Z",
+      "remarks": "bus"
+    }
+  },
+  {
+    "model": "attendance.studentattendance",
+    "pk": 4,
+    "fields": {
+      "student": 6,
+      "school": 1,
+      "student_class": 1,
+      "date": "2026-04-04",
+      "status": "Present",
+      "marked_by": null,
+      "marked_at": "2026-04-04T21:05:29.798Z",
+      "remarks": "n/a"
+    }
+  },
+  {
+    "model": "attendance.studentattendance",
+    "pk": 5,
+    "fields": {
+      "student": 164,
+      "school": 1,
+      "student_class": 8,
+      "date": "2026-05-30",
+      "status": "Late",
+      "marked_by": null,
+      "marked_at": "2026-05-30T06:23:37.818Z",
+      "remarks": "yddffc"
+    }
+  },
+  {
+    "model": "attendance.studentattendance",
+    "pk": 6,
+    "fields": {
+      "student": 173,
+      "school": 1,
+      "student_class": 9,
+      "date": "2026-07-27",
+      "status": "Absent",
+      "marked_by": null,
+      "marked_at": "2026-07-27T10:09:44.240Z",
+      "remarks": ""
+    }
+  },
+  {
+    "model": "attendance.studentattendance",
+    "pk": 7,
+    "fields": {
+      "student": 168,
+      "school": 1,
+      "student_class": 9,
+      "date": "2026-07-27",
+      "status": "Late",
+      "marked_by": null,
+      "marked_at": "2026-07-27T10:09:46.550Z",
+      "remarks": ""
+    }
+  },
+  {
+    "model": "attendance.studentattendance",
+    "pk": 8,
+    "fields": {
+      "student": 174,
+      "school": 1,
+      "student_class": 9,
+      "date": "2026-07-27",
+      "status": "Absent",
+      "marked_by": null,
+      "marked_at": "2026-07-27T10:09:49.430Z",
+      "remarks": ""
+    }
+  },
+  {
+    "model": "attendance.studentattendance",
+    "pk": 9,
+    "fields": {
+      "student": 167,
+      "school": 1,
+      "student_class": 9,
+      "date": "2026-07-27",
+      "status": "Late",
+      "marked_by": null,
+      "marked_at": "2026-07-27T10:09:50.916Z",
+      "remarks": ""
+    }
+  }
+]

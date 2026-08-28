@@ -1,0 +1,2396 @@
+[
+  {
+    "model": "academics.examsubject",
+    "pk": 28,
+    "fields": {
+      "exam": 4,
+      "school_class": 4,
+      "subject": 10
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 29,
+    "fields": {
+      "exam": 4,
+      "school_class": 4,
+      "subject": 11
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 30,
+    "fields": {
+      "exam": 4,
+      "school_class": 4,
+      "subject": 12
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 31,
+    "fields": {
+      "exam": 4,
+      "school_class": 5,
+      "subject": 10
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 32,
+    "fields": {
+      "exam": 4,
+      "school_class": 5,
+      "subject": 11
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 33,
+    "fields": {
+      "exam": 4,
+      "school_class": 5,
+      "subject": 12
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 34,
+    "fields": {
+      "exam": 5,
+      "school_class": 6,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 35,
+    "fields": {
+      "exam": 5,
+      "school_class": 6,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 36,
+    "fields": {
+      "exam": 5,
+      "school_class": 6,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 37,
+    "fields": {
+      "exam": 5,
+      "school_class": 6,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 38,
+    "fields": {
+      "exam": 5,
+      "school_class": 6,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 39,
+    "fields": {
+      "exam": 5,
+      "school_class": 6,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 43,
+    "fields": {
+      "exam": 5,
+      "school_class": 3,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 44,
+    "fields": {
+      "exam": 5,
+      "school_class": 3,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 45,
+    "fields": {
+      "exam": 5,
+      "school_class": 1,
+      "subject": 1
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 46,
+    "fields": {
+      "exam": 5,
+      "school_class": 1,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 47,
+    "fields": {
+      "exam": 5,
+      "school_class": 1,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 48,
+    "fields": {
+      "exam": 5,
+      "school_class": 1,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 74,
+    "fields": {
+      "exam": 5,
+      "school_class": 3,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 75,
+    "fields": {
+      "exam": 5,
+      "school_class": 3,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 76,
+    "fields": {
+      "exam": 5,
+      "school_class": 3,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 77,
+    "fields": {
+      "exam": 5,
+      "school_class": 3,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 78,
+    "fields": {
+      "exam": 5,
+      "school_class": 3,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 79,
+    "fields": {
+      "exam": 5,
+      "school_class": 3,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 83,
+    "fields": {
+      "exam": 5,
+      "school_class": 2,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 84,
+    "fields": {
+      "exam": 5,
+      "school_class": 2,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 85,
+    "fields": {
+      "exam": 5,
+      "school_class": 2,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 86,
+    "fields": {
+      "exam": 5,
+      "school_class": 2,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 87,
+    "fields": {
+      "exam": 5,
+      "school_class": 2,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 88,
+    "fields": {
+      "exam": 5,
+      "school_class": 2,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 89,
+    "fields": {
+      "exam": 5,
+      "school_class": 2,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 90,
+    "fields": {
+      "exam": 5,
+      "school_class": 2,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 91,
+    "fields": {
+      "exam": 5,
+      "school_class": 7,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 92,
+    "fields": {
+      "exam": 5,
+      "school_class": 7,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 93,
+    "fields": {
+      "exam": 5,
+      "school_class": 7,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 94,
+    "fields": {
+      "exam": 5,
+      "school_class": 7,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 95,
+    "fields": {
+      "exam": 5,
+      "school_class": 7,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 96,
+    "fields": {
+      "exam": 5,
+      "school_class": 7,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 97,
+    "fields": {
+      "exam": 5,
+      "school_class": 7,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 98,
+    "fields": {
+      "exam": 5,
+      "school_class": 7,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 99,
+    "fields": {
+      "exam": 5,
+      "school_class": 9,
+      "subject": 1
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 100,
+    "fields": {
+      "exam": 5,
+      "school_class": 9,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 101,
+    "fields": {
+      "exam": 5,
+      "school_class": 9,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 102,
+    "fields": {
+      "exam": 5,
+      "school_class": 9,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 103,
+    "fields": {
+      "exam": 5,
+      "school_class": 9,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 104,
+    "fields": {
+      "exam": 5,
+      "school_class": 9,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 105,
+    "fields": {
+      "exam": 5,
+      "school_class": 9,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 106,
+    "fields": {
+      "exam": 5,
+      "school_class": 9,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 107,
+    "fields": {
+      "exam": 5,
+      "school_class": 9,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 108,
+    "fields": {
+      "exam": 5,
+      "school_class": 10,
+      "subject": 1
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 109,
+    "fields": {
+      "exam": 5,
+      "school_class": 10,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 110,
+    "fields": {
+      "exam": 5,
+      "school_class": 10,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 111,
+    "fields": {
+      "exam": 5,
+      "school_class": 10,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 112,
+    "fields": {
+      "exam": 5,
+      "school_class": 10,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 113,
+    "fields": {
+      "exam": 5,
+      "school_class": 10,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 114,
+    "fields": {
+      "exam": 5,
+      "school_class": 10,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 115,
+    "fields": {
+      "exam": 5,
+      "school_class": 10,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 116,
+    "fields": {
+      "exam": 5,
+      "school_class": 10,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 117,
+    "fields": {
+      "exam": 5,
+      "school_class": 1,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 118,
+    "fields": {
+      "exam": 5,
+      "school_class": 1,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 119,
+    "fields": {
+      "exam": 5,
+      "school_class": 1,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 120,
+    "fields": {
+      "exam": 5,
+      "school_class": 1,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 121,
+    "fields": {
+      "exam": 5,
+      "school_class": 1,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 122,
+    "fields": {
+      "exam": 5,
+      "school_class": 14,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 123,
+    "fields": {
+      "exam": 5,
+      "school_class": 14,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 124,
+    "fields": {
+      "exam": 5,
+      "school_class": 14,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 125,
+    "fields": {
+      "exam": 5,
+      "school_class": 14,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 126,
+    "fields": {
+      "exam": 5,
+      "school_class": 14,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 127,
+    "fields": {
+      "exam": 5,
+      "school_class": 14,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 128,
+    "fields": {
+      "exam": 5,
+      "school_class": 8,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 129,
+    "fields": {
+      "exam": 5,
+      "school_class": 8,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 130,
+    "fields": {
+      "exam": 5,
+      "school_class": 8,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 131,
+    "fields": {
+      "exam": 5,
+      "school_class": 8,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 132,
+    "fields": {
+      "exam": 5,
+      "school_class": 8,
+      "subject": 14
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 133,
+    "fields": {
+      "exam": 5,
+      "school_class": 8,
+      "subject": 15
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 134,
+    "fields": {
+      "exam": 5,
+      "school_class": 11,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 135,
+    "fields": {
+      "exam": 5,
+      "school_class": 11,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 136,
+    "fields": {
+      "exam": 5,
+      "school_class": 11,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 137,
+    "fields": {
+      "exam": 5,
+      "school_class": 11,
+      "subject": 14
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 138,
+    "fields": {
+      "exam": 5,
+      "school_class": 11,
+      "subject": 16
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 139,
+    "fields": {
+      "exam": 5,
+      "school_class": 13,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 140,
+    "fields": {
+      "exam": 5,
+      "school_class": 13,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 141,
+    "fields": {
+      "exam": 5,
+      "school_class": 13,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 142,
+    "fields": {
+      "exam": 5,
+      "school_class": 13,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 143,
+    "fields": {
+      "exam": 5,
+      "school_class": 13,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 144,
+    "fields": {
+      "exam": 5,
+      "school_class": 13,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 145,
+    "fields": {
+      "exam": 5,
+      "school_class": 12,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 146,
+    "fields": {
+      "exam": 5,
+      "school_class": 12,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 147,
+    "fields": {
+      "exam": 5,
+      "school_class": 12,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 148,
+    "fields": {
+      "exam": 5,
+      "school_class": 12,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 149,
+    "fields": {
+      "exam": 5,
+      "school_class": 12,
+      "subject": 14
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 150,
+    "fields": {
+      "exam": 5,
+      "school_class": 12,
+      "subject": 17
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 151,
+    "fields": {
+      "exam": 8,
+      "school_class": 9,
+      "subject": 1
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 152,
+    "fields": {
+      "exam": 8,
+      "school_class": 9,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 153,
+    "fields": {
+      "exam": 8,
+      "school_class": 9,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 154,
+    "fields": {
+      "exam": 8,
+      "school_class": 9,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 155,
+    "fields": {
+      "exam": 8,
+      "school_class": 9,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 156,
+    "fields": {
+      "exam": 8,
+      "school_class": 9,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 157,
+    "fields": {
+      "exam": 8,
+      "school_class": 9,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 158,
+    "fields": {
+      "exam": 8,
+      "school_class": 9,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 159,
+    "fields": {
+      "exam": 8,
+      "school_class": 9,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 169,
+    "fields": {
+      "exam": 8,
+      "school_class": 1,
+      "subject": 1
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 170,
+    "fields": {
+      "exam": 8,
+      "school_class": 1,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 171,
+    "fields": {
+      "exam": 8,
+      "school_class": 1,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 172,
+    "fields": {
+      "exam": 8,
+      "school_class": 1,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 173,
+    "fields": {
+      "exam": 8,
+      "school_class": 1,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 174,
+    "fields": {
+      "exam": 8,
+      "school_class": 1,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 175,
+    "fields": {
+      "exam": 8,
+      "school_class": 1,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 176,
+    "fields": {
+      "exam": 8,
+      "school_class": 1,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 177,
+    "fields": {
+      "exam": 8,
+      "school_class": 1,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 178,
+    "fields": {
+      "exam": 8,
+      "school_class": 10,
+      "subject": 1
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 179,
+    "fields": {
+      "exam": 8,
+      "school_class": 10,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 180,
+    "fields": {
+      "exam": 8,
+      "school_class": 10,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 181,
+    "fields": {
+      "exam": 8,
+      "school_class": 10,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 182,
+    "fields": {
+      "exam": 8,
+      "school_class": 10,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 183,
+    "fields": {
+      "exam": 8,
+      "school_class": 10,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 184,
+    "fields": {
+      "exam": 8,
+      "school_class": 10,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 185,
+    "fields": {
+      "exam": 8,
+      "school_class": 10,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 186,
+    "fields": {
+      "exam": 8,
+      "school_class": 10,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 187,
+    "fields": {
+      "exam": 8,
+      "school_class": 2,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 188,
+    "fields": {
+      "exam": 8,
+      "school_class": 2,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 189,
+    "fields": {
+      "exam": 8,
+      "school_class": 2,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 190,
+    "fields": {
+      "exam": 8,
+      "school_class": 2,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 191,
+    "fields": {
+      "exam": 8,
+      "school_class": 2,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 192,
+    "fields": {
+      "exam": 8,
+      "school_class": 2,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 193,
+    "fields": {
+      "exam": 8,
+      "school_class": 2,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 194,
+    "fields": {
+      "exam": 8,
+      "school_class": 2,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 195,
+    "fields": {
+      "exam": 8,
+      "school_class": 3,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 196,
+    "fields": {
+      "exam": 8,
+      "school_class": 3,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 197,
+    "fields": {
+      "exam": 8,
+      "school_class": 3,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 198,
+    "fields": {
+      "exam": 8,
+      "school_class": 3,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 199,
+    "fields": {
+      "exam": 8,
+      "school_class": 3,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 200,
+    "fields": {
+      "exam": 8,
+      "school_class": 3,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 201,
+    "fields": {
+      "exam": 8,
+      "school_class": 3,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 202,
+    "fields": {
+      "exam": 8,
+      "school_class": 3,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 203,
+    "fields": {
+      "exam": 8,
+      "school_class": 7,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 204,
+    "fields": {
+      "exam": 8,
+      "school_class": 7,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 205,
+    "fields": {
+      "exam": 8,
+      "school_class": 7,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 206,
+    "fields": {
+      "exam": 8,
+      "school_class": 7,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 207,
+    "fields": {
+      "exam": 8,
+      "school_class": 7,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 208,
+    "fields": {
+      "exam": 8,
+      "school_class": 7,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 209,
+    "fields": {
+      "exam": 8,
+      "school_class": 7,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 210,
+    "fields": {
+      "exam": 8,
+      "school_class": 7,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 211,
+    "fields": {
+      "exam": 8,
+      "school_class": 6,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 212,
+    "fields": {
+      "exam": 8,
+      "school_class": 6,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 213,
+    "fields": {
+      "exam": 8,
+      "school_class": 6,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 214,
+    "fields": {
+      "exam": 8,
+      "school_class": 6,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 215,
+    "fields": {
+      "exam": 8,
+      "school_class": 6,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 216,
+    "fields": {
+      "exam": 8,
+      "school_class": 6,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 217,
+    "fields": {
+      "exam": 8,
+      "school_class": 13,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 218,
+    "fields": {
+      "exam": 8,
+      "school_class": 13,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 219,
+    "fields": {
+      "exam": 8,
+      "school_class": 13,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 220,
+    "fields": {
+      "exam": 8,
+      "school_class": 13,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 221,
+    "fields": {
+      "exam": 8,
+      "school_class": 13,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 222,
+    "fields": {
+      "exam": 8,
+      "school_class": 13,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 223,
+    "fields": {
+      "exam": 8,
+      "school_class": 14,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 224,
+    "fields": {
+      "exam": 8,
+      "school_class": 14,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 225,
+    "fields": {
+      "exam": 8,
+      "school_class": 14,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 226,
+    "fields": {
+      "exam": 8,
+      "school_class": 14,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 227,
+    "fields": {
+      "exam": 8,
+      "school_class": 14,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 228,
+    "fields": {
+      "exam": 8,
+      "school_class": 14,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 229,
+    "fields": {
+      "exam": 8,
+      "school_class": 11,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 230,
+    "fields": {
+      "exam": 8,
+      "school_class": 11,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 231,
+    "fields": {
+      "exam": 8,
+      "school_class": 11,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 232,
+    "fields": {
+      "exam": 8,
+      "school_class": 11,
+      "subject": 14
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 233,
+    "fields": {
+      "exam": 8,
+      "school_class": 11,
+      "subject": 16
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 234,
+    "fields": {
+      "exam": 8,
+      "school_class": 8,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 235,
+    "fields": {
+      "exam": 8,
+      "school_class": 8,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 236,
+    "fields": {
+      "exam": 8,
+      "school_class": 8,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 237,
+    "fields": {
+      "exam": 8,
+      "school_class": 8,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 238,
+    "fields": {
+      "exam": 8,
+      "school_class": 8,
+      "subject": 14
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 239,
+    "fields": {
+      "exam": 8,
+      "school_class": 8,
+      "subject": 15
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 240,
+    "fields": {
+      "exam": 8,
+      "school_class": 12,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 241,
+    "fields": {
+      "exam": 8,
+      "school_class": 12,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 242,
+    "fields": {
+      "exam": 8,
+      "school_class": 12,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 243,
+    "fields": {
+      "exam": 8,
+      "school_class": 12,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 244,
+    "fields": {
+      "exam": 8,
+      "school_class": 12,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 245,
+    "fields": {
+      "exam": 8,
+      "school_class": 12,
+      "subject": 14
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 246,
+    "fields": {
+      "exam": 10,
+      "school_class": 2,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 247,
+    "fields": {
+      "exam": 10,
+      "school_class": 2,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 248,
+    "fields": {
+      "exam": 10,
+      "school_class": 2,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 249,
+    "fields": {
+      "exam": 10,
+      "school_class": 2,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 250,
+    "fields": {
+      "exam": 10,
+      "school_class": 2,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 251,
+    "fields": {
+      "exam": 10,
+      "school_class": 2,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 252,
+    "fields": {
+      "exam": 10,
+      "school_class": 2,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 253,
+    "fields": {
+      "exam": 10,
+      "school_class": 2,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 254,
+    "fields": {
+      "exam": 10,
+      "school_class": 3,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 255,
+    "fields": {
+      "exam": 10,
+      "school_class": 3,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 256,
+    "fields": {
+      "exam": 10,
+      "school_class": 3,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 257,
+    "fields": {
+      "exam": 10,
+      "school_class": 3,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 258,
+    "fields": {
+      "exam": 10,
+      "school_class": 3,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 259,
+    "fields": {
+      "exam": 10,
+      "school_class": 3,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 260,
+    "fields": {
+      "exam": 10,
+      "school_class": 3,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 261,
+    "fields": {
+      "exam": 10,
+      "school_class": 3,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 262,
+    "fields": {
+      "exam": 10,
+      "school_class": 7,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 263,
+    "fields": {
+      "exam": 10,
+      "school_class": 7,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 264,
+    "fields": {
+      "exam": 10,
+      "school_class": 7,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 265,
+    "fields": {
+      "exam": 10,
+      "school_class": 7,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 266,
+    "fields": {
+      "exam": 10,
+      "school_class": 7,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 267,
+    "fields": {
+      "exam": 10,
+      "school_class": 7,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 268,
+    "fields": {
+      "exam": 10,
+      "school_class": 7,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 269,
+    "fields": {
+      "exam": 10,
+      "school_class": 7,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 270,
+    "fields": {
+      "exam": 10,
+      "school_class": 8,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 271,
+    "fields": {
+      "exam": 10,
+      "school_class": 8,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 272,
+    "fields": {
+      "exam": 10,
+      "school_class": 8,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 273,
+    "fields": {
+      "exam": 10,
+      "school_class": 8,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 274,
+    "fields": {
+      "exam": 10,
+      "school_class": 8,
+      "subject": 14
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 275,
+    "fields": {
+      "exam": 10,
+      "school_class": 8,
+      "subject": 15
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 276,
+    "fields": {
+      "exam": 10,
+      "school_class": 11,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 277,
+    "fields": {
+      "exam": 10,
+      "school_class": 11,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 278,
+    "fields": {
+      "exam": 10,
+      "school_class": 11,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 279,
+    "fields": {
+      "exam": 10,
+      "school_class": 11,
+      "subject": 14
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 280,
+    "fields": {
+      "exam": 10,
+      "school_class": 11,
+      "subject": 16
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 281,
+    "fields": {
+      "exam": 10,
+      "school_class": 11,
+      "subject": 17
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 282,
+    "fields": {
+      "exam": 10,
+      "school_class": 1,
+      "subject": 1
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 283,
+    "fields": {
+      "exam": 10,
+      "school_class": 1,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 284,
+    "fields": {
+      "exam": 10,
+      "school_class": 1,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 285,
+    "fields": {
+      "exam": 10,
+      "school_class": 1,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 286,
+    "fields": {
+      "exam": 10,
+      "school_class": 1,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 287,
+    "fields": {
+      "exam": 10,
+      "school_class": 1,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 288,
+    "fields": {
+      "exam": 10,
+      "school_class": 1,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 289,
+    "fields": {
+      "exam": 10,
+      "school_class": 1,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 290,
+    "fields": {
+      "exam": 10,
+      "school_class": 1,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 291,
+    "fields": {
+      "exam": 10,
+      "school_class": 9,
+      "subject": 1
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 292,
+    "fields": {
+      "exam": 10,
+      "school_class": 9,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 293,
+    "fields": {
+      "exam": 10,
+      "school_class": 9,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 294,
+    "fields": {
+      "exam": 10,
+      "school_class": 9,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 295,
+    "fields": {
+      "exam": 10,
+      "school_class": 9,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 296,
+    "fields": {
+      "exam": 10,
+      "school_class": 9,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 297,
+    "fields": {
+      "exam": 10,
+      "school_class": 9,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 298,
+    "fields": {
+      "exam": 10,
+      "school_class": 9,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 299,
+    "fields": {
+      "exam": 10,
+      "school_class": 9,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 300,
+    "fields": {
+      "exam": 10,
+      "school_class": 10,
+      "subject": 1
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 301,
+    "fields": {
+      "exam": 10,
+      "school_class": 10,
+      "subject": 2
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 302,
+    "fields": {
+      "exam": 10,
+      "school_class": 10,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 303,
+    "fields": {
+      "exam": 10,
+      "school_class": 10,
+      "subject": 4
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 304,
+    "fields": {
+      "exam": 10,
+      "school_class": 10,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 305,
+    "fields": {
+      "exam": 10,
+      "school_class": 10,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 306,
+    "fields": {
+      "exam": 10,
+      "school_class": 10,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 307,
+    "fields": {
+      "exam": 10,
+      "school_class": 10,
+      "subject": 8
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 308,
+    "fields": {
+      "exam": 10,
+      "school_class": 10,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 316,
+    "fields": {
+      "exam": 10,
+      "school_class": 13,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 317,
+    "fields": {
+      "exam": 10,
+      "school_class": 13,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 318,
+    "fields": {
+      "exam": 10,
+      "school_class": 13,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 319,
+    "fields": {
+      "exam": 10,
+      "school_class": 13,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 320,
+    "fields": {
+      "exam": 10,
+      "school_class": 13,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 322,
+    "fields": {
+      "exam": 10,
+      "school_class": 6,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 323,
+    "fields": {
+      "exam": 10,
+      "school_class": 6,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 324,
+    "fields": {
+      "exam": 10,
+      "school_class": 6,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 325,
+    "fields": {
+      "exam": 10,
+      "school_class": 6,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 326,
+    "fields": {
+      "exam": 10,
+      "school_class": 6,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 327,
+    "fields": {
+      "exam": 10,
+      "school_class": 6,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 328,
+    "fields": {
+      "exam": 10,
+      "school_class": 14,
+      "subject": 3
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 329,
+    "fields": {
+      "exam": 10,
+      "school_class": 14,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 330,
+    "fields": {
+      "exam": 10,
+      "school_class": 14,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 331,
+    "fields": {
+      "exam": 10,
+      "school_class": 14,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 332,
+    "fields": {
+      "exam": 10,
+      "school_class": 14,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 333,
+    "fields": {
+      "exam": 10,
+      "school_class": 14,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 337,
+    "fields": {
+      "exam": 10,
+      "school_class": 12,
+      "subject": 5
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 338,
+    "fields": {
+      "exam": 10,
+      "school_class": 12,
+      "subject": 6
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 339,
+    "fields": {
+      "exam": 10,
+      "school_class": 12,
+      "subject": 9
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 340,
+    "fields": {
+      "exam": 10,
+      "school_class": 12,
+      "subject": 13
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 341,
+    "fields": {
+      "exam": 10,
+      "school_class": 12,
+      "subject": 14
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 343,
+    "fields": {
+      "exam": 10,
+      "school_class": 12,
+      "subject": 17
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 344,
+    "fields": {
+      "exam": 10,
+      "school_class": 12,
+      "subject": 7
+    }
+  },
+  {
+    "model": "academics.examsubject",
+    "pk": 345,
+    "fields": {
+      "exam": 10,
+      "school_class": 13,
+      "subject": 3
+    }
+  }
+]
