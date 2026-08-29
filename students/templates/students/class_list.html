@@ -1,38 +1,231 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Classes & Streams - {{ request.user.school.name|default:"SmartHub" }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Classes – {{ request.user.school.name }}</h3>
-        <a href="{% url 'students:student_add' %}" class="btn btn-primary">
-            Add Learner
-        </a>
+<style>
+/* CSS Tokens & Surfaces */
+:root {
+    --cls-surface: #ffffff;
+    --cls-surface-subtle: #f8fafc;
+    --cls-border: #e2e8f0;
+    --cls-border-subtle: #f1f5f9;
+    --cls-text-main: #0f172a;
+    --cls-text-muted: #64748b;
+    --cls-card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+    --cls-hover-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.08), 0 3px 6px -2px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"], [data-bs-theme="dark"] {
+    --cls-surface: #0f172a;
+    --cls-surface-subtle: #1e293b;
+    --cls-border: #334155;
+    --cls-border-subtle: #1e293b;
+    --cls-text-main: #f8fafc;
+    --cls-text-muted: #94a3b8;
+    --cls-card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+    --cls-hover-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.5);
+}
+
+.text-main { color: var(--cls-text-main) !important; }
+.text-muted-custom { color: var(--cls-text-muted) !important; }
+.bg-surface { background-color: var(--cls-surface) !important; }
+.bg-surface-subtle { background-color: var(--cls-surface-subtle) !important; }
+.border-subtle { border-color: var(--cls-border) !important; }
+
+/* 8-Column Grid Utility (12.5% width on desktop / wide screens) */
+@media (min-width: 1400px) {
+    .row-cols-xxl-8 > * {
+        flex: 0 0 auto;
+        width: 12.5%;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+    .row-cols-xl-8 > * {
+        flex: 0 0 auto;
+        width: 12.5%;
+    }
+}
+
+/* Compact Class Card */
+.class-compact-card {
+    background-color: var(--cls-surface);
+    border: 1px solid var(--cls-border);
+    border-radius: 10px;
+    box-shadow: var(--cls-card-shadow);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.class-compact-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--cls-hover-shadow);
+    border-color: #cbd5e1;
+}
+
+[data-theme="dark"] .class-compact-card:hover,
+[data-bs-theme="dark"] .class-compact-card:hover {
+    border-color: #475569;
+}
+
+/* Micro Icon */
+.class-micro-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    margin: 0 auto;
+}
+
+/* Search Bar */
+.search-input-group {
+    background-color: var(--cls-surface);
+    border: 1px solid var(--cls-border);
+    border-radius: 8px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-input-group:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.search-input-group input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.8rem;
+    color: var(--cls-text-main);
+}
+</style>
+
+<div class="container-fluid py-4">
+
+    <!-- Header Section -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h4 fw-bold text-main mb-0">Classes & Streams</h1>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">
+                    {{ request.user.school.name|default:"School Portal" }}
+                </span>
+            </div>
+            <p class="text-muted-custom small mb-0">Quick directory of active class cohorts and rosters.</p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-surface-subtle text-muted-custom border border-subtle px-2 py-1 small">
+                {{ classes|length }} Class{{ classes|length|pluralize:"es" }}
+            </span>
+            <a href="{% url 'students:student_add' %}" class="btn btn-primary btn-sm px-3 shadow-sm">
+                <i class="bi bi-person-plus-fill me-1"></i>Add Learner
+            </a>
+        </div>
     </div>
 
-    <div class="row">
-        {% for class in classes %}
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ class.name }}</h5>
-
-                        <a href="{% url 'students:class_detail' class.id %}"
-                           class="btn btn-primary btn-sm mt-2">
-                            View Students
-                        </a>
-
-                        <a href="{% url 'students:class_download' class.id %}"
-                           class="btn btn-success btn-sm mt-2">
-                            Download CSV
-                        </a>
-                    </div>
-                </div>
+    <!-- Quick Filter Bar -->
+    <div class="row g-2 mb-3">
+        <div class="col-12 col-md-4 col-xl-3">
+            <div class="search-input-group d-flex align-items-center px-2 py-1">
+                <i class="bi bi-search text-muted-custom me-2 small"></i>
+                <input type="text" id="classSearchInput" class="w-100 py-1" placeholder="Search class name..." onkeyup="filterClasses()">
             </div>
+        </div>
+    </div>
+
+    <!-- 8-Column Dense Classes Grid -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 row-cols-xxl-8 g-2" id="classGrid">
+        {% for class in classes %}
+        <div class="col class-card-item" data-name="{{ class.name|lower }}">
+            <div class="class-compact-card h-100 p-2 text-center d-flex flex-column justify-content-between">
+                
+                <!-- Class Header & Micro Icon -->
+                <div class="mb-2">
+                    <div class="class-micro-icon bg-primary-subtle text-primary mb-2">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <h6 class="fw-bold text-main mb-0 text-truncate" title="{{ class.name }}" style="font-size: 0.825rem;">
+                        {{ class.name }}
+                    </h6>
+                    {% if class.stream %}
+                        <small class="text-muted-custom d-block text-truncate" style="font-size: 0.7rem;">{{ class.stream }}</small>
+                    {% else %}
+                        <small class="text-muted-custom d-block" style="font-size: 0.7rem;">Stream</small>
+                    {% endif %}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex flex-column gap-1 mt-auto">
+                    <a href="{% url 'students:class_detail' class.id %}" 
+                       class="btn btn-primary btn-sm py-1 d-flex align-items-center justify-content-center"
+                       style="font-size: 0.725rem;">
+                        <i class="bi bi-people me-1"></i>View
+                    </a>
+
+                    <a href="{% url 'students:class_download' class.id %}" 
+                       class="btn btn-outline-success btn-sm py-1 d-flex align-items-center justify-content-center"
+                       style="font-size: 0.725rem;"
+                       title="Download CSV">
+                        <i class="bi bi-file-earmark-arrow-down me-1"></i>CSV
+                    </a>
+                </div>
+
+            </div>
+        </div>
         {% empty %}
-            <p class="text-center">No classes found.</p>
+        <div class="col-12 w-100">
+            <div class="bg-surface border border-subtle rounded-3 text-center py-5">
+                <i class="bi bi-mortarboard display-4 text-muted-custom opacity-50 mb-2 d-block"></i>
+                <h6 class="fw-bold text-main mb-1">No classes found</h6>
+                <p class="text-muted-custom small mb-3">Get started by creating your first class stream.</p>
+                <a href="{% url 'students:student_add' %}" class="btn btn-primary btn-sm px-4">
+                    <i class="bi bi-person-plus-fill me-1"></i>Add Learner
+                </a>
+            </div>
+        </div>
         {% endfor %}
     </div>
 
+    <!-- No Search Results Fallback -->
+    <div id="noSearchResults" class="text-center py-4 d-none">
+        <i class="bi bi-search fs-3 text-muted-custom opacity-50 mb-1 d-block"></i>
+        <small class="text-muted-custom">No matching classes found.</small>
+    </div>
+
 </div>
+
+<!-- Real-time Filter JS -->
+<script>
+function filterClasses() {
+    const input = document.getElementById('classSearchInput').value.toLowerCase().trim();
+    const items = document.querySelectorAll('.class-card-item');
+    let visibleCount = 0;
+
+    items.forEach(item => {
+        const name = item.getAttribute('data-name');
+        if (name && name.includes(input)) {
+            item.classList.remove('d-none');
+            visibleCount++;
+        } else {
+            item.classList.add('d-none');
+        }
+    });
+
+    const noResults = document.getElementById('noSearchResults');
+    if (noResults) {
+        if (visibleCount === 0 && items.length > 0) {
+            noResults.classList.remove('d-none');
+        } else {
+            noResults.classList.add('d-none');
+        }
+    }
+}
+</script>
 {% endblock %}
