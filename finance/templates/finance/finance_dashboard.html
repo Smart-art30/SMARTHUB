@@ -1,184 +1,621 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
 
-{% block title %}Finance Dashboard{% endblock %}
+{% block title %}Finance Dashboard - SmartHub{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
-    <h1 class="mb-4">Finance Dashboard</h1>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- ================== Summary Cards ================== -->
-    <div class="row g-4">
-        <!-- Total Fees Collected -->
-        <div class="col-md-3 col-sm-6">
-            <div class="card text-white bg-primary shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Total Fees Collected</h5>
-                    <p class="card-text display-6">
-                        KES {{ total_collected|floatformat:2 }}
-                    </p>
+<style>
+/* CSS Variables & Palette Tokens */
+:root {
+    --fin-surface: #ffffff;
+    --fin-surface-subtle: #f8fafc;
+    --fin-border: #e2e8f0;
+    --fin-border-subtle: #f1f5f9;
+    --fin-text-main: #0f172a;
+    --fin-text-muted: #64748b;
+    --fin-sidebar-bg: #0f172a;
+    --fin-sidebar-border: #1e293b;
+    --fin-card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+    --fin-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"], [data-bs-theme="dark"] {
+    --fin-surface: #0f172a;
+    --fin-surface-subtle: #1e293b;
+    --fin-border: #334155;
+    --fin-border-subtle: #1e293b;
+    --fin-text-main: #f8fafc;
+    --fin-text-muted: #94a3b8;
+    --fin-sidebar-bg: #0b1120;
+    --fin-sidebar-border: #1e293b;
+    --fin-card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+    --fin-hover-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* Base Wrapper */
+.finance-wrapper {
+    min-height: 100vh;
+    background-color: var(--fin-surface-subtle);
+    display: flex;
+}
+
+/* Sidebar */
+.finance-sidebar {
+    width: 260px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    background-color: var(--fin-sidebar-bg);
+    border-right: 1px solid var(--fin-sidebar-border);
+    display: flex;
+    flex-direction: column;
+    z-index: 1040;
+    flex-shrink: 0;
+}
+
+.finance-sidebar-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--fin-sidebar-border);
+}
+
+.finance-nav-scroll {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 0.75rem;
+}
+
+.finance-menu-heading {
+    padding: 1rem 0.75rem 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.finance-sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    color: #94a3b8;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s ease-in-out;
+    margin-bottom: 2px;
+}
+
+.finance-sidebar .nav-link:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.finance-sidebar .nav-link.active {
+    color: #ffffff !important;
+    background: #2563eb;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* Main Area */
+.finance-main {
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* Dashboard Cards */
+.fin-card {
+    background-color: var(--fin-surface);
+    border: 1px solid var(--fin-border);
+    border-radius: 14px;
+    box-shadow: var(--fin-card-shadow);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.fin-stat-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.fin-stat-card:hover {
+    box-shadow: var(--fin-hover-shadow);
+    transform: translateY(-2px);
+}
+
+.stat-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Tables */
+.fin-table {
+    margin-bottom: 0;
+    color: var(--fin-text-main);
+}
+
+.fin-table thead th {
+    background-color: var(--fin-surface-subtle);
+    color: var(--fin-text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--fin-border);
+    white-space: nowrap;
+}
+
+.fin-table tbody td {
+    padding: 0.95rem 1rem;
+    font-size: 0.875rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--fin-border-subtle);
+    white-space: nowrap;
+}
+
+.fin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.fin-table tbody tr:hover td {
+    background-color: var(--fin-surface-subtle);
+}
+
+/* Chart Canvas Container */
+.finance-chart-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 991.98px) {
+    .finance-sidebar {
+        position: fixed;
+        left: -270px;
+        width: 260px;
+        transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .finance-sidebar.show {
+        left: 0;
+    }
+
+    .finance-main {
+        padding: 1.25rem;
+    }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(2px);
+        z-index: 1035;
+    }
+
+    .sidebar-overlay.show {
+        display: block;
+    }
+}
+</style>
+
+<div class="finance-wrapper">
+
+    <!-- Fixed/Sticky Sidebar -->
+    <aside id="financeSidebar" class="finance-sidebar">
+        <div class="finance-sidebar-header">
+            <h4 class="mb-0 text-white fw-bold d-flex align-items-center">
+                <i class="bi bi-wallet2 text-primary me-2"></i>SmartFinance
+            </h4>
+            <small class="text-secondary small">Financial Management System</small>
+        </div>
+
+        <div class="finance-nav-scroll">
+            <ul class="nav flex-column mb-2">
+                <li class="nav-item">
+                    <a href="{% url 'finance:finance_dashboard' %}" class="nav-link active">
+                        <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="finance-menu-heading">Fees</div>
+            <ul class="nav flex-column mb-2">
+                <li class="nav-item">
+                    <a href="{% url 'finance:school_payment_methods' %}" class="nav-link">
+                        <i class="bi bi-credit-card-fill"></i><span>Payment Methods</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'finance:payment_list' %}" class="nav-link">
+                        <i class="bi bi-cash-stack"></i><span>Payments</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'finance:fee_list' %}" class="nav-link">
+                        <i class="bi bi-currency-dollar"></i><span>Fee Structure</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'finance:invoice_list' %}" class="nav-link">
+                        <i class="bi bi-receipt-cutoff"></i><span>Invoices</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="finance-menu-heading">Reports</div>
+            <ul class="nav flex-column mb-2">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-bar-chart-line"></i><span>Fee Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-graph-up-arrow"></i><span>Payment Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-file-earmark-text"></i><span>Financial Statements</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="finance-menu-heading">Management</div>
+            <ul class="nav flex-column mb-2">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-gear"></i><span>Finance Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeFinanceSidebar()"></div>
+
+    <!-- Main Workspace -->
+    <main class="finance-main">
+
+        <!-- Mobile Header Bar -->
+        <div class="d-lg-none d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="openFinanceSidebar()">
+                <i class="bi bi-list me-1 fs-6"></i>Finance Menu
+            </button>
+            <span class="fw-bold text-main">SmartHub Finance</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1 text-main">Finance Dashboard</h1>
+                <p class="text-muted small mb-0">Overview of institutional collections, pending dues, and ledger records.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'finance:invoice_list' %}" class="btn btn-primary btn-sm px-3 shadow-sm">
+                    <i class="bi bi-receipt me-1"></i>Manage Invoices
+                </a>
+            </div>
+        </div>
+
+        <!-- Summary Metric Cards -->
+        <div class="row g-3 g-xl-4 mb-4">
+            <!-- Total Collected -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="fin-card fin-stat-card p-3 p-xl-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small fw-medium">Total Collected</span>
+                        <div class="stat-icon-wrapper bg-primary-subtle text-primary">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                    </div>
+                    <h3 class="h4 fw-bold text-main mb-1">
+                        KES {{ total_collected|default:0|floatformat:2|intcomma }}
+                    </h3>
+                    <small class="text-success fw-medium d-inline-flex align-items-center">
+                        <i class="bi bi-arrow-up-right me-1"></i>Reconciled Collections
+                    </small>
+                </div>
+            </div>
+
+            <!-- Pending Fees -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="fin-card fin-stat-card p-3 p-xl-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small fw-medium">Pending Fees</span>
+                        <div class="stat-icon-wrapper bg-warning-subtle text-warning">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                    </div>
+                    <h3 class="h4 fw-bold text-main mb-1">
+                        KES {{ total_pending|default:0|floatformat:2|intcomma }}
+                    </h3>
+                    <small class="text-warning-emphasis fw-medium d-inline-flex align-items-center">
+                        <i class="bi bi-clock-history me-1"></i>Outstanding Balances
+                    </small>
+                </div>
+            </div>
+
+            <!-- Students Paid -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="fin-card fin-stat-card p-3 p-xl-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small fw-medium">Students Paid</span>
+                        <div class="stat-icon-wrapper bg-success-subtle text-success">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                    </div>
+                    <h3 class="h4 fw-bold text-main mb-1">
+                        {{ students_paid_count|default:0|intcomma }}
+                    </h3>
+                    <small class="text-success fw-medium">Full & Partial Clearances</small>
+                </div>
+            </div>
+
+            <!-- Students Pending -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="fin-card fin-stat-card p-3 p-xl-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small fw-medium">Students Pending</span>
+                        <div class="stat-icon-wrapper bg-danger-subtle text-danger">
+                            <i class="bi bi-person-exclamation"></i>
+                        </div>
+                    </div>
+                    <h3 class="h4 fw-bold text-main mb-1">
+                        {{ students_pending_count|default:0|intcomma }}
+                    </h3>
+                    <small class="text-danger fw-medium">Action Required</small>
                 </div>
             </div>
         </div>
 
-        <!-- Total Pending Fees -->
-        <div class="col-md-3 col-sm-6">
-            <div class="card text-white bg-warning shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Pending Fees</h5>
-                    <p class="card-text display-6">
-                        KES {{ total_pending|floatformat:2 }}
-                    </p>
+        <!-- Monthly Fees Chart -->
+        <div class="fin-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold text-main mb-0">Monthly Fees Overview</h5>
+                    <small class="text-muted">Monthly fee collections tracked over the current calendar year</small>
                 </div>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Collections (KES)</span>
+            </div>
+            <div class="finance-chart-container">
+                <canvas id="feesChart"></canvas>
             </div>
         </div>
 
-        <!-- Students Paid -->
-        <div class="col-md-3 col-sm-6">
-            <div class="card text-white bg-success shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Students Paid</h5>
-                    <p class="card-text display-6">
-                        {{ students_paid_count }}
-                    </p>
+        <!-- Recent Invoices -->
+        <div class="fin-card mb-4 overflow-hidden">
+            <div class="d-flex justify-content-between align-items-center p-4 border-bottom border-subtle">
+                <div>
+                    <h5 class="fw-bold text-main mb-0">Recent Invoices</h5>
+                    <small class="text-muted">Latest fee assessments generated for enrolled students</small>
                 </div>
+                <a href="{% url 'finance:invoice_list' %}" class="btn btn-outline-primary btn-sm px-3">
+                    <i class="bi bi-list-ul me-1"></i>View All
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table fin-table align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Student</th>
+                            <th scope="col">Class</th>
+                            <th scope="col">Invoice Amount</th>
+                            <th scope="col">Paid Amount</th>
+                            <th scope="col">Balance</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end">Issued Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in recent_invoices %}
+                        <tr>
+                            <td class="text-muted font-monospace small">{{ forloop.counter }}</td>
+                            <td class="fw-semibold text-main">
+                                {{ invoice.student.get_full_name }}
+                            </td>
+                            <td>
+                                <span class="badge bg-surface-subtle text-muted border border-subtle">
+                                    {{ invoice.fee_structure.student_class.name }}
+                                </span>
+                            </td>
+                            <td class="font-monospace">KES {{ invoice.total_amount|floatformat:2|intcomma }}</td>
+                            <td class="font-monospace text-success">KES {{ invoice.total_paid|floatformat:2|intcomma }}</td>
+                            <td class="font-monospace fw-bold {% if invoice.balance > 0 %}text-danger{% else %}text-muted{% endif %}">
+                                KES {{ invoice.balance|floatformat:2|intcomma }}
+                            </td>
+                            <td>
+                                {% if invoice.is_paid %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                        <i class="bi bi-check-circle me-1"></i>Paid
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                                        <i class="bi bi-clock me-1"></i>Pending
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small text-end">{{ invoice.issued_date|date:"d M Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5">
+                                <i class="bi bi-receipt fs-2 d-block mb-2 opacity-50"></i>
+                                No invoices registered recently.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Students Pending -->
-        <div class="col-md-3 col-sm-6">
-            <div class="card text-white bg-danger shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Students Pending</h5>
-                    <p class="card-text display-6">
-                        {{ students_pending_count }}
-                    </p>
+        <!-- Recent Payments -->
+        <div class="fin-card mb-4 overflow-hidden">
+            <div class="d-flex justify-content-between align-items-center p-4 border-bottom border-subtle">
+                <div>
+                    <h5 class="fw-bold text-main mb-0">Recent Payments</h5>
+                    <small class="text-muted">Direct receipts, bank transfers, and automated gateway confirmations</small>
                 </div>
+                <a href="{% url 'finance:payment_list' %}" class="btn btn-outline-primary btn-sm px-3">
+                    <i class="bi bi-list-ul me-1"></i>View All
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table fin-table align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Student</th>
+                            <th scope="col">Invoice Ref</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Date</th>
+                            <th scope="col" class="text-end">Action / Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in recent_payments %}
+                        <tr>
+                            <td class="text-muted font-monospace small">{{ forloop.counter }}</td>
+                            <td class="fw-semibold text-main">{{ payment.invoice.student.get_full_name }}</td>
+                            <td>
+                                <span class="font-monospace small bg-surface-subtle px-2 py-1 rounded border border-subtle">
+                                    #{{ payment.invoice.id }}
+                                </span>
+                            </td>
+                            <td class="font-monospace text-success fw-bold">
+                                KES {{ payment.amount|floatformat:2|intcomma }}
+                            </td>
+                            <td class="text-muted small">{{ payment.created_at|date:"d M Y" }}</td>
+                            <td class="text-end">
+                                {% if not payment.is_confirmed %}
+                                    <div class="d-inline-flex gap-1">
+                                        <a href="{% url 'finance:payment_confirm' payment.id %}" class="btn btn-success btn-sm px-2 py-1" title="Confirm Payment">
+                                            <i class="bi bi-check-circle me-1"></i>Confirm
+                                        </a>
+                                        <a href="{% url 'finance:payment_fail' payment.id %}" class="btn btn-outline-danger btn-sm px-2 py-1" title="Mark as Failed">
+                                            <i class="bi bi-x-circle me-1"></i>Fail
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                        <i class="bi bi-check-circle me-1"></i>Confirmed
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <i class="bi bi-credit-card fs-2 d-block mb-2 opacity-50"></i>
+                                No recent payments recorded.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
 
-    <!-- ================== Recent Invoices ================== -->
-    <div class="mt-5">
-        <h3>Recent Invoices</h3>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Student</th>
-                        <th>Class</th>
-                        <th>Invoice Amount</th>
-                        <th>Paid Amount</th>
-                        <th>Balance</th>
-                        <th>Status</th>
-                        <th>Issued Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for invoice in recent_invoices %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ invoice.student.get_full_name }}</td>
-                        <td>{{ invoice.fee_structure.student_class.name }}</td>
-                        <td>{{ invoice.total_amount|floatformat:2 }}</td>
-                        <td>{{ invoice.total_paid|floatformat:2 }}</td>
-                        <td>{{ invoice.balance|floatformat:2 }}</td>
-                        <td>
-                            {% if invoice.is_paid %}
-                                <span class="badge bg-success">Paid</span>
-                            {% else %}
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ invoice.issued_date|date:"d M Y" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="8" class="text-center">No invoices found</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- ================== Recent Payments ================== -->
-    <div class="mt-5">
-        <h3>Recent Payments</h3>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Student</th>
-                        <th>Invoice</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for payment in recent_payments %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ payment.invoice.student.get_full_name }}</td>
-                        <td>#{{ payment.invoice.id }}</td>
-                        <td>KES {{ payment.amount|floatformat:2 }}</td>
-                        <td>{{ payment.created_at|date:"d M Y" }}</td>
-                        <td>
-                            {% if not payment.is_confirmed %}
-                                <a href="{% url 'finance:payment_confirm' payment.id %}" class="btn btn-success btn-sm mb-1">Confirm</a>
-                                <a href="{% url 'finance:payment_fail' payment.id %}" class="btn btn-danger btn-sm mb-1">Fail</a>
-                            {% else %}
-                                <span class="badge bg-success">Confirmed</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center">No recent payments</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- ================== Monthly Fees Chart ================== -->
-    <div class="mt-5">
-        <h3>Monthly Fees Overview</h3>
-        <canvas id="feesChart" height="100"></canvas>
-    </div>
+    </main>
 </div>
 
-<!-- ================== Chart.js ================== -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js Engine -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
 <script>
-    const ctx = document.getElementById('feesChart').getContext('2d');
-    const feesChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{ chart_labels|safe }},
-            datasets: [{
-                label: 'Fees Collected (KES)',
-                data: {{ chart_data|safe }},
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: { 
-                y: { 
-                    beginAtZero: true 
-                } 
+document.addEventListener('DOMContentLoaded', function() {
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark' || 
+                   document.body.getAttribute('data-theme') === 'dark';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+    const textColor = isDark ? '#94a3b8' : '#64748b';
+
+    Chart.defaults.color = textColor;
+    Chart.defaults.font.family = "system-ui, -apple-system, sans-serif";
+
+    const chartElement = document.getElementById("feesChart");
+    if (chartElement) {
+        const ctx = chartElement.getContext("2d");
+        new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [{
+                    label: "Fees Collected",
+                    data: {{ chart_data|safe }},
+                    backgroundColor: "#2563eb",
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
             },
-            plugins: {
-                legend: { display: true }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return " Collected: KES " + Number(context.parsed.y).toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        ticks: {
+                            callback: function(value) {
+                                if (value >= 1000000) return 'KES ' + (value / 1000000) + 'M';
+                                if (value >= 1000) return 'KES ' + (value / 1000) + 'k';
+                                return 'KES ' + value;
+                            }
+                        }
+                    }
+                }
             }
-        }
+        });
+    }
+});
+
+/* Sidebar Drawer Controls */
+function openFinanceSidebar() {
+    document.getElementById("financeSidebar")?.classList.add("show");
+    document.getElementById("sidebarOverlay")?.classList.add("show");
+}
+
+function closeFinanceSidebar() {
+    document.getElementById("financeSidebar")?.classList.remove("show");
+    document.getElementById("sidebarOverlay")?.classList.remove("show");
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") closeFinanceSidebar();
+});
+
+document.querySelectorAll(".finance-sidebar .nav-link").forEach(function(link) {
+    link.addEventListener("click", function() {
+        if (window.innerWidth <= 991) closeFinanceSidebar();
     });
+});
 </script>
 {% endblock %}
