@@ -1,21 +1,13 @@
 from django.contrib import admin
 from teachers.models import Teacher, TeacherClass
 from schools.models import School
-
-
 admin.site.register(TeacherClass)
-
-
-
-
 
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('user', 'school', 'employee_id', 'is_approved')
     list_filter = ('is_approved', 'school')
-    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'employee_id')
-
-    # Fields to show in the form
+    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'employee_id') 
     fields = ('user', 'school', 'employee_id', 'phone', 'designation', 'qualification',
               'specialization', 'is_class_teacher', 'profile_picture', 'is_approved')
 
