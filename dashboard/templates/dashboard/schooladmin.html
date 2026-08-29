@@ -86,6 +86,21 @@
     padding: 0.75rem 0.875rem 0.25rem;
 }
 
+/* Mobile Nav Submenu */
+.mobile-submenu {
+    padding-left: 2rem;
+    list-style: none;
+    border-left: 2px solid var(--sh-border);
+    margin-left: 1.25rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.mobile-submenu .nav-link {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.825rem;
+}
+
 /* Cards & Badges */
 .dash-card {
     background-color: var(--sh-surface);
@@ -218,25 +233,55 @@
             </div>
         </aside>
 
-        <!-- Offcanvas Mobile Sidebar -->
+        <!-- Offcanvas Mobile Sidebar (Full Navigation Restored) -->
         <div class="offcanvas offcanvas-start bg-surface text-main" tabindex="-1" id="mobileSidebar">
             <div class="offcanvas-header border-bottom border-subtle">
-                <h5 class="offcanvas-title fw-bold">SmartHub Menu</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-building-school text-primary fs-5"></i>
+                    <h5 class="offcanvas-title fw-bold">SmartHub Menu</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
-            <div class="offcanvas-body p-3">
-                <ul class="nav flex-column sidebar-nav">
+            
+            <div class="offcanvas-body p-3 overflow-y-auto">
+                <div class="sidebar-section-title pt-0">Core Management</div>
+                <ul class="nav flex-column sidebar-nav mb-3">
                     <li class="nav-item"><a class="nav-link active" href="{% url 'dashboard:schooladmin_dashboard' %}"><i class="bi bi-house-door-fill me-2"></i>Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'students:student_list' %}"><i class="bi bi-people-fill me-2"></i>Students</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'students:class_list' %}"><i class="bi bi-mortarboard-fill me-2"></i>Classes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'academics:admin_class_list' %}"><i class="bi bi-clipboard-data-fill me-2"></i>Class Mark Lists</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'teachers:teacher_list' %}"><i class="bi bi-person-badge-fill me-2"></i>Teachers</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'teachers:assign_teacher_subjects' %}"><i class="bi bi-arrow-right-circle-fill me-2"></i>Assign Teacher</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'students:parent_list' %}"><i class="bi bi-people-fill me-2"></i>Parents</a></li>
+                </ul>
+
+                <div class="sidebar-section-title">Academics & Reports</div>
+                <ul class="nav flex-column sidebar-nav">
                     <li class="nav-item"><a class="nav-link" href="{% url 'attendance:attendance_dashboard' %}"><i class="bi bi-check-circle-fill me-2"></i>Attendance</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'academics:subject_list' %}"><i class="bi bi-book-fill me-2"></i>Subjects</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'academics:exam_list' %}"><i class="bi bi-clipboard-check-fill me-2"></i>Exams</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'academics:admin_class_list' %}"><i class="bi bi-clipboard-data-fill me-2"></i>Class Mark Lists</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'academics:report_list' %}"><i class="bi bi-file-earmark-text-fill me-2"></i>Report List</a></li>
+                    
+                    <!-- Mobile Class Reports Accordion Collapse -->
+                    <li class="nav-item">
+                        <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#mobileClassReports" role="button" aria-expanded="false">
+                            <span><i class="bi bi-file-earmark-bar-graph-fill me-2"></i>Class Reports</span>
+                            <i class="bi bi-chevron-down small opacity-75"></i>
+                        </a>
+                        <div class="collapse" id="mobileClassReports">
+                            <ul class="mobile-submenu">
+                                {% for class in classes %}
+                                    <li>
+                                        <a class="nav-link text-muted-custom" href="{% url 'academics:class_report' class.id %}">
+                                            {{ class.name }}
+                                        </a>
+                                    </li>
+                                {% empty %}
+                                    <li class="nav-link text-muted small">No classes found</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
