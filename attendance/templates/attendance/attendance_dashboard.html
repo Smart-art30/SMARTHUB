@@ -1,107 +1,509 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Attendance Dashboard{% endblock %}
+{% block title %}Attendance Analytics & Register{% endblock %}
+
+{% block extra_css %}
+<!-- Bootstrap Icons & Fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --color-present-bg: #f0fdf4;
+        --color-present-border: #bbf7d0;
+        --color-present-text: #15803d;
+        --color-present-accent: #22c55e;
+
+        --color-absent-bg: #fef2f2;
+        --color-absent-border: #fecaca;
+        --color-absent-text: #b91c1c;
+        --color-absent-accent: #ef4444;
+
+        --color-late-bg: #fffbeb;
+        --color-late-border: #fde68a;
+        --color-late-text: #b45309;
+        --color-late-accent: #f59e0b;
+
+        --color-excused-bg: #f0fdfa;
+        --color-excused-border: #99f6e4;
+        --color-excused-text: #0f766e;
+        --color-excused-accent: #14b8a6;
+
+        --brand-gradient: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f8fafc;
+        color: #1e293b;
+    }
+
+    /* Vibrant Banner Header */
+    .dashboard-hero {
+        background: var(--brand-gradient);
+        color: #ffffff;
+        border-radius: 16px;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.25);
+    }
+
+    /* Metric Summary Cards */
+    .metric-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        border: 1px solid #e2e8f0;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6px;
+        height: 100%;
+    }
+
+    .metric-card.card-total::before { background: #6366f1; }
+    .metric-card.card-present::before { background: var(--color-present-accent); }
+    .metric-card.card-absent::before { background: var(--color-absent-accent); }
+    .metric-card.card-late::before { background: var(--color-late-accent); }
+    .metric-card.card-excused::before { background: var(--color-excused-accent); }
+
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 1.35rem;
+    }
+
+    .icon-total { background: #e0e7ff; color: #4338ca; }
+    .icon-present { background: var(--color-present-border); color: var(--color-present-text); }
+    .icon-absent { background: var(--color-absent-border); color: var(--color-absent-text); }
+    .icon-late { background: var(--color-late-border); color: var(--color-late-text); }
+    .icon-excused { background: var(--color-excused-border); color: var(--color-excused-text); }
+
+    /* Class Group Card */
+    .class-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    .class-header-bar {
+        background: #1e293b;
+        color: #ffffff;
+        padding: 0.9rem 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 6px solid #6366f1;
+    }
+
+    /* Colored Table Styling */
+    .table-attendance {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-attendance thead th {
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        padding: 0.85rem 1rem;
+        border-bottom: 2px solid #cbd5e1;
+    }
+
+    .table-attendance tbody td {
+        padding: 0.8rem 1rem;
+        vertical-align: middle;
+        font-size: 0.875rem;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+    }
+
+    /* Contextual Color-Coded Rows */
+    .row-present {
+        background-color: var(--color-present-bg) !important;
+        border-left: 4px solid var(--color-present-accent);
+    }
+    .row-present:hover { background-color: #dcfce7 !important; }
+
+    .row-absent {
+        background-color: var(--color-absent-bg) !important;
+        border-left: 4px solid var(--color-absent-accent);
+    }
+    .row-absent:hover { background-color: #fee2e2 !important; }
+
+    .row-late {
+        background-color: var(--color-late-bg) !important;
+        border-left: 4px solid var(--color-late-accent);
+    }
+    .row-late:hover { background-color: #fef3c7 !important; }
+
+    .row-excused {
+        background-color: var(--color-excused-bg) !important;
+        border-left: 4px solid var(--color-excused-accent);
+    }
+    .row-excused:hover { background-color: #ccfbf1 !important; }
+
+    .row-default {
+        background-color: #ffffff;
+        border-left: 4px solid #cbd5e1;
+    }
+
+    /* Vibrant Badges */
+    .pill-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.35rem 0.75rem;
+        border-radius: 9999px;
+    }
+
+    .pill-present { background-color: #22c55e; color: #ffffff; box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3); }
+    .pill-absent  { background-color: #ef4444; color: #ffffff; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3); }
+    .pill-late    { background-color: #f59e0b; color: #ffffff; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3); }
+    .pill-excused { background-color: #06b6d4; color: #ffffff; box-shadow: 0 2px 4px rgba(6, 182, 212, 0.3); }
+    .pill-default { background-color: #64748b; color: #ffffff; }
+
+    .counter-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+    }
+
+    /* Print Formatting with Color Adjustments */
+    @media print {
+        @page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
+
+        body {
+            background: #ffffff !important;
+            color: #000000 !important;
+            font-size: 9pt;
+        }
+
+        .no-print {
+            display: none !important;
+        }
+
+        .print-only {
+            display: block !important;
+        }
+
+        .table-attendance {
+            border-collapse: collapse !important;
+        }
+
+        .table-attendance th,
+        .table-attendance td {
+            border: 0.5pt solid #cbd5e1 !important;
+            padding: 5px 8px !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .row-present { background-color: #f0fdf4 !important; }
+        .row-absent  { background-color: #fef2f2 !important; }
+        .row-late    { background-color: #fffbeb !important; }
+        .row-excused { background-color: #f0fdfa !important; }
+
+        .pill-badge {
+            border: 1px solid #475569 !important;
+            color: #000000 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            font-size: 7.5pt !important;
+            padding: 1px 4px !important;
+        }
+
+        .class-card {
+            border: 1px solid #94a3b8 !important;
+            margin-bottom: 15px !important;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .class-header-bar {
+            background: #e2e8f0 !important;
+            color: #0f172a !important;
+            border-left: 6pt solid #4f46e5 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Attendance Dashboard</h2>
+<div class="container py-4">
 
-    <!-- Filter form -->
-    <form method="get" class="row g-3 mb-4">
-        <div class="col-md-4">
-            <label for="class" class="form-label">Select Class</label>
-            <select name="class" id="class" class="form-select">
-                <option value="">All Classes</option>
-                {% for cls in classes %}
-                    <option value="{{ cls.id }}" {% if cls.id|stringformat:"s" == selected_class_id %}selected{% endif %}>
-                        {{ cls.name }}
-                    </option>
-                {% endfor %}
-            </select>
+    <!-- Print Header -->
+    <div class="print-only mb-3 pb-2 border-bottom border-dark">
+        <h2 class="fw-bold text-uppercase mb-1">Official Attendance Register</h2>
+        <div class="d-flex justify-content-between text-muted" style="font-size: 8.5pt;">
+            <span><strong>Date:</strong> {% if selected_date %}{{ selected_date|date:"l, F d, Y" }}{% else %}All Dates{% endif %}</span>
+            <span><strong>Class:</strong> {% if selected_class %}{{ selected_class.name }}{% else %}All Classes{% endif %}</span>
+            <span><strong>Generated:</strong> {% now "d/m/Y H:i" %}</span>
         </div>
-        <div class="col-md-4">
-            <label for="date" class="form-label">Select Date</label>
-            <input type="date" name="date" id="date" value="{{ selected_date }}" class="form-control">
-        </div>
-        <div class="col-md-4 align-self-end">
-            <button type="submit" class="btn btn-primary">Filter</button>
-        </div>
-    </form>
+    </div>
 
-    <!-- SUMMARY CARDS -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white text-center">
-                <div class="card-body">
-                    <h6>Total Students</h6>
-                    <h3>{{ total_students }}</h3>
+    <!-- Screen Hero Banner (Hidden in Print) -->
+    <div class="dashboard-hero mb-4 no-print d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <span class="badge bg-white text-primary fw-semibold px-3 py-1 mb-2">Daily Attendance Analytics</span>
+            <h2 class="fw-bold mb-1">Attendance Register Dashboard</h2>
+            <p class="mb-0 text-white-50 small">Filter student cohorts, track attendance rates, and export registers.</p>
+        </div>
+        <button type="button" class="btn btn-light text-primary fw-semibold d-inline-flex align-items-center gap-2 shadow-sm" onclick="window.print()">
+            <i class="bi bi-printer-fill"></i> Print Register
+        </button>
+    </div>
+
+    <!-- Filter Card (Hidden in Print) -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 no-print" style="background: #ffffff;">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-5 col-sm-6">
+                <label for="class" class="form-label small fw-semibold text-secondary">Class / Stream</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-mortarboard-fill"></i></span>
+                    <select name="class" id="class" class="form-select border-start-0 ps-0 bg-light">
+                        <option value="">All Classes</option>
+                        {% for cls in classes %}
+                            <option value="{{ cls.id }}" {% if cls.id|stringformat:"s" == selected_class_id %}selected{% endif %}>
+                                {{ cls.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <label for="date" class="form-label small fw-semibold text-secondary">Attendance Date</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-calendar-check-fill"></i></span>
+                    <input type="date" name="date" id="date" value="{{ selected_date }}" class="form-control border-start-0 ps-0 bg-light">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100 fw-semibold d-inline-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-funnel-fill"></i> Apply Filter
+                </button>
+                <a href="{% url 'attendance:attendance_dashboard' %}" class="btn btn-outline-secondary w-auto" title="Reset Filters">
+                    <i class="bi bi-arrow-repeat"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Colorful High-Level Stat Cards (Hidden in Print) -->
+    <div class="row g-3 mb-4 no-print">
+        <div class="col-xl col-md-4 col-6">
+            <div class="metric-card card-total h-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-secondary fw-semibold small text-uppercase">Total Enrolled</span>
+                        <h3 class="fw-bold mt-1 mb-0 text-dark">{{ total_students|default:"0" }}</h3>
+                    </div>
+                    <div class="icon-box icon-total">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
         {% for item in status_summary %}
-        <div class="col-md-3">
-            <div class="card text-center text-white
-                {% if item.status|lower == 'present' %}bg-success
-                {% elif item.status|lower == 'absent' %}bg-danger
-                {% elif item.status|lower == 'late' %}bg-warning text-dark
-                {% elif item.status|lower == 'excused' %}bg-info text-dark
-                {% else %}bg-secondary{% endif %}">
-                <div class="card-body">
-                    <h6>{{ item.status|capfirst }}</h6>
-                    <h3>{{ item.total }}</h3>
+        <div class="col-xl col-md-4 col-6">
+            <div class="metric-card h-100 
+                {% if item.status|lower == 'present' %}card-present
+                {% elif item.status|lower == 'absent' %}card-absent
+                {% elif item.status|lower == 'late' %}card-late
+                {% elif item.status|lower == 'excused' %}card-excused
+                {% else %}card-total{% endif %}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-secondary fw-semibold small text-uppercase">{{ item.status }}</span>
+                        <h3 class="fw-bold mt-1 mb-0 
+                            {% if item.status|lower == 'present' %}text-success
+                            {% elif item.status|lower == 'absent' %}text-danger
+                            {% elif item.status|lower == 'late' %}text-warning
+                            {% elif item.status|lower == 'excused' %}text-info
+                            {% else %}text-dark{% endif %}">
+                            {{ item.total }}
+                        </h3>
+                    </div>
+                    <div class="icon-box 
+                        {% if item.status|lower == 'present' %}icon-present
+                        {% elif item.status|lower == 'absent' %}icon-absent
+                        {% elif item.status|lower == 'late' %}icon-late
+                        {% elif item.status|lower == 'excused' %}icon-excused
+                        {% else %}icon-total{% endif %}">
+                        <i class="bi 
+                            {% if item.status|lower == 'present' %}bi-check-circle-fill
+                            {% elif item.status|lower == 'absent' %}bi-x-circle-fill
+                            {% elif item.status|lower == 'late' %}bi-alarm-fill
+                            {% elif item.status|lower == 'excused' %}bi-info-circle-fill
+                            {% else %}bi-person-fill{% endif %}"></i>
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 
-    <!-- Attendance Table -->
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Class</th>
-                <th>Student</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Remarks</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for record in records %}
-            <tr>
-                <td>{{ record.student_class.name }}</td>
-                <td>{{ record.student }}</td>
-                <td>{{ record.date|date:"M d, Y" }}</td>
-                <td>
-                    {% with record.status|lower as status_lower %}
-                        {% if status_lower == 'present' %}
-                            <span class="badge bg-success">Present</span>
-                        {% elif status_lower == 'absent' %}
-                            <span class="badge bg-danger">Absent</span>
-                        {% elif status_lower == 'late' %}
-                            <span class="badge bg-warning text-dark">Late</span>
-                        {% elif status_lower == 'excused' %}
-                            <span class="badge bg-info text-dark">Excused</span>
-                        {% else %}
-                            <span class="badge bg-secondary">{{ record.status }}</span>
-                        {% endif %}
-                    {% endwith %}
-                </td>
-                <td>{{ record.remarks }}</td>
-                <td>
-                    <a href="{% url 'attendance:attendance_detail' record.pk %}" class="btn btn-sm btn-primary">
-                        View
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="text-center">No attendance records found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Attendance Record Tables Grouped by Class -->
+    {% if records %}
+        {% regroup records by student_class as class_records %}
+
+        {% for class_group in class_records %}
+        <div class="class-card mb-4">
+            
+            <!-- Class Group Header -->
+            <div class="class-header-bar">
+                <div class="d-flex align-items-center gap-2">
+                    <h5 class="fw-bold mb-0">Class: {{ class_group.grouper.name }}</h5>
+                    <span class="badge bg-light text-dark fw-semibold">{{ class_group.list|length }} Roll Count</span>
+                </div>
+                <div class="d-none d-md-flex align-items-center gap-2 no-print">
+                    <span class="counter-pill" style="background: rgba(34,197,94,0.2); color: #86efac;">
+                        <i class="bi bi-check-circle"></i> {{ class_group.present_count|default:0 }} Present
+                    </span>
+                    <span class="counter-pill" style="background: rgba(239,68,68,0.2); color: #fca5a5;">
+                        <i class="bi bi-x-circle"></i> {{ class_group.absent_count|default:0 }} Absent
+                    </span>
+                    <span class="counter-pill" style="background: rgba(245,158,11,0.2); color: #fde68a;">
+                        <i class="bi bi-alarm"></i> {{ class_group.late_count|default:0 }} Late
+                    </span>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="table-responsive">
+                <table class="table-attendance">
+                    <thead>
+                        <tr>
+                            <th style="width: 4%;">#</th>
+                            <th style="width: 30%;">Student Details</th>
+                            <th style="width: 15%;">Date</th>
+                            <th style="width: 18%;">Status</th>
+                            <th>Teacher's Remarks</th>
+                            <th class="no-print text-end" style="width: 10%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in class_group.list %}
+                        {% with record.status|lower as st %}
+                        <tr class="{% if st == 'present' %}row-present{% elif st == 'absent' %}row-absent{% elif st == 'late' %}row-late{% elif st == 'excused' %}row-excused{% else %}row-default{% endif %}">
+                            <td class="text-secondary fw-semibold">{{ forloop.counter }}</td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ record.student }}</div>
+                                {% if record.student.admission_number %}
+                                    <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.7rem;">Adm: #{{ record.student.admission_number }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-secondary fw-medium">{{ record.date|date:"M d, Y" }}</td>
+                            <td>
+                                {% if st == 'present' %}
+                                    <span class="pill-badge pill-present"><i class="bi bi-check-lg"></i> Present</span>
+                                {% elif st == 'absent' %}
+                                    <span class="pill-badge pill-absent"><i class="bi bi-x-lg"></i> Absent</span>
+                                {% elif st == 'late' %}
+                                    <span class="pill-badge pill-late"><i class="bi bi-clock-fill"></i> Late</span>
+                                {% elif st == 'excused' %}
+                                    <span class="pill-badge pill-excused"><i class="bi bi-info-circle-fill"></i> Excused</span>
+                                {% else %}
+                                    <span class="pill-badge pill-default">{{ record.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="{% if not record.remarks %}text-muted fst-italic{% else %}text-dark{% endif %}">
+                                    {{ record.remarks|default:"No remarks" }}
+                                </span>
+                            </td>
+                            <td class="no-print text-end">
+                                <a href="{% url 'attendance:attendance_detail' record.pk %}" class="btn btn-sm btn-white border shadow-sm py-1 px-2" title="Inspect Record">
+                                    <i class="bi bi-eye-fill text-primary"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endwith %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox-fill fs-3 d-block mb-1"></i> No records available in this section.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Print Footer -->
+        <div class="print-only mt-4 pt-3 border-top border-secondary">
+            <div class="row">
+                <div class="col-6 text-center">
+                    <p class="mb-4">_________________________________________</p>
+                    <small>Class Teacher Signature</small>
+                </div>
+                <div class="col-6 text-center">
+                    <p class="mb-4">_________________________________________</p>
+                    <small>Head of Department / Registrar</small>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4 text-center py-5">
+            <div class="py-4">
+                <div class="icon-box icon-total mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.75rem;">
+                    <i class="bi bi-calendar2-x-fill"></i>
+                </div>
+                <h4 class="fw-bold">No Attendance Records Found</h4>
+                <p class="text-secondary small mb-3">Adjust your selected filters or pick another class stream.</p>
+                <a href="{% url 'attendance:attendance_dashboard' %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-arrow-clockwise"></i> Clear Filters
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('print') === 'true') {
+            setTimeout(() => { window.print(); }, 350);
+        }
+    });
+</script>
 {% endblock %}

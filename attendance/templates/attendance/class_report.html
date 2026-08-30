@@ -1,55 +1,534 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<h3>
-    Attendance Report —
-    {{ student_class.name }} {{ student_class.stream }}
-</h3>
-
-<form method="get" class="row g-2 mb-3">
-    <div class="col-md-4">
-        <input type="date"
-               name="date"
-               class="form-control"
-               value="{{ selected_date }}">
-    </div>
-    <div class="col-md-2">
-        <button class="btn btn-primary w-100">
-            Filter
-        </button>
-    </div>
-</form>
-
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Student</th>
-            <th>Status</th>
-            <th>Remarks</th>
-            <th>Marked By</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for r in records %}
-        <tr>
-            <td>{{ r.date }}</td>
-            <td>{{ r.student.user.get_full_name }}</td>
-            <td>
-                <span class="badge bg-info">
-                    {{ r.get_status_display }}
+<div class="container-fluid px-2 px-sm-3 px-md-4 py-3 py-md-4">
+    
+    <!-- ===== HEADER SECTION ===== -->
+    <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-2 gap-sm-3 mb-3 mb-md-4">
+        <div class="w-100 w-sm-auto">
+            <h3 class="fw-bold mb-0 d-flex align-items-center gap-2" style="font-size: clamp(1.2rem, 4vw, 1.8rem);">
+                <i class="bi bi-calendar-check text-primary" style="font-size: clamp(1.3rem, 3vw, 1.8rem);"></i>
+                <span>Attendance Report</span>
+            </h3>
+            <p class="text-muted small mb-0 mt-1 d-flex align-items-center gap-2 flex-wrap">
+                <span><i class="bi bi-mortarboard-fill me-1"></i>{{ student_class.name }} {{ student_class.stream }}</span>
+                <span class="d-none d-sm-inline">•</span>
+                <span class="badge bg-light text-dark border px-2 py-1 rounded-pill">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    {% if view_type == 'daily' %}
+                        {{ selected_date|default:"Today" }}
+                    {% elif view_type == 'weekly' %}
+                        Week of {{ week_start|date:"M d" }} – {{ week_end|date:"M d, Y" }}
+                    {% elif view_type == 'monthly' %}
+                        {{ month_year|date:"F Y" }}
+                    {% endif %}
                 </span>
-            </td>
-            <td>{{ r.remarks|default:"-" }}</td>
-            <td>{{ r.marked_by.user.get_full_name }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5" class="text-center text-muted">
-                No attendance records found
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap flex-shrink-0">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-2 px-sm-3 py-1 py-sm-2 rounded-pill small">
+                <i class="bi bi-people-fill me-1"></i>
+                <span class="d-none d-sm-inline">Records</span> {{ records|length }}
+            </span>
+            <a href="?export=csv&view={{ view_type }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-download"></i>
+                <span class="d-none d-md-inline">Export</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== VIEW TYPE NAVIGATION ===== -->
+    <div class="card border-0 shadow-sm rounded-3 rounded-md-4 mb-3 mb-md-4">
+        <div class="card-body p-2 p-sm-3">
+            <ul class="nav nav-pills nav-fill gap-2 gap-sm-3" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a href="?view=daily&date={{ selected_date }}" 
+                       class="nav-link {% if view_type == 'daily' %}active{% endif %} rounded-3 d-flex align-items-center justify-content-center gap-1 gap-sm-2"
+                       style="{% if view_type == 'daily' %}background: #0f172a; color: white;{% else %}color: #475569;{% endif %}">
+                        <i class="bi bi-calendar-day"></i>
+                        <span>Daily</span>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a href="?view=weekly&week={{ week_start|date:'Y-m-d' }}" 
+                       class="nav-link {% if view_type == 'weekly' %}active{% endif %} rounded-3 d-flex align-items-center justify-content-center gap-1 gap-sm-2"
+                       style="{% if view_type == 'weekly' %}background: #0f172a; color: white;{% else %}color: #475569;{% endif %}">
+                        <i class="bi bi-calendar-week"></i>
+                        <span>Weekly</span>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a href="?view=monthly&month={{ month_year|date:'Y-m' }}" 
+                       class="nav-link {% if view_type == 'monthly' %}active{% endif %} rounded-3 d-flex align-items-center justify-content-center gap-1 gap-sm-2"
+                       style="{% if view_type == 'monthly' %}background: #0f172a; color: white;{% else %}color: #475569;{% endif %}">
+                        <i class="bi bi-calendar-month"></i>
+                        <span>Monthly</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== VIEW-SPECIFIC FILTERS ===== -->
+    <div class="card border-0 shadow-sm rounded-3 rounded-md-4 mb-3 mb-md-4" style="background: #f8fafc;">
+        <div class="card-body p-2 p-sm-3 p-md-4">
+            <form method="get" class="row g-2 g-sm-3 align-items-end">
+                <input type="hidden" name="view" value="{{ view_type }}">
+                
+                <!-- Daily View Filter -->
+                {% if view_type == 'daily' %}
+                <div class="col-12 col-sm-7 col-md-5 col-lg-4">
+                    <label for="dateFilter" class="form-label small fw-semibold text-secondary mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-calendar3"></i>
+                        <span>Select Date</span>
+                    </label>
+                    <input type="date"
+                           name="date"
+                           id="dateFilter"
+                           class="form-control form-control-sm form-control-md-lg rounded-3 border-0 shadow-sm"
+                           value="{{ selected_date }}"
+                           style="background: white; min-height: 38px;">
+                </div>
+                {% endif %}
+
+                <!-- Weekly View Filter -->
+                {% if view_type == 'weekly' %}
+                <div class="col-12 col-sm-7 col-md-5 col-lg-4">
+                    <label for="weekFilter" class="form-label small fw-semibold text-secondary mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-calendar-week"></i>
+                        <span>Week Starting</span>
+                    </label>
+                    <input type="date"
+                           name="week"
+                           id="weekFilter"
+                           class="form-control form-control-sm form-control-md-lg rounded-3 border-0 shadow-sm"
+                           value="{{ week_start|date:'Y-m-d' }}"
+                           style="background: white; min-height: 38px;">
+                </div>
+                <div class="col-12 col-sm-5 col-md-3">
+                    <div class="text-muted small">
+                        <i class="bi bi-info-circle"></i>
+                        {{ week_start|date:"M d" }} – {{ week_end|date:"M d, Y" }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Monthly View Filter -->
+                {% if view_type == 'monthly' %}
+                <div class="col-12 col-sm-7 col-md-5 col-lg-4">
+                    <label for="monthFilter" class="form-label small fw-semibold text-secondary mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-calendar-month"></i>
+                        <span>Select Month</span>
+                    </label>
+                    <input type="month"
+                           name="month"
+                           id="monthFilter"
+                           class="form-control form-control-sm form-control-md-lg rounded-3 border-0 shadow-sm"
+                           value="{{ month_year|date:'Y-m' }}"
+                           style="background: white; min-height: 38px;">
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div class="col-6 col-sm-3 col-md-2">
+                    <button class="btn btn-primary w-100 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-1 gap-sm-2" 
+                            style="background: #0f172a; border-color: #0f172a; min-height: 38px; font-size: clamp(0.85rem, 1.5vw, 1rem);">
+                        <i class="bi bi-funnel-fill"></i>
+                        <span class="d-none d-sm-inline">Filter</span>
+                        <span class="d-sm-none">Go</span>
+                    </button>
+                </div>
+                <div class="col-6 col-sm-2 text-end">
+                    <a href="?view={{ view_type }}" class="btn btn-outline-secondary w-100 rounded-3 px-2 px-sm-3" style="min-height: 38px; font-size: clamp(0.85rem, 1.5vw, 1rem);">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span class="d-none d-sm-inline">Reset</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== VIEW-SPECIFIC SUMMARY ===== -->
+    <div class="row g-2 g-sm-3 mb-3 mb-md-4">
+        <!-- Daily Summary -->
+        {% if view_type == 'daily' %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-3 rounded-md-4 bg-primary bg-opacity-5">
+                <div class="card-body p-2 p-sm-3 p-md-4">
+                    <div class="row g-2 text-center">
+                        <div class="col-4">
+                            <div class="fw-bold text-success" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">
+                                {{ daily_stats.present|default:0 }}
+                            </div>
+                            <div class="text-muted small">Present</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-warning" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">
+                                {{ daily_stats.late|default:0 }}
+                            </div>
+                            <div class="text-muted small">Late</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-danger" style="font-size: clamp(1.2rem, 3vw, 1.8rem);">
+                                {{ daily_stats.absent|default:0 }}
+                            </div>
+                            <div class="text-muted small">Absent</div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-2">
+                        <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
+                            <i class="bi bi-people me-1"></i>
+                            Total: {{ daily_stats.total|default:0 }} students
+                        </span>
+                        <span class="badge bg-light text-dark px-3 py-2 rounded-pill ms-1">
+                            <i class="bi bi-percent me-1"></i>
+                            Attendance: {{ daily_stats.percentage|default:"0" }}%
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Weekly Summary -->
+        {% if view_type == 'weekly' %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-3 rounded-md-4">
+                <div class="card-body p-2 p-sm-3 p-md-4">
+                    <h6 class="fw-semibold mb-2">Weekly Overview</h6>
+                    <div class="row g-2">
+                        {% for day in weekly_data %}
+                        <div class="col-6 col-sm-4 col-md-2">
+                            <div class="border rounded-3 p-2 text-center" style="background: {% if day.date == today %} #eef2ff {% else %} white {% endif %};">
+                                <div class="small fw-semibold">{{ day.date|date:"D" }}</div>
+                                <div class="small text-muted">{{ day.date|date:"d" }}</div>
+                                <div class="mt-1">
+                                    <span class="badge bg-success bg-opacity-15 text-success px-1 py-0">P: {{ day.present|default:0 }}</span>
+                                    <span class="badge bg-danger bg-opacity-15 text-danger px-1 py-0">A: {{ day.absent|default:0 }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row g-2 mt-2 text-center">
+                        <div class="col-4">
+                            <div class="fw-bold text-success" style="font-size: clamp(1rem, 2vw, 1.3rem);">
+                                {{ weekly_stats.total_present|default:0 }}
+                            </div>
+                            <div class="text-muted small">Total Present</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-warning" style="font-size: clamp(1rem, 2vw, 1.3rem);">
+                                {{ weekly_stats.total_late|default:0 }}
+                            </div>
+                            <div class="text-muted small">Total Late</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-danger" style="font-size: clamp(1rem, 2vw, 1.3rem);">
+                                {{ weekly_stats.total_absent|default:0 }}
+                            </div>
+                            <div class="text-muted small">Total Absent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Monthly Summary -->
+        {% if view_type == 'monthly' %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-3 rounded-md-4">
+                <div class="card-body p-2 p-sm-3 p-md-4">
+                    <h6 class="fw-semibold mb-2">Monthly Overview</h6>
+                    <div class="row g-2 mb-2">
+                        <div class="col-6 col-sm-3">
+                            <div class="border rounded-3 p-2 text-center">
+                                <div class="fw-bold text-success" style="font-size: clamp(1.2rem, 2.5vw, 1.5rem);">
+                                    {{ monthly_stats.total_present|default:0 }}
+                                </div>
+                                <div class="text-muted small">Present</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <div class="border rounded-3 p-2 text-center">
+                                <div class="fw-bold text-warning" style="font-size: clamp(1.2rem, 2.5vw, 1.5rem);">
+                                    {{ monthly_stats.total_late|default:0 }}
+                                </div>
+                                <div class="text-muted small">Late</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <div class="border rounded-3 p-2 text-center">
+                                <div class="fw-bold text-danger" style="font-size: clamp(1.2rem, 2.5vw, 1.5rem);">
+                                    {{ monthly_stats.total_absent|default:0 }}
+                                </div>
+                                <div class="text-muted small">Absent</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <div class="border rounded-3 p-2 text-center" style="background: #f0fdf4;">
+                                <div class="fw-bold text-primary" style="font-size: clamp(1.2rem, 2.5vw, 1.5rem);">
+                                    {{ monthly_stats.percentage|default:"0" }}%
+                                </div>
+                                <div class="text-muted small">Attendance Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Mini calendar -->
+                    <div class="row g-1 mt-2">
+                        {% for week in monthly_calendar %}
+                            {% for day in week %}
+                            <div class="col-1 text-center" style="font-size: 0.65rem;">
+                                {% if day %}
+                                    <div class="border rounded-1 p-1 {% if day.has_attendance %}bg-success bg-opacity-10{% endif %}"
+                                         style="min-height: 30px;">
+                                        {{ day.date|date:"d" }}
+                                        {% if day.has_attendance %}
+                                        <i class="bi bi-check-circle-fill text-success d-block" style="font-size: 0.5rem;"></i>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div style="min-height: 30px;"></div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ===== TABLE SECTION ===== -->
+    <div class="card border-0 shadow-sm rounded-3 rounded-md-4 overflow-hidden">
+        <div class="card-body p-0">
+            <!-- Mobile Card View -->
+            <div class="d-block d-md-none">
+                {% for r in records %}
+                <div class="border-bottom p-3 {% if not forloop.last %}border-light{% endif %}" style="background: {% if forloop.counter|divisibleby:2 %}#fafbfc{% else %}white{% endif %};">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" 
+                                 style="width: 36px; height: 36px; font-size: 0.8rem; font-weight: 600; flex-shrink: 0;">
+                                {{ r.student.user.get_full_name|slice:":1" }}
+                            </div>
+                            <div>
+                                <div class="fw-semibold" style="font-size: 0.95rem;">{{ r.student.user.get_full_name }}</div>
+                                <div class="text-muted small">{{ r.date|date:"M d, Y" }}</div>
+                            </div>
+                        </div>
+                        <div>
+                            {% if r.status == 'present' %}
+                            <span class="badge bg-success bg-opacity-15 text-success px-2 py-1 rounded-pill fw-medium">
+                                <i class="bi bi-check-circle-fill me-1"></i> Present
+                            </span>
+                            {% elif r.status == 'absent' %}
+                            <span class="badge bg-danger bg-opacity-15 text-danger px-2 py-1 rounded-pill fw-medium">
+                                <i class="bi bi-x-circle-fill me-1"></i> Absent
+                            </span>
+                            {% elif r.status == 'late' %}
+                            <span class="badge bg-warning bg-opacity-15 text-warning px-2 py-1 rounded-pill fw-medium">
+                                <i class="bi bi-clock-fill me-1"></i> Late
+                            </span>
+                            {% elif r.status == 'excused' %}
+                            <span class="badge bg-info bg-opacity-15 text-info px-2 py-1 rounded-pill fw-medium">
+                                <i class="bi bi-check-circle me-1"></i> Excused
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded-pill fw-medium">
+                                {{ r.get_status_display }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row g-1 mt-1 small">
+                        <div class="col-6">
+                            <span class="text-muted">Remarks:</span>
+                            <span class="text-secondary">{% if r.remarks %}{{ r.remarks }}{% else %}<span class="text-muted fst-italic">—</span>{% endif %}</span>
+                        </div>
+                        <div class="col-6 text-end">
+                            <span class="text-muted">By:</span>
+                            <span class="text-secondary">{{ r.marked_by.user.get_full_name }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                    <p class="fw-semibold mt-2 mb-0">No records found</p>
+                    <p class="text-muted small">Try adjusting your filter</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Desktop Table View -->
+            <div class="d-none d-md-block table-responsive">
+                <table class="table table-hover align-middle mb-0" style="min-width: 700px;">
+                    <thead style="background: #f1f5f9; border-bottom: 2px solid #e2e8f0;">
+                        <tr>
+                            <th class="px-3 px-xl-4 py-3 fw-semibold text-secondary small text-uppercase tracking-wider">
+                                <i class="bi bi-calendar-event me-1"></i> Date
+                            </th>
+                            <th class="px-3 px-xl-4 py-3 fw-semibold text-secondary small text-uppercase tracking-wider">
+                                <i class="bi bi-person me-1"></i> Student
+                            </th>
+                            <th class="px-3 px-xl-4 py-3 fw-semibold text-secondary small text-uppercase tracking-wider">
+                                <i class="bi bi-check-circle me-1"></i> Status
+                            </th>
+                            <th class="px-3 px-xl-4 py-3 fw-semibold text-secondary small text-uppercase tracking-wider">
+                                <i class="bi bi-chat me-1"></i> Remarks
+                            </th>
+                            <th class="px-3 px-xl-4 py-3 fw-semibold text-secondary small text-uppercase tracking-wider">
+                                <i class="bi bi-person-badge me-1"></i> Marked By
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in records %}
+                        <tr class="border-bottom border-light">
+                            <td class="px-3 px-xl-4 py-3">
+                                <span class="fw-medium">{{ r.date|date:"M d, Y" }}</span>
+                            </td>
+                            <td class="px-3 px-xl-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" 
+                                         style="width: 32px; height: 32px; font-size: 0.8rem; font-weight: 600; flex-shrink: 0;">
+                                        {{ r.student.user.get_full_name|slice:":1" }}
+                                    </div>
+                                    <span class="fw-medium">{{ r.student.user.get_full_name }}</span>
+                                </div>
+                            </td>
+                            <td class="px-3 px-xl-4 py-3">
+                                {% if r.status == 'present' %}
+                                <span class="badge bg-success bg-opacity-15 text-success px-3 py-2 rounded-pill fw-medium">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Present
+                                </span>
+                                {% elif r.status == 'absent' %}
+                                <span class="badge bg-danger bg-opacity-15 text-danger px-3 py-2 rounded-pill fw-medium">
+                                    <i class="bi bi-x-circle-fill me-1"></i> Absent
+                                </span>
+                                {% elif r.status == 'late' %}
+                                <span class="badge bg-warning bg-opacity-15 text-warning px-3 py-2 rounded-pill fw-medium">
+                                    <i class="bi bi-clock-fill me-1"></i> Late
+                                </span>
+                                {% elif r.status == 'excused' %}
+                                <span class="badge bg-info bg-opacity-15 text-info px-3 py-2 rounded-pill fw-medium">
+                                    <i class="bi bi-check-circle me-1"></i> Excused
+                                </span>
+                                {% else %}
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill fw-medium">
+                                    {{ r.get_status_display }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-3 px-xl-4 py-3">
+                                {% if r.remarks %}
+                                <span class="text-secondary">{{ r.remarks }}</span>
+                                {% else %}
+                                <span class="text-muted fst-italic">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-3 px-xl-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-person-circle text-secondary"></i>
+                                    <span class="small">{{ r.marked_by.user.get_full_name }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center gap-3">
+                                    <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                                    <div>
+                                        <p class="fw-semibold mb-0">No attendance records found</p>
+                                        <p class="text-muted small">Try adjusting your filter or date range</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- ===== PAGINATION ===== -->
+        {% if records.paginator %}
+        <div class="card-footer bg-white border-0 px-2 px-sm-3 px-md-4 py-2 py-sm-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <span class="text-muted small" style="font-size: clamp(0.7rem, 1.5vw, 0.85rem);">
+                Showing {{ records.start_index }}–{{ records.end_index }} of {{ records.paginator.count }}
+            </span>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm mb-0 flex-wrap">
+                    {% if records.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1&view={{ view_type }}">&laquo;</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ records.previous_page_number }}&view={{ view_type }}">‹</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ records.number }}</span></li>
+                    {% if records.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ records.next_page_number }}&view={{ view_type }}">›</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ records.paginator.num_pages }}&view={{ view_type }}">&raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .tracking-wider { letter-spacing: 0.05em; }
+    
+    .card {
+        transition: box-shadow 0.2s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+        transition: background 0.15s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #0f172a;
+        box-shadow: 0 0 0 0.2rem rgba(15, 23, 42, 0.1);
+    }
+    
+    .btn-primary:hover {
+        background: #1e293b !important;
+        border-color: #1e293b !important;
+    }
+    
+    .badge {
+        font-weight: 500;
+    }
+    
+    .nav-pills .nav-link.active {
+        background: #0f172a;
+        color: white;
+    }
+    
+    .nav-pills .nav-link:not(.active):hover {
+        background: #f1f5f9;
+    }
+    
+    @media (max-width: 576px) {
+        .table td, .table th {
+            padding: 0.5rem;
+        }
+        .card-body {
+            padding: 0.75rem !important;
+        }
+    }
+    
+    @media (max-width: 400px) {
+        .pagination .page-link {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+</style>
 {% endblock %}

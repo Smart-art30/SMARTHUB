@@ -5,284 +5,363 @@
 
 {% block extra_css %}
 <style>
+  /* ============================================
+     CSS VARIABLES (Light & Dark Mode)
+     ============================================ */
   :root {
-    --primary-color: #4361ee;
-    --success-color: #06d6a0;
-    --warning-color: #ffd166;
-    --danger-color: #ef476f;
-    --info-color: #118ab2;
-    --border-radius: 0.5rem;
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    --success: #22c55e;
+    --warning: #facc15;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --radius: 0.75rem;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+    --bg: #ffffff;
+    --text: #0f172a;
+    --border: #e2e8f0;
+    --card-bg: #ffffff;
+    --header-bg: #f1f5f9;
+    --table-stripe: #f8fafc;
+    --table-hover: #eef2ff;
+    --sticky-bg: #ffffff;
+    --badge-text: #ffffff;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  [data-bs-theme="dark"] {
+    --bg: #0f172a;
+    --text: #f1f5f9;
+    --border: #1e293b;
+    --card-bg: #1e293b;
+    --header-bg: #1e293b;
+    --gray-50: #1e293b;
+    --gray-100: #334155;
+    --gray-200: #475569;
+    --gray-300: #64748b;
+    --gray-400: #94a3b8;
+    --gray-500: #cbd5e1;
+    --gray-600: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    --table-stripe: #1e293b;
+    --table-hover: #2d3a56;
+    --sticky-bg: #1e293b;
+    --badge-text: #0f172a;
+  }
+
+  /* ============================================
+     BASE & LAYOUT
+     ============================================ */
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   }
 
   .page-header {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #3a56d4 100%);
-    color: white;
-    padding: 1.5rem 0;
-    margin-bottom: 1.5rem;
-    border-radius: var(--border-radius);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    padding: clamp(1rem, 2.5vw, 1.75rem);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.75rem;
   }
 
   .filter-card {
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
   }
 
   .filter-card .card-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 1px solid #dee2e6;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border);
     font-weight: 600;
-    color: #2b2d42;
+    color: var(--text);
+    padding: 0.75rem 1.25rem;
   }
 
   .form-label {
     font-weight: 500;
-    color: #495057;
+    color: var(--gray-600);
     font-size: clamp(0.75rem, 2vw, 0.875rem);
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
   }
 
-  .form-select, .form-control {
-    border-radius: 0.375rem;
-    border: 1px solid #ced4da;
+  .form-select,
+  .form-control {
+    background-color: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
     font-size: clamp(0.8rem, 2.5vw, 0.9rem);
-    transition: all 0.2s ease;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
 
-  .form-select:focus, .form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+  .form-select:focus,
+  .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #3a56d4 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     border: none;
     font-weight: 500;
     padding: 0.5rem 1.25rem;
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
     transition: all 0.2s ease;
-    font-size: clamp(0.75rem, 2vw, 0.9rem);
+    color: #fff;
   }
 
   .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
   }
 
   .btn-success {
-    background: linear-gradient(135deg, var(--success-color) 0%, #06c492 100%);
+    background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
     border: none;
     font-weight: 500;
+    color: #fff;
     transition: all 0.2s ease;
-    font-size: clamp(0.7rem, 1.8vw, 0.85rem);
-    padding: 0.4rem 0.8rem;
   }
 
   .btn-success:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(6, 214, 160, 0.4);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
   }
 
+  /* ============================================
+     ALERTS
+     ============================================ */
   .alert-info {
-    background: linear-gradient(135deg, rgba(17, 138, 178, 0.15) 0%, rgba(17, 138, 178, 0.08) 100%);
-    border: 1px solid rgba(17, 138, 178, 0.3);
-    color: #0a5c7a;
-    border-radius: var(--border-radius);
-    font-size: clamp(0.75rem, 2vw, 0.9rem);
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    color: var(--text);
+    border-radius: var(--radius);
   }
 
   .alert-warning {
-    background: linear-gradient(135deg, rgba(255, 209, 102, 0.15) 0%, rgba(255, 209, 102, 0.08) 100%);
-    border: 1px solid rgba(255, 209, 102, 0.3);
-    color: #997d00;
-    border-radius: var(--border-radius);
-    font-size: clamp(0.75rem, 2vw, 0.9rem);
+    background: rgba(250, 204, 21, 0.12);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    color: var(--text);
+    border-radius: var(--radius);
+  }
+
+  /* ============================================
+     PRINT HEADER
+     ============================================ */
+  .print-header {
+    background: var(--header-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: clamp(0.5rem, 1.5vw, 1rem);
+    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .print-header h3 {
+    color: var(--text);
+    font-weight: 700;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    margin-bottom: 0.2rem;
+  }
+
+  .print-header p {
+    color: var(--gray-600);
+    font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+    margin-bottom: 0.15rem;
   }
 
   .school-logo {
-    height: clamp(45px, 7vw, 70px);
+    height: clamp(48px, 7vw, 72px);
     width: auto;
     object-fit: contain;
   }
 
-  .print-header {
-    border-bottom: 2px solid #2b2d42;
-    padding-bottom: clamp(0.35rem, 1.5vw, 0.75rem);
-    margin-bottom: clamp(0.5rem, 1.5vw, 0.9rem);
-    background: #f8f9fa;
-    padding: clamp(0.4rem, 1.5vw, 0.8rem);
-    border-radius: var(--border-radius);
-    display: flex;
-    flex-wrap: wrap;
-    gap: clamp(0.4rem, 1.5vw, 0.8rem);
-  }
-
-  .print-header h3 {
-    color: #2b2d42;
-    font-weight: 700;
-    font-size: clamp(0.95rem, 2.5vw, 1.25rem);
-    margin-bottom: clamp(0.2rem, 0.8vw, 0.35rem);
-  }
-
-  .print-header p {
-    color: #495057;
-    font-size: clamp(0.65rem, 1.8vw, 0.82rem);
-    margin-bottom: clamp(0.08rem, 0.4vw, 0.2rem);
-    line-height: 1.25;
-  }
-
-  .print-header strong {
-    color: #2b2d42;
-  }
-
-  .exam-card {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    padding: clamp(0.65rem, 1.8vw, 1.2rem);
-    margin-bottom: clamp(1rem, 3vw, 2rem);
-    border: 1px solid #e9ecef;
-  }
-
   .stat-badge {
     display: inline-block;
-    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(67, 97, 238, 0.05) 100%);
-    border: 1px solid rgba(67, 97, 238, 0.2);
-    padding: clamp(0.16rem, 0.8vw, 0.25rem) clamp(0.45rem, 1.2vw, 0.7rem);
-    border-radius: 1rem;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    padding: 0.15rem 0.6rem;
+    border-radius: 2rem;
     font-size: clamp(0.6rem, 1.6vw, 0.78rem);
     font-weight: 500;
-    color: var(--primary-color);
-    margin-right: clamp(0.2rem, 0.8vw, 0.4rem);
-    margin-bottom: clamp(0.2rem, 0.8vw, 0.4rem);
+    color: var(--primary);
+    margin-right: 0.4rem;
+    margin-bottom: 0.3rem;
     white-space: nowrap;
   }
 
+  /* ============================================
+     TABLE – Fully Responsive, Sticky Columns
+     ============================================ */
+  .exam-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: clamp(0.75rem, 1.8vw, 1.25rem);
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+  }
+
   .table-responsive {
-    border-radius: var(--border-radius);
-    overflow: auto;
-    max-width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .table {
     margin-bottom: 0;
-    font-size: clamp(0.6rem, 1.4vw, 0.76rem);
+    font-size: clamp(0.7rem, 1.4vw, 0.8rem);
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--card-bg);
+    color: var(--text);
   }
 
   .table thead th {
-    background: linear-gradient(135deg, #2b2d42 0%, #495057 100%);
-    color: white;
+    background: var(--gray-800);
+    color: #fff;
     font-weight: 600;
     text-transform: uppercase;
-    font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+    font-size: clamp(0.6rem, 1.2vw, 0.72rem);
     letter-spacing: 0.3px;
-    padding: clamp(0.22rem, 0.8vw, 0.45rem) clamp(0.15rem, 0.6vw, 0.3rem);
+    padding: 0.45rem 0.35rem;
     border: none;
     white-space: nowrap;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 5;
   }
 
-  .table tbody tr {
-    transition: background-color 0.15s ease;
+  .table tbody tr:nth-child(even) {
+    background-color: var(--table-stripe);
   }
 
   .table tbody tr:hover {
-    background-color: rgba(67, 97, 238, 0.05);
+    background-color: var(--table-hover);
   }
 
   .table tbody td {
-    padding: clamp(0.18rem, 0.7vw, 0.4rem) clamp(0.15rem, 0.6vw, 0.3rem);
+    padding: 0.4rem 0.35rem;
     vertical-align: middle;
-    color: #495057;
-    font-size: clamp(0.55rem, 1.2vw, 0.72rem);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
     white-space: nowrap;
-  }
-
-  .table tfoot {
-    background: #f8f9fa;
-    font-weight: 600;
+    color: var(--text);
   }
 
   .table tfoot td {
-    padding: clamp(0.22rem, 0.8vw, 0.45rem) clamp(0.15rem, 0.6vw, 0.3rem);
-    color: #2b2d42;
-    font-size: clamp(0.6rem, 1.4vw, 0.76rem);
+    padding: 0.45rem 0.35rem;
+    font-weight: 600;
+    border-top: 2px solid var(--border);
+    border-right: 1px solid var(--border);
+    color: var(--text);
+    background: var(--header-bg);
   }
 
+  /* Sticky columns */
+  .sticky-col-rank {
+    position: sticky;
+    left: 0;
+    background-color: var(--sticky-bg);
+    z-index: 3;
+    border-right: 1px solid var(--border) !important;
+  }
+
+  .sticky-col-student {
+    position: sticky;
+    left: 42px;
+    background-color: var(--sticky-bg);
+    z-index: 3;
+    border-right: 2px solid var(--border) !important;
+  }
+
+  .table thead th.sticky-col-rank,
+  .table thead th.sticky-col-student {
+    background: var(--gray-800) !important;
+    z-index: 4;
+  }
+
+  .table tbody tr:nth-child(even) .sticky-col-rank,
+  .table tbody tr:nth-child(even) .sticky-col-student {
+    background-color: var(--table-stripe);
+  }
+
+  .table tbody tr:hover .sticky-col-rank,
+  .table tbody tr:hover .sticky-col-student {
+    background-color: var(--table-hover);
+  }
+
+  .table tfoot .sticky-col-rank,
+  .table tfoot .sticky-col-student {
+    background-color: var(--header-bg);
+  }
+
+  /* ============================================
+     BADGES
+     ============================================ */
   .badge {
-    padding: clamp(0.16rem, 0.7vw, 0.3em) clamp(0.28rem, 0.9vw, 0.58em);
+    padding: 0.2rem 0.5rem;
     font-weight: 600;
-    border-radius: 0.25rem;
-    font-size: clamp(0.5rem, 1vw, 0.68rem);
-    letter-spacing: 0.3px;
+    border-radius: 0.35rem;
+    font-size: clamp(0.55rem, 1vw, 0.68rem);
+    letter-spacing: 0.2px;
     white-space: nowrap;
+    color: var(--badge-text);
   }
 
   .badge.bg-success {
-    background: linear-gradient(135deg, var(--success-color) 0%, #06c492 100%) !important;
+    background: var(--success) !important;
   }
-
   .badge.bg-primary {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #3a56d4 100%) !important;
+    background: var(--primary) !important;
   }
-
   .badge.bg-warning {
-    background: linear-gradient(135deg, var(--warning-color) 0%, #ffc800 100%) !important;
-    color: #333 !important;
+    background: var(--warning) !important;
+    color: #0f172a !important;
   }
-
   .badge.bg-danger {
-    background: linear-gradient(135deg, var(--danger-color) 0%, #d63384 100%) !important;
+    background: var(--danger) !important;
   }
 
+  /* ============================================
+     RESPONSIVE TWEAKS
+     ============================================ */
   @media (max-width: 768px) {
-    .page-header {
-      padding: 1rem 0;
-      margin-bottom: 1rem;
+    .sticky-col-student {
+      min-width: 120px;
+      max-width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-
-    .page-header h2 {
-      font-size: 1.2rem;
-    }
-
-    .filter-card {
-      margin: 0 -0.5rem 1rem;
-      border-radius: 0;
-      box-shadow: none;
-      border-left: 1px solid #e9ecef;
-      border-right: 1px solid #e9ecef;
-    }
-
-    .form-select, .form-control {
-      font-size: 0.85rem;
-    }
-
     .print-header {
       flex-direction: column;
       align-items: flex-start;
     }
-
     .school-logo {
-      height: 50px;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-badge {
-      display: block;
-      margin-bottom: 0.35rem;
-      white-space: normal;
-    }
-
-    .table-responsive {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .table {
-      min-width: 600px;
+      height: 42px;
     }
   }
 
@@ -291,211 +370,139 @@
       padding-left: 0.5rem;
       padding-right: 0.5rem;
     }
-
     .exam-card {
-      padding: 0.75rem;
+      padding: 0.5rem;
     }
-
     .btn-success {
       width: 100%;
       margin-bottom: 0.5rem;
     }
   }
 
+  /* ============================================
+     PRINT STYLES (applied dynamically via JS)
+     ============================================ */
+  /* Base print styles - will be overridden by JS orientation */
   @media print {
-    .site-name,
+    .d-print-none,
     .page-header,
+    .filter-card,
     .btn,
-    .card,
+    .alert,
     nav,
     footer,
     .sidebar,
-    .navbar,
-    .alert,
-    .d-print-none {
+    .navbar {
       display: none !important;
     }
 
     body {
-      margin: 0;
-      padding: 0;
-      background: white;
+      background: white !important;
+      color: #000 !important;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
-      font-size: 9pt;
-    }
-
-    .container-fluid {
-      width: 100%;
-      max-width: 100%;
-      padding: 0;
-      margin: 0;
-    }
-
-    .exam-printable {
-      width: 100%;
-      page-break-after: avoid;
-      page-break-inside: avoid;
-      display: block;
     }
 
     .exam-card {
-      box-shadow: none;
-      border: 0;
-      padding: 0.1in;
-      margin: 0;
+      box-shadow: none !important;
+      border: 0 !important;
+      padding: 0.1in !important;
+      background: white !important;
     }
 
     .print-header {
-      background: #f8f9fa !important;
-      border: 1px solid #dee2e6;
-      margin-bottom: 0.08in;
-      padding: 0.06in 0.08in;
-      page-break-inside: avoid;
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 0.08in;
-    }
-
-    .print-header h3 {
-      font-size: 10pt;
-      margin-bottom: 0.03in;
-    }
-
-    .print-header p {
-      font-size: 6.5pt;
-      margin-bottom: 0.02in;
-      line-height: 1.05;
-    }
-
-    .school-logo {
-      height: 0.38in;
-      max-height: 0.38in;
-    }
-
-    .stat-badge {
-      font-size: 5.8pt;
-      padding: 0.02in 0.06in;
-      margin-right: 0.04in;
-      margin-bottom: 0.04in;
-      white-space: normal;
-    }
-
-    .table-responsive {
-      overflow: visible;
-      max-width: 100%;
-      page-break-inside: auto;
+      background: #f1f5f9 !important;
+      border: 1px solid #ccc !important;
     }
 
     .table {
-      width: 100%;
-      font-size: 5.8pt;
-      table-layout: fixed;
-      page-break-inside: auto;
-    }
-
-    .table thead {
-      display: table-header-group;
+      font-size: 7pt !important;
     }
 
     .table thead th {
-      font-size: 5.5pt;
-      padding: 0.025in 0.02in;
-      white-space: normal;
-      word-wrap: break-word;
+      background: #1e293b !important;
+      color: white !important;
     }
 
-    .table tbody tr {
-      page-break-inside: avoid;
+    .sticky-col-rank,
+    .sticky-col-student {
+      position: static !important;
+      background: white !important;
     }
 
-    .table tbody td {
-      font-size: 5.6pt;
-      padding: 0.025in 0.02in;
-      white-space: normal;
-      word-wrap: break-word;
+    .table tbody tr:nth-child(even) .sticky-col-rank,
+    .table tbody tr:nth-child(even) .sticky-col-student {
+      background: #f8fafc !important;
     }
 
-    .table tfoot {
-      display: table-footer-group;
-    }
-
-    .table tfoot td {
-      font-size: 5.8pt;
-      padding: 0.025in 0.02in;
-    }
-
-    .badge {
-      font-size: 5pt;
-      padding: 0.015in 0.05in;
-      white-space: normal;
-    }
-
-    @page {
-      margin: 0.18in;
+    .stat-badge {
+      border: 1px solid #ccc !important;
     }
   }
 
-  @media print and (orientation: landscape) {
-    @page {
-      size: landscape;
-      margin: 0.18in;
-    }
-
-    .exam-card {
-      padding: 0.08in;
-    }
+  /* ============================================
+     ORIENTATION MODAL
+     ============================================ */
+  .print-modal .modal-content {
+    background: var(--card-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
   }
 
-  @media print and (orientation: portrait) {
-    @page {
-      size: portrait;
-      margin: 0.18in;
-    }
+  .print-modal .modal-header {
+    border-bottom: 1px solid var(--border);
+  }
 
-    .exam-card {
-      padding: 0.08in;
-    }
+  .print-modal .modal-footer {
+    border-top: 1px solid var(--border);
+  }
 
-    .print-header {
-      flex-direction: column;
-    }
+  .print-modal .btn-outline-secondary {
+    color: var(--text);
+    border-color: var(--border);
+  }
 
-    .school-logo {
-      height: 0.35in;
-      max-height: 0.35in;
-    }
+  .print-modal .btn-outline-secondary:hover {
+    background: var(--gray-100);
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid py-2 py-md-3">
+  <!-- ==========================================
+       PAGE HEADER
+       ========================================== -->
   <div class="page-header d-print-none">
-    <div class="container-fluid">
-      <div class="row align-items-center">
-        <div class="col">
-          <h2 class="mb-1">
-            <i class="bi bi-bar-chart-fill me-2"></i>Class Marks
-          </h2>
-          <p class="mb-0 opacity-75">{{ school_class.name }}</p>
-        </div>
+    <div class="d-flex flex-wrap align-items-center justify-content-between">
+      <div>
+        <h2 class="mb-0 fw-bold">
+          <i class="bi bi-bar-chart-fill me-2"></i>Class Marks
+        </h2>
+        <p class="mb-0 opacity-75 mt-1">{{ school_class.name }}</p>
       </div>
+      <button id="themeToggle" class="btn btn-light btn-sm rounded-pill px-3 mt-2 mt-sm-0">
+        <i class="bi bi-moon-fill me-1"></i><span id="themeLabel">Dark</span>
+      </button>
     </div>
   </div>
 
+  <!-- ==========================================
+       FILTER CARD
+       ========================================== -->
   <div class="card filter-card mb-4 d-print-none">
-    <div class="card-header py-3">
+    <div class="card-header">
       <i class="bi bi-funnel-fill me-2"></i>Filter Results
     </div>
     <div class="card-body">
-      <form method="get" class="row g-3">
-        <div class="col-md-4 col-12 mb-2 mb-md-0">
+      <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-4 col-12">
           <label for="year-filter" class="form-label">
             <i class="bi bi-calendar-event me-1"></i>Academic Year
           </label>
-          <select name="year" id="year-filter" class="form-select" aria-label="Select Academic Year">
-            <option value="">Select Year</option>
+          <select name="year" id="year-filter" class="form-select">
+            <option value="">All Years</option>
             {% for year in years %}
               <option value="{{ year }}" {% if selected_year|stringformat:"s" == year|stringformat:"s" %}selected{% endif %}>
                 {{ year }}
@@ -503,13 +510,12 @@
             {% endfor %}
           </select>
         </div>
-
-        <div class="col-md-4 col-12 mb-2 mb-md-0">
+        <div class="col-md-4 col-12">
           <label for="term-filter" class="form-label">
-            <i class="bi bi-calendar3 me-1"></i>Academic Term
+            <i class="bi bi-calendar3 me-1"></i>Term
           </label>
-          <select name="term" id="term-filter" class="form-select" aria-label="Select Academic Term">
-            <option value="">Select Term</option>
+          <select name="term" id="term-filter" class="form-select">
+            <option value="">All Terms</option>
             {% for t in terms %}
               <option value="{{ t.term }}" {% if selected_term_name == t.term %}selected{% endif %}>
                 {{ t.term }}
@@ -517,9 +523,8 @@
             {% endfor %}
           </select>
         </div>
-
-        <div class="col-md-2 col-6 d-flex align-items-end">
-          <button type="submit" class="btn btn-primary w-100" aria-label="Load Results">
+        <div class="col-md-2 col-6">
+          <button type="submit" class="btn btn-primary w-100">
             <i class="bi bi-search me-1"></i>Load
           </button>
         </div>
@@ -527,82 +532,72 @@
     </div>
   </div>
 
+  <!-- ==========================================
+       TERM INFO
+       ========================================== -->
   {% if term %}
     <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
       <i class="bi bi-info-circle-fill me-2 flex-shrink-0"></i>
       <div>
-        <strong>Showing:</strong> {{ term.term }} - {{ term.year }}
+        <strong>Showing:</strong> {{ term.term }} — {{ term.year }}
       </div>
     </div>
   {% endif %}
 
+  <!-- ==========================================
+       NO DATA
+       ========================================== -->
   {% if not exam_tables %}
     <div class="alert alert-warning d-flex align-items-center" role="alert">
       <i class="bi bi-exclamation-triangle-fill me-2 flex-shrink-0"></i>
       <div>
         {% if term %}
-          No exams found for <strong>{{ term.term }}</strong> - <strong>{{ term.year }}</strong>.
+          No exams found for <strong>{{ term.term }}</strong> — <strong>{{ term.year }}</strong>.
         {% else %}
-          No academic term selected. Please select a term and year to view results.
+          Please select a term and year to view results.
         {% endif %}
       </div>
     </div>
   {% endif %}
 
+  <!-- ==========================================
+       EXAM TABLES
+       ========================================== -->
   {% for table in exam_tables %}
-    <div class="d-print-none mb-3">
-      <button type="button" onclick="printExam('exam-{{ table.exam.id }}')" class="btn btn-success btn-sm" aria-label="Print {{ table.exam.name }}">
+    <div class="d-print-none mb-3 d-flex justify-content-end">
+      <button type="button" onclick="openPrintModal('exam-{{ table.exam.id }}', '{{ table.exam.name }}')" class="btn btn-success btn-sm">
         <i class="bi bi-printer-fill me-1"></i>Print {{ table.exam.name }}
       </button>
     </div>
 
     <div id="exam-{{ table.exam.id }}" class="exam-printable">
       <div class="exam-card">
+        <!-- Print Header -->
         <div class="print-header">
-          <div class="d-flex align-items-start flex-wrap">
+          <div class="d-flex flex-wrap align-items-start gap-3 w-100">
             {% if table.school.logo %}
-              <img src="{{ table.school.logo.url }}" class="school-logo me-3 mb-2 mb-md-0" alt="{{ table.school.name }} logo">
+              <img src="{{ table.school.logo.url }}" class="school-logo" alt="{{ table.school.name }} logo">
             {% endif %}
-
             <div class="flex-grow-1">
-              <h3 class="mb-1">{{ table.school.name }}</h3>
+              <h3>{{ table.school.name }}</h3>
               {% if table.school.motto %}
-                <p class="mb-1"><em>{{ table.school.motto }}</em></p>
+                <p><em>{{ table.school.motto }}</em></p>
               {% endif %}
-
               <div class="mb-2">
-                <span class="stat-badge">
-                  <i class="bi bi-person-badge me-1"></i>Class: {{ school_class.name }}
-                </span>
-                <span class="stat-badge">
-                  <i class="bi bi-calendar-event me-1"></i>Term: {{ term.term }} - {{ term.year }}
-                </span>
-                <span class="stat-badge">
-                  <i class="bi bi-file-earmark-text me-1"></i>Exam: {{ table.exam.name }}
-                </span>
+                <span class="stat-badge"><i class="bi bi-person-badge me-1"></i>Class: {{ school_class.name }}</span>
+                <span class="stat-badge"><i class="bi bi-calendar-event me-1"></i>{{ term.term }} — {{ term.year }}</span>
+                <span class="stat-badge"><i class="bi bi-file-earmark-text me-1"></i>{{ table.exam.name }}</span>
               </div>
-
-              <div class="row">
-                <div class="col-md-6 col-12">
-                  <p class="mb-1">
-                    <strong><i class="bi bi-people-fill me-1"></i>Students:</strong>
-                    {{ table.student_count }}
-                  </p>
-                  <p class="mb-1">
-                    <strong><i class="bi bi-graph-up-arrow me-1"></i>Class Mean:</strong>
-                    {{ table.class_mean }}
-                  </p>
+              <div class="row g-1">
+                <div class="col-md-6">
+                  <p class="mb-1"><strong><i class="bi bi-people-fill me-1"></i>Students:</strong> {{ table.student_count }}</p>
+                  <p class="mb-1"><strong><i class="bi bi-graph-up-arrow me-1"></i>Class Mean:</strong> {{ table.class_mean }}</p>
                 </div>
-                <div class="col-md-6 col-12">
-                  <p class="mb-0">
-                    <strong><i class="bi bi-person-workspace me-1"></i>Facilitator:</strong>
+                <div class="col-md-6">
+                  <p class="mb-0"><strong><i class="bi bi-person-workspace me-1"></i>Facilitator:</strong>
                     {% if table.teachers %}
-                      {% for t in table.teachers %}
-                        {{ t.user.get_full_name }}{% if not forloop.last %}, {% endif %}
-                      {% endfor %}
-                    {% else %}
-                      N/A
-                    {% endif %}
+                      {% for t in table.teachers %}{{ t.user.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    {% else %}N/A{% endif %}
                   </p>
                 </div>
               </div>
@@ -610,42 +605,39 @@
           </div>
         </div>
 
+        <!-- Table -->
         <div class="table-responsive">
-          <table class="table table-hover" aria-label="Student marks table">
+          <table class="table" aria-label="Student marks">
             <thead>
               <tr>
-                <th scope="col" rowspan="2" style="width: 40px;">Rank</th>
-                <th scope="col" rowspan="2" class="text-start">Student</th>
+                <th scope="col" rowspan="2" class="sticky-col-rank" style="width:42px;">Rank</th>
+                <th scope="col" rowspan="2" class="sticky-col-student text-start" style="min-width:140px;">Student</th>
                 {% for subject in table.subjects %}
-                  <th scope="col" colspan="2" class="text-center">
-                    {{ subject.short_name|default:subject.name }}
-                  </th>
+                  <th scope="col" colspan="2" class="text-center">{{ subject.short_name|default:subject.name }}</th>
                 {% endfor %}
-                <th scope="col" rowspan="2" style="width: 50px;">Total</th>
-                <th scope="col" rowspan="2" style="width: 50px;">Avg</th>
+                <th scope="col" rowspan="2" style="width:50px;">Total</th>
+                <th scope="col" rowspan="2" style="width:50px;">Avg</th>
               </tr>
               <tr>
                 {% for subject in table.subjects %}
-                  <th scope="col" class="text-center">M</th>
-                  <th scope="col" class="text-center">R</th>
+                  <th scope="col" class="text-center" style="min-width:36px;">M</th>
+                  <th scope="col" class="text-center" style="min-width:36px;">R</th>
                 {% endfor %}
               </tr>
             </thead>
-
             <tbody>
               {% for row in table.rows %}
                 <tr>
-                  <td class="text-center"><strong>{{ row.rank }}</strong></td>
-                  <td class="text-start">{{ row.student.user.get_full_name }}</td>
-
+                  <td class="text-center sticky-col-rank"><strong>{{ row.rank }}</strong></td>
+                  <td class="text-start sticky-col-student">{{ row.student.user.get_full_name }}</td>
                   {% for mark in row.marks %}
                     <td class="text-center">{{ mark.mark }}</td>
                     <td class="text-center">
                       {% if mark.rubric %}
                         <span class="badge
                           {% if mark.rubric == 'EE' %}bg-success
-                          {% elif mark.rubric == 'M.E' %}bg-primary
-                          {% elif mark.rubric == 'A.E' %}bg-warning text-dark
+                          {% elif mark.rubric == 'M.E' or mark.rubric == 'ME' %}bg-primary
+                          {% elif mark.rubric == 'A.E' or mark.rubric == 'AE' %}bg-warning
                           {% else %}bg-danger{% endif %}"
                           title="Rubric: {{ mark.rubric }}">
                           {{ mark.rubric }}
@@ -655,16 +647,14 @@
                       {% endif %}
                     </td>
                   {% endfor %}
-
                   <td class="text-center"><strong>{{ row.total }}</strong></td>
                   <td class="text-center">{{ row.average }}</td>
                 </tr>
               {% endfor %}
             </tbody>
-
             <tfoot>
               <tr>
-                <td colspan="2" class="text-start"><strong>Subject Totals</strong></td>
+                <td colspan="2" class="text-start sticky-col-student"><strong>Subject Totals</strong></td>
                 {% for subj_total in table.subject_totals %}
                   <td class="text-center"><strong>{{ subj_total.total }}</strong></td>
                   <td></td>
@@ -672,7 +662,7 @@
                 <td colspan="2"></td>
               </tr>
               <tr>
-                <td colspan="2" class="text-start"><strong>Subject Means</strong></td>
+                <td colspan="2" class="text-start sticky-col-student"><strong>Subject Means</strong></td>
                 {% for subj_total in table.subject_totals %}
                   <td class="text-center">{{ subj_total.mean }}</td>
                   <td></td>
@@ -686,21 +676,137 @@
     </div>
   {% endfor %}
 
+  <!-- Print target -->
   <div id="print-area" style="position:absolute; left:-9999px; top:0;"></div>
 </div>
 
-<script>
-function printExam(divId) {
-  const content = document.getElementById(divId);
-  if (!content) return;
-  const printArea = document.getElementById('print-area');
-  printArea.innerHTML = content.innerHTML;
-  window.print();
-}
+<!-- ==========================================
+     PRINT ORIENTATION MODAL
+     ========================================== -->
+<div class="modal fade print-modal" id="printOrientationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-printer-fill me-2"></i>Print Options</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3">Choose the page orientation for printing <strong id="printExamName"></strong>.</p>
+        <div class="d-flex gap-3 justify-content-center">
+          <button class="btn btn-outline-primary d-flex flex-column align-items-center p-3" style="min-width:120px;" onclick="printWithOrientation('portrait')">
+            <i class="bi bi-phone-landscape fs-1 mb-2" style="transform:rotate(90deg);"></i>
+            <span>Portrait</span>
+          </button>
+          <button class="btn btn-outline-primary d-flex flex-column align-items-center p-3" style="min-width:120px;" onclick="printWithOrientation('landscape')">
+            <i class="bi bi-phone-landscape fs-1 mb-2"></i>
+            <span>Landscape</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-window.addEventListener('afterprint', function () {
-  const printArea = document.getElementById('print-area');
-  if (printArea) printArea.innerHTML = '';
-});
+<!-- ==========================================
+     SCRIPTS
+     ========================================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // ---------- PRINT WITH ORIENTATION ----------
+  let printTargetId = null;
+
+  function openPrintModal(divId, examName) {
+    printTargetId = divId;
+    document.getElementById('printExamName').textContent = examName || 'Exam Sheet';
+    const modal = new bootstrap.Modal(document.getElementById('printOrientationModal'));
+    modal.show();
+  }
+
+  function printWithOrientation(orientation) {
+    const content = document.getElementById(printTargetId);
+    if (!content) return;
+
+    const printArea = document.getElementById('print-area');
+    printArea.innerHTML = content.innerHTML;
+
+    // Inject orientation-specific print styles
+    const style = document.createElement('style');
+    style.id = 'print-orientation-style';
+    if (orientation === 'landscape') {
+      style.textContent = `
+        @page {
+          size: landscape;
+          margin: 0.2in;
+        }
+        .exam-card { padding: 0.08in; }
+        .table { font-size: 6.5pt !important; }
+      `;
+    } else {
+      style.textContent = `
+        @page {
+          size: portrait;
+          margin: 0.2in;
+        }
+        .exam-card { padding: 0.08in; }
+        .print-header { flex-direction: column; }
+        .school-logo { height: 0.35in; }
+      `;
+    }
+    // Remove any previous orientation style
+    const oldStyle = document.getElementById('print-orientation-style');
+    if (oldStyle) oldStyle.remove();
+    document.head.appendChild(style);
+
+    // Close modal and print
+    const modal = bootstrap.Modal.getInstance(document.getElementById('printOrientationModal'));
+    if (modal) modal.hide();
+
+    // Small delay to let modal close
+    setTimeout(() => {
+      window.print();
+    }, 200);
+  }
+
+  window.addEventListener('afterprint', function () {
+    document.getElementById('print-area').innerHTML = '';
+    const style = document.getElementById('print-orientation-style');
+    if (style) style.remove();
+  });
+
+  // ---------- DARK MODE TOGGLE ----------
+  (function() {
+    const toggleBtn = document.getElementById('themeToggle');
+    const label = document.getElementById('themeLabel');
+    const html = document.documentElement;
+
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark') {
+      html.setAttribute('data-bs-theme', 'dark');
+      label.textContent = 'Light';
+      toggleBtn.querySelector('i').className = 'bi bi-sun-fill me-1';
+    } else if (stored === 'light') {
+      html.removeAttribute('data-bs-theme');
+      label.textContent = 'Dark';
+      toggleBtn.querySelector('i').className = 'bi bi-moon-fill me-1';
+    }
+
+    toggleBtn.addEventListener('click', function() {
+      const isDark = html.getAttribute('data-bs-theme') === 'dark';
+      if (isDark) {
+        html.removeAttribute('data-bs-theme');
+        localStorage.setItem('theme', 'light');
+        label.textContent = 'Dark';
+        toggleBtn.querySelector('i').className = 'bi bi-moon-fill me-1';
+      } else {
+        html.setAttribute('data-bs-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        label.textContent = 'Light';
+        toggleBtn.querySelector('i').className = 'bi bi-sun-fill me-1';
+      }
+    });
+  })();
 </script>
 {% endblock %}
