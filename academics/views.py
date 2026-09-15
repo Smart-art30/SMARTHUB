@@ -185,46 +185,72 @@ def subject_delete(request, pk):
 
     return render(request, 'academics/subject_confirm_delete.html', {'subject': subject})
     
+
+
 @login_required
 @role_required('schooladmin')
 def exam_list(request):
     school = request.user.school
 
+    # Get exams belonging to the logged-in school.
+    # Year is now stored directly on Exam.
     exams = (
         Exam.objects
         .filter(school=school)
-        .order_by('-term__year', '-term__term', 'exam_type')
+        .select_related('term')
+        .order_by('-year', '-term__id', 'exam_type')
     )
 
+    # Get classes assigned to each exam
     for exam in exams:
         exam.assigned_classes = (
-            SchoolClass.objects.filter(
-                examsubject__exam=exam
-            ).distinct()
+            SchoolClass.objects
+            .filter(examsubject__exam=exam)
+            .distinct()
         )
 
+    # Handle assigning classes and subjects to an exam
     if request.method == 'POST':
         exam_id = request.POST.get('exam_id')
-        exam = get_object_or_404(Exam, id=exam_id, school=school)
 
-        form = AssignExamForm(request.POST, user=request.user)
+        exam = get_object_or_404(
+            Exam,
+            id=exam_id,
+            school=school
+        )
+
+        form = AssignExamForm(
+            request.POST,
+            user=request.user
+        )
+
         if form.is_valid():
             classes = form.cleaned_data['classes']
+
+            # Get all subjects belonging to this school
+            subjects = Subject.objects.filter(school=school)
+
             for school_class in classes:
-                for subject in Subject.objects.filter(school=school):
+                for subject in subjects:
                     ExamSubject.objects.get_or_create(
                         exam=exam,
                         school_class=school_class,
                         subject=subject
                     )
+
             return redirect('academics:exam_list')
+
     else:
         form = AssignExamForm(user=request.user)
 
-    return render(request, 'academics/exam_list.html', {
-        'exams': exams,
-        'form': form
-    })
+    return render(
+        request,
+        'academics/exam_list.html',
+        {
+            'exams': exams,
+            'form': form
+        }
+    )
 
 
 
@@ -232,8 +258,6 @@ def exam_list(request):
 @role_required('schooladmin')
 def exam_add(request):
 
-    # The school is determined automatically
-    # from the logged-in user.
     school = request.user.school
 
     if request.method == 'POST':
@@ -242,13 +266,13 @@ def exam_add(request):
 
         if form.is_valid():
 
-            exam_type = form.cleaned_data['exam_type']
+            year = form.cleaned_data['year']
             term = form.cleaned_data['term']
+            exam_type = form.cleaned_data['exam_type']
 
-            # Check whether this school already has
-            # this type of exam for the selected term.
             existing_exam = Exam.objects.filter(
                 school=school,
+                year=year,
                 term=term,
                 exam_type=exam_type
             ).first()
@@ -257,19 +281,16 @@ def exam_add(request):
 
                 messages.error(
                     request,
-                    f"{exam_type.capitalize()} exam already exists for {term}."
+                    f"{exam_type} exam already exists "
+                    f"for {term} - {year}."
                 )
 
             else:
 
-                # Create the exam without saving first
-                # because the school is assigned automatically.
                 exam = form.save(commit=False)
 
-                # Assign the logged-in user's school.
                 exam.school = school
 
-                # Save the exam.
                 exam.save()
 
                 messages.success(
@@ -281,28 +302,18 @@ def exam_add(request):
                     'academics:exam_list'
                 )
 
-        else:
-
-            messages.error(
-                request,
-                "Please correct the errors below."
-            )
-
     else:
 
-        # No school argument anymore because
-        # AcademicTerm is universal.
         form = ExamForm()
-
-    context = {
-        'form': form
-    }
 
     return render(
         request,
         'academics/exam_add.html',
-        context
+        {
+            'form': form
+        }
     )
+
 
 
 @login_required

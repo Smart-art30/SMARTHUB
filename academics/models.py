@@ -7,31 +7,22 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class AcademicTerm(models.Model):
+
     TERM_CHOICES = [
         ("Term 1", "Term 1"),
         ("Term 2", "Term 2"),
         ("Term 3", "Term 3"),
     ]
 
-    YEAR_CHOICES = [
-        (y, y) for y in range(2020, 2090)
-    ]
-
-    year = models.IntegerField(choices=YEAR_CHOICES)
     term = models.CharField(
         max_length=50,
-        choices=TERM_CHOICES
+        choices=TERM_CHOICES,
+        unique=True
     )
 
-    start_date = models.DateField()
-    end_date = models.DateField()
-    is_active = models.BooleanField(default=False)
-
-    class Meta:
-        unique_together = ("year", "term")
-
     def __str__(self):
-        return f"{self.term} - {self.year}"
+        return self.term
+
 
 class Subject(models.Model):
     school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
@@ -57,25 +48,45 @@ class Subject(models.Model):
 
 
 class Exam(models.Model):
-    
 
     EXAM_TYPE_CHOICES = [
         ('Opener', 'Opener'),
         ('Mid-term', 'Mid-term'),
         ('End-term', 'End-term'),
     ]
-    school = models.ForeignKey('schools.School', on_delete=models.CASCADE)
-    term = models.ForeignKey(AcademicTerm, on_delete=models.CASCADE)
-    exam_type = models.CharField(max_length=20, choices=EXAM_TYPE_CHOICES, default='Opener')
+
+    YEAR_CHOICES = [
+        (y, y) for y in range(2020, 2090)
+    ]
+    school = models.ForeignKey(
+        'schools.School',
+        on_delete=models.CASCADE
+    )
+    year = models.IntegerField(
+        choices=YEAR_CHOICES
+    )
+    term = models.ForeignKey(
+        AcademicTerm,
+        on_delete=models.CASCADE
+    )
+    exam_type = models.CharField(
+        max_length=20,
+        choices=EXAM_TYPE_CHOICES,
+        default='Opener'
+    )
     name = models.CharField(max_length=100)
     max_mark = models.PositiveIntegerField(default=100)
     created_at = models.DateTimeField(auto_now_add=True)
-
     class Meta:
-        unique_together = ('school', 'term', 'exam_type')
+        unique_together = (
+            'school',
+            'year',
+            'term',
+            'exam_type'
+        )
 
     def __str__(self):
-        return f'{self.exam_type} - {self.term}'
+        return f'{self.exam_type} - {self.term} - {self.year}'    
 
 class StudentMark(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

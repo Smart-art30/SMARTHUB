@@ -72,9 +72,6 @@ class AssignSubjectsToExamForm(forms.Form):
 
 class ExamForm(forms.ModelForm):
 
-    # ---------------------------------------------------------
-    # YEAR
-    # ---------------------------------------------------------
     year = forms.ChoiceField(
         label="Year",
         required=True,
@@ -92,9 +89,6 @@ class ExamForm(forms.ModelForm):
         ),
     )
 
-    # ---------------------------------------------------------
-    # META
-    # ---------------------------------------------------------
     class Meta:
 
         model = Exam
@@ -129,89 +123,24 @@ class ExamForm(forms.ModelForm):
             ),
         }
 
-    # ---------------------------------------------------------
-    # INITIALIZATION
-    # ---------------------------------------------------------
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
 
-        # Terms are universal.
-        #
-        # We initially leave the queryset empty.
-        # It will be populated based on the selected year.
-        self.fields["term"].queryset = AcademicTerm.objects.none()
+        # -----------------------------------------------------
+        # TERMS ARE UNIVERSAL
+        # -----------------------------------------------------
+        self.fields["term"].queryset = AcademicTerm.objects.all()
 
         # -----------------------------------------------------
-        # EDITING AN EXISTING EXAM
+        # EDITING EXISTING EXAM
         # -----------------------------------------------------
-        if self.instance.pk and self.instance.term_id:
+        if self.instance.pk:
 
-            term = self.instance.term
+            self.fields["year"].initial = str(
+                self.instance.year
+            )
 
-            # Get the year from the existing term
-            self.fields["year"].initial = str(term.year)
-
-            # Load all universal terms for that year
-            self.fields["term"].queryset = AcademicTerm.objects.filter(
-                year=term.year
-            ).order_by("term")
-
-            # Keep the current term selected
-            self.fields["term"].initial = term.pk
-
-        # -----------------------------------------------------
-        # FORM SUBMITTED / POST REQUEST
-        # -----------------------------------------------------
-        elif self.data.get("year"):
-
-            try:
-
-                year = int(self.data.get("year"))
-
-                # Load universal terms for submitted year
-                self.fields["term"].queryset = AcademicTerm.objects.filter(
-                    year=year
-                ).order_by("term")
-
-            except (TypeError, ValueError):
-
-                pass
-
-    # ---------------------------------------------------------
-    # VALIDATION
-    # ---------------------------------------------------------
-    def clean(self):
-
-        cleaned_data = super().clean()
-
-        year = cleaned_data.get("year")
-        term = cleaned_data.get("term")
-
-        # Make sure both were selected
-        if year and term:
-
-            try:
-
-                year = int(year)
-
-            except (TypeError, ValueError):
-
-                self.add_error(
-                    "year",
-                    "Invalid academic year."
-                )
-
-                return cleaned_data
-
-            # Make sure the selected term belongs
-            # to the selected year.
-            if term.year != year:
-
-                self.add_error(
-                    "term",
-                    "The selected term does not belong "
-                    "to the selected year."
-                )
-
-        return cleaned_data
+            self.fields["term"].initial = (
+                self.instance.term_id
+            )
