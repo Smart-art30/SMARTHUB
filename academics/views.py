@@ -510,7 +510,11 @@ def select_exam(request, class_id, subject_id):
         school_class=school_class,
         subject=subject,
         exam__school=teacher.school
-    ).select_related('exam').order_by('-exam__term__year', '-exam__term__term', 'exam__exam_type')
+    ).select_related('exam').order_by(
+    '-exam__year',
+    '-exam__term__id',
+    'exam__exam_type'
+)
 
     if not exam_subjects.exists():
         return render(request, 'academics/no_exam.html', {
