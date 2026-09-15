@@ -31,63 +31,63 @@ User = get_user_model()
 from django.http import JsonResponse
 
 
-@login_required
-def load_terms(request):
+# @login_required
+# def load_terms(request):
 
-    year = request.GET.get("year")
+#     year = request.GET.get("year")
 
-    # Make sure a year was selected
-    if not year:
-        return JsonResponse({
-            "options": (
-                '<option value="">'
-                'Select Year First'
-                '</option>'
-            )
-        })
+#     # Make sure a year was selected
+#     if not year:
+#         return JsonResponse({
+#             "options": (
+#                 '<option value="">'
+#                 'Select Year First'
+#                 '</option>'
+#             )
+#         })
 
-    # Make sure the year is valid
-    try:
-        year = int(year)
+#     # Make sure the year is valid
+#     try:
+#         year = int(year)
 
-    except (TypeError, ValueError):
+#     except (TypeError, ValueError):
 
-        return JsonResponse({
-            "options": (
-                '<option value="">'
-                'Invalid Year'
-                '</option>'
-            )
-        })
+#         return JsonResponse({
+#             "options": (
+#                 '<option value="">'
+#                 'Invalid Year'
+#                 '</option>'
+#             )
+#         })
 
-    # Academic terms are universal.
-    # They are NOT linked to a specific school.
-    terms = AcademicTerm.objects.filter(
-        year=year
-    ).order_by("term")
+#     # Academic terms are universal.
+#     # They are NOT linked to a specific school.
+#     terms = AcademicTerm.objects.filter(
+#         year=year
+#     ).order_by("term")
 
-    options = '<option value="">Select Term</option>'
+#     options = '<option value="">Select Term</option>'
 
-    for term in terms:
+#     for term in terms:
 
-        options += (
-            f'<option value="{term.pk}">'
-            f'{term.term} - {term.year}'
-            f'</option>'
-        )
+#         options += (
+#             f'<option value="{term.pk}">'
+#             f'{term.term} - {term.year}'
+#             f'</option>'
+#         )
 
-    # If no terms exist for the selected year
-    if not terms.exists():
+#     # If no terms exist for the selected year
+#     if not terms.exists():
 
-        options = (
-            '<option value="">'
-            f'No terms found for {year}'
-            '</option>'
-        )
+#         options = (
+#             '<option value="">'
+#             f'No terms found for {year}'
+#             '</option>'
+#         )
 
-    return JsonResponse({
-        "options": options
-    })
+#     return JsonResponse({
+#         "options": options
+#     })
 
 
 
@@ -101,37 +101,24 @@ def load_classes(request):
     return JsonResponse({'options': options})
 
 def get_selected_term(request):
-    school = request.user.school
+    term_id = request.GET.get('term')
 
-    year = request.GET.get("year")
-    term_name = request.GET.get("term")
+    if term_id:
+        return AcademicTerm.objects.filter(
+            id=term_id
+        ).first()
 
-    # Explicit selection
-    if year and term_name:
-        term = AcademicTerm.objects.filter(
-            school=school,
-            year=year,
+    term_name = request.GET.get('term_name')
+
+    if term_name:
+        return AcademicTerm.objects.filter(
             term=term_name
         ).first()
 
-        if term:
-            return term
-
-    # Active term
-    term = AcademicTerm.objects.filter(
-        school=school,
-        is_active=True
+    # Default to Term 1
+    return AcademicTerm.objects.order_by(
+        'id'
     ).first()
-
-    if term:
-        return term
-
-    # Latest term fallback
-    return AcademicTerm.objects.filter(
-        school=school
-    ).order_by('-year', '-id').first()
-
-
 
 @login_required
 @role_required('schooladmin')
@@ -186,19 +173,20 @@ def subject_delete(request, pk):
     return render(request, 'academics/subject_confirm_delete.html', {'subject': subject})
     
 
-
 @login_required
 @role_required('schooladmin')
 def exam_list(request):
     school = request.user.school
 
-    # Get exams belonging to the logged-in school.
-    # Year is now stored directly on Exam.
     exams = (
         Exam.objects
         .filter(school=school)
         .select_related('term')
-        .order_by('-year', '-term__id', 'exam_type')
+        .order_by(
+            '-year',
+            '-term__id',
+            'exam_type'
+        )
     )
 
     # Get classes assigned to each exam
@@ -209,7 +197,6 @@ def exam_list(request):
             .distinct()
         )
 
-    # Handle assigning classes and subjects to an exam
     if request.method == 'POST':
         exam_id = request.POST.get('exam_id')
 
@@ -227,8 +214,9 @@ def exam_list(request):
         if form.is_valid():
             classes = form.cleaned_data['classes']
 
-            # Get all subjects belonging to this school
-            subjects = Subject.objects.filter(school=school)
+            subjects = Subject.objects.filter(
+                school=school
+            )
 
             for school_class in classes:
                 for subject in subjects:
@@ -238,38 +226,44 @@ def exam_list(request):
                         subject=subject
                     )
 
+            messages.success(
+                request,
+                'Exam assigned successfully.'
+            )
+
             return redirect('academics:exam_list')
 
     else:
-        form = AssignExamForm(user=request.user)
+        form = AssignExamForm(
+            user=request.user
+        )
+
+    context = {
+        'exams': exams,
+        'form': form,
+    }
 
     return render(
         request,
         'academics/exam_list.html',
-        {
-            'exams': exams,
-            'form': form
-        }
+        context
     )
-
 
 
 @login_required
 @role_required('schooladmin')
 def exam_add(request):
-
     school = request.user.school
 
     if request.method == 'POST':
-
         form = ExamForm(request.POST)
 
         if form.is_valid():
-
-            year = form.cleaned_data['year']
+            year = int(form.cleaned_data['year'])
             term = form.cleaned_data['term']
             exam_type = form.cleaned_data['exam_type']
 
+            # Prevent duplicate exam
             existing_exam = Exam.objects.filter(
                 school=school,
                 year=year,
@@ -278,32 +272,36 @@ def exam_add(request):
             ).first()
 
             if existing_exam:
-
                 messages.error(
                     request,
-                    f"{exam_type} exam already exists "
-                    f"for {term} - {year}."
+                    f'{exam_type} exam already exists '
+                    f'for {term} - {year}.'
                 )
 
             else:
-
                 exam = form.save(commit=False)
 
                 exam.school = school
+                exam.year = year
 
                 exam.save()
 
                 messages.success(
                     request,
-                    "Exam saved successfully!"
+                    'Exam saved successfully!'
                 )
 
                 return redirect(
                     'academics:exam_list'
                 )
 
-    else:
+        else:
+            messages.error(
+                request,
+                'Please correct the errors below.'
+            )
 
+    else:
         form = ExamForm()
 
     return render(
@@ -345,50 +343,72 @@ def exam_subject_add(request, exam_id):
         'subjects': subjects
     })
 
-
 @login_required
-def exam_edit(request, pk):
+@role_required('schooladmin')
+def exam_edit(request, exam_id):
+    school = request.user.school
 
     exam = get_object_or_404(
         Exam,
-        pk=pk,
-        school=request.user.school
+        id=exam_id,
+        school=school
     )
 
     if request.method == 'POST':
-
         form = ExamForm(
             request.POST,
-            instance=exam,
-            school=request.user.school
+            instance=exam
         )
 
-        print(form.errors)
-
         if form.is_valid():
+            year = int(form.cleaned_data['year'])
+            term = form.cleaned_data['term']
+            exam_type = form.cleaned_data['exam_type']
 
-            form.save()
-
-            messages.success(
-                request,
-                'Exam updated successfully.'
+            duplicate = (
+                Exam.objects
+                .filter(
+                    school=school,
+                    year=year,
+                    term=term,
+                    exam_type=exam_type
+                )
+                .exclude(id=exam.id)
+                .exists()
             )
 
-            return redirect('academics:exam_list')
+            if duplicate:
+                messages.error(
+                    request,
+                    f'{exam_type} exam already exists '
+                    f'for {term} - {year}.'
+                )
+            else:
+                exam = form.save(commit=False)
+                exam.school = school
+                exam.year = year
+                exam.save()
+
+                messages.success(
+                    request,
+                    'Exam updated successfully!'
+                )
+
+                return redirect(
+                    'academics:exam_list'
+                )
 
     else:
-
         form = ExamForm(
-            instance=exam,
-            school=request.user.school
+            instance=exam
         )
 
     return render(
         request,
-        'academics/exam_edit.html',
+        'academics/exam_add.html',
         {
             'form': form,
-            'exam': exam
+            'exam': exam,
         }
     )
 
@@ -398,28 +418,56 @@ def exam_delete(request, pk):
     exam.delete()
     return redirect('academics:exam_list')
 
-
 @login_required
 @role_required('teacher')
-def select_class(request, class_id):
-    teacher = request.user.teacher
-    selected_class = get_object_or_404(
-        SchoolClass.objects.filter(
-            teachersubjectassignment__teacher=teacher
-        ).distinct(),
-        id=class_id
+def select_exam(request):
+    teacher = request.user
+
+    school_class_id = request.GET.get(
+        'school_class'
     )
 
-    assignments = TeacherSubjectAssignment.objects.filter(
-        teacher=teacher,
-        school_class=selected_class
-    ).select_related('subject')
+    subject_id = request.GET.get(
+        'subject'
+    )
 
-    return render(request, 'academics/select_class.html', {
-        'school_class': selected_class,
-        'assignments': assignments,
-    })
+    school_class = get_object_or_404(
+        SchoolClass,
+        id=school_class_id
+    )
 
+    subject = get_object_or_404(
+        Subject,
+        id=subject_id
+    )
+
+    exam_subjects = (
+        ExamSubject.objects
+        .filter(
+            school_class=school_class,
+            subject=subject,
+            exam__school=teacher.school
+        )
+        .select_related(
+            'exam',
+            'exam__term'
+        )
+        .order_by(
+            '-exam__year',
+            '-exam__term__id',
+            'exam__exam_type'
+        )
+    )
+
+    return render(
+        request,
+        'academics/select_exam.html',
+        {
+            'school_class': school_class,
+            'subject': subject,
+            'exam_subjects': exam_subjects,
+        }
+    )
 
 
 
@@ -450,83 +498,30 @@ def class_overview(request, class_id):
         'subjects': subjects
     })
 
-def get_term_exams(term):
+def get_term_exams(school, term, year=None):
     if not term:
         return []
 
-    exams = list(
-        Exam.objects.filter(
-            school=term.school,
-            term=term
-        ).select_related('term')
-    )
-
-    exam_order = {
-        "Opener": 1,
-        "Mid-term": 2,
-        "End-term": 3,
+    filters = {
+        'school': school,
+        'term': term,
     }
 
-    exams.sort(
-        key=lambda x: exam_order.get(x.exam_type, 99)
+    if year:
+        filters['year'] = int(year)
+
+    exams = (
+        Exam.objects
+        .filter(**filters)
+        .select_related('term')
+        .order_by(
+            'year',
+            'term__id',
+            'exam_type'
+        )
     )
 
-    return exams
-
-@login_required
-@role_required('teacher')
-def select_exam(request, class_id, subject_id):
-    teacher = request.user.teacher
-
-   
-    school_class = get_object_or_404(
-        SchoolClass,
-        id=class_id,
-        school=teacher.school
-    )
-
-    subject = get_object_or_404(
-        Subject,
-        id=subject_id,
-        school=teacher.school
-    )
-
-    is_assigned = TeacherSubjectAssignment.objects.filter(
-        teacher=teacher,
-        school_class=school_class,
-        subject=subject
-    ).exists()
-
-    if not is_assigned:
-      
-        return render(request, 'academics/not_assigned.html', {
-            'school_class': school_class,
-            'subject': subject,
-            'message': "You are not assigned to this subject for this class."
-        })
-
-    
-    exam_subjects = ExamSubject.objects.filter(
-        school_class=school_class,
-        subject=subject,
-        exam__school=teacher.school
-    ).select_related('exam').order_by(
-    '-exam__year',
-    '-exam__term__id',
-    'exam__exam_type'
-)
-
-    if not exam_subjects.exists():
-        return render(request, 'academics/no_exam.html', {
-            'school_class': school_class,
-            'subject': subject
-        })
-
-    return render(request, 'academics/select_exam.html', {
-        'school_class': school_class,
-        'subject': subject,
-        'exam_subjects': exam_subjects
-    })
+    return list(exams)
 
 
 @login_required
