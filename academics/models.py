@@ -8,25 +8,30 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 class AcademicTerm(models.Model):
     TERM_CHOICES = [
-        ('Term 1', 'Term 1'),
-        ('Term 2', 'Term 2'),
-        ('Term 3', 'Term 3'),
+        ("Term 1", "Term 1"),
+        ("Term 2", "Term 2"),
+        ("Term 3", "Term 3"),
     ]
-    YEAR_CHOICES = [(y, y) for y in range(2020, 2090)]
 
-    school = models.ForeignKey('schools.School', on_delete=models.CASCADE, default=1)
-    year = models.IntegerField(choices=YEAR_CHOICES, default=2026)
-    term = models.CharField(max_length=50, choices=TERM_CHOICES)
-    is_active = models.BooleanField(default=False)
+    YEAR_CHOICES = [
+        (y, y) for y in range(2020, 2090)
+    ]
+
+    year = models.IntegerField(choices=YEAR_CHOICES)
+    term = models.CharField(
+        max_length=50,
+        choices=TERM_CHOICES
+    )
+
     start_date = models.DateField()
     end_date = models.DateField()
+    is_active = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('school', 'year', 'term')
+        unique_together = ("year", "term")
 
     def __str__(self):
-        return f'{self.term} - {self.year}'
-
+        return f"{self.term} - {self.year}"
 
 class Subject(models.Model):
     school = models.ForeignKey('schools.School', on_delete=models.CASCADE)

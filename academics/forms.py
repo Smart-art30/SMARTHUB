@@ -1,28 +1,27 @@
+
 from django import forms
-from .models import Subject
+from .models import Subject, Exam, AcademicTerm
 from schools.models import SchoolClass
-from .models import Exam
-from django import forms
-from .models import Exam, AcademicTerm
+
 
 class SubjectForm(forms.ModelForm):
+
     class Meta:
         model = Subject
-        fields = ['name', 'code']
+        fields = ["name", "code"]
 
     def __init__(self, *args, **kwargs):
-        self.school = kwargs.pop('school', None)
+        self.school = kwargs.pop("school", None)
         super().__init__(*args, **kwargs)
 
     def clean_code(self):
-        code = self.cleaned_data['code']
+        code = self.cleaned_data["code"]
 
         qs = Subject.objects.filter(
             school=self.school,
             code__iexact=code
         )
 
-        
         if self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
 
@@ -35,7 +34,10 @@ class SubjectForm(forms.ModelForm):
 
 
 class AssignSubjectsToExamForm(forms.Form):
-    exam = forms.ModelChoiceField(queryset=Exam.objects.none())
+
+    exam = forms.ModelChoiceField(
+        queryset=Exam.objects.none()
+    )
 
     school_class = forms.ModelMultipleChoiceField(
         queryset=SchoolClass.objects.none(),
@@ -51,52 +53,165 @@ class AssignSubjectsToExamForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         school = kwargs.pop("school", None)
+
         super().__init__(*args, **kwargs)
 
         if school:
-            self.fields["exam"].queryset = Exam.objects.filter(school=school)
-            self.fields["school_class"].queryset = SchoolClass.objects.filter(school=school)
-            self.fields["subjects"].queryset = Subject.objects.filter(school=school)
+            self.fields["exam"].queryset = Exam.objects.filter(
+                school=school
+            )
+
+            self.fields["school_class"].queryset = SchoolClass.objects.filter(
+                school=school
+            )
+
+            self.fields["subjects"].queryset = Subject.objects.filter(
+                school=school
+            )
 
 
 class ExamForm(forms.ModelForm):
-    year = forms.IntegerField(
-        label='Year',
-        required=False,
-        widget=forms.NumberInput(attrs={'class': 'form-control', 'readonly': True})
+
+    # ---------------------------------------------------------
+    # YEAR
+    # ---------------------------------------------------------
+    year = forms.ChoiceField(
+        label="Year",
+        required=True,
+        choices=[
+            ("", "Select Year")
+        ] + [
+            (str(year), str(year))
+            for year in range(2020, 2090)
+        ],
+        widget=forms.Select(
+            attrs={
+                "class": "form-select",
+                "id": "id_year",
+            }
+        ),
     )
 
+    # ---------------------------------------------------------
+    # META
+    # ---------------------------------------------------------
     class Meta:
+
         model = Exam
-        fields = ['name', 'exam_type', 'term', 'year']
+
+        fields = [
+            "name",
+            "exam_type",
+            "year",
+            "term",
+        ]
+
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'exam_type': forms.Select(attrs={'class': 'form-control'}),
-            'term': forms.Select(attrs={'class': 'form-control'}),
+
+            "name": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter exam name",
+                }
+            ),
+
+            "exam_type": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+
+            "term": forms.Select(
+                attrs={
+                    "class": "form-select",
+                    "id": "id_term",
+                }
+            ),
         }
 
+    # ---------------------------------------------------------
+    # INITIALIZATION
+    # ---------------------------------------------------------
     def __init__(self, *args, **kwargs):
-        school = kwargs.pop('school', None)
+
         super().__init__(*args, **kwargs)
 
-        if school:
-            terms = AcademicTerm.objects.filter(school=school).order_by('-year', 'term')
-            self.fields['term'].queryset = terms
-            self.term_year_map = {str(term.id): term.year for term in terms}
+        # Terms are universal.
+        #
+        # We initially leave the queryset empty.
+        # It will be populated based on the selected year.
+        self.fields["term"].queryset = AcademicTerm.objects.none()
 
-        if self.instance and getattr(self.instance, 'term_id', None):
-            self.fields['year'].initial = self.instance.term.year
+        # -----------------------------------------------------
+        # EDITING AN EXISTING EXAM
+        # -----------------------------------------------------
+        if self.instance.pk and self.instance.term_id:
 
-        term_id = self.data.get('term')
-        if term_id:
-            term = AcademicTerm.objects.filter(id=term_id).first()
-            if term:
-                self.fields['year'].initial = term.year
+            term = self.instance.term
 
-    def save(self, commit=True):
-        exam = super().save(commit=False)
-        if self.cleaned_data.get('term'):
-            exam.year = self.cleaned_data['term'].year
-        if commit:
-            exam.save()
-        return exam
+            # Get the year from the existing term
+            self.fields["year"].initial = str(term.year)
+
+            # Load all universal terms for that year
+            self.fields["term"].queryset = AcademicTerm.objects.filter(
+                year=term.year
+            ).order_by("term")
+
+            # Keep the current term selected
+            self.fields["term"].initial = term.pk
+
+        # -----------------------------------------------------
+        # FORM SUBMITTED / POST REQUEST
+        # -----------------------------------------------------
+        elif self.data.get("year"):
+
+            try:
+
+                year = int(self.data.get("year"))
+
+                # Load universal terms for submitted year
+                self.fields["term"].queryset = AcademicTerm.objects.filter(
+                    year=year
+                ).order_by("term")
+
+            except (TypeError, ValueError):
+
+                pass
+
+    # ---------------------------------------------------------
+    # VALIDATION
+    # ---------------------------------------------------------
+    def clean(self):
+
+        cleaned_data = super().clean()
+
+        year = cleaned_data.get("year")
+        term = cleaned_data.get("term")
+
+        # Make sure both were selected
+        if year and term:
+
+            try:
+
+                year = int(year)
+
+            except (TypeError, ValueError):
+
+                self.add_error(
+                    "year",
+                    "Invalid academic year."
+                )
+
+                return cleaned_data
+
+            # Make sure the selected term belongs
+            # to the selected year.
+            if term.year != year:
+
+                self.add_error(
+                    "term",
+                    "The selected term does not belong "
+                    "to the selected year."
+                )
+
+        return cleaned_data

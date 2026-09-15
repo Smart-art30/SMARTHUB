@@ -1,79 +1,396 @@
 {% extends "base.html" %}
+
 {% load static %}
 
 {% block content %}
+
 <div class="container mt-4">
-    <h2>{{ form.instance.pk|yesno:"Edit Exam,Create Exam" }}</h2>
-    <form method="POST" novalidate>
-        {% csrf_token %}
 
-        <!-- Exam Name -->
-        <div class="mb-3">
-            {{ form.name.label_tag }}
-            {{ form.name }}
-            {% if form.name.errors %}
-                <div class="text-danger">{{ form.name.errors }}</div>
-            {% endif %}
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+            <h2 class="mb-0">
+                {% if form.instance.pk %}
+                    Edit Exam
+                {% else %}
+                    Create Exam
+                {% endif %}
+            </h2>
         </div>
 
-        <!-- Exam Type -->
-        <div class="mb-3">
-            {{ form.exam_type.label_tag }}
-            {{ form.exam_type }}
-            {% if form.exam_type.errors %}
-                <div class="text-danger">{{ form.exam_type.errors }}</div>
-            {% endif %}
+        <div class="card-body">
+
+            <form method="POST" novalidate>
+
+                {% csrf_token %}
+
+                <!-- ========================= -->
+                <!-- EXAM NAME -->
+                <!-- ========================= -->
+
+                <div class="mb-3">
+
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+
+                    {% if form.name.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.name.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- EXAM TYPE -->
+                <!-- ========================= -->
+
+                <div class="mb-3">
+
+                    {{ form.exam_type.label_tag }}
+                    {{ form.exam_type }}
+
+                    {% if form.exam_type.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.exam_type.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- YEAR -->
+                <!-- ========================= -->
+
+                <div class="mb-3">
+
+                    {{ form.year.label_tag }}
+                    {{ form.year }}
+
+                    {% if form.year.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.year.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- TERM -->
+                <!-- ========================= -->
+
+                <div class="mb-3">
+
+                    {{ form.term.label_tag }}
+
+                    <select
+                        name="{{ form.term.html_name }}"
+                        id="id_term"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            Select Year First
+                        </option>
+
+                        {% if form.term.value %}
+
+                            {% for term in form.term.field.queryset %}
+
+                                <option
+                                    value="{{ term.pk }}"
+                                    {% if form.term.value|stringformat:"s" == term.pk|stringformat:"s" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ term.term }} - {{ term.year }}
+                                </option>
+
+                            {% endfor %}
+
+                        {% endif %}
+
+                    </select>
+
+                    {% if form.term.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.term.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- BUTTONS -->
+                <!-- ========================= -->
+
+                <div class="mt-4">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        {% if form.instance.pk %}
+                            Update Exam
+                        {% else %}
+                            Save Exam
+                        {% endif %}
+
+                    </button>
+
+
+                    <a
+                        href="{% url 'academics:exam_list' %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
         </div>
 
-        <!-- Term -->
-        <div class="mb-3">
-            {{ form.term.label_tag }}
-            {{ form.term }}
-            {% if form.term.errors %}
-                <div class="text-danger">{{ form.term.errors }}</div>
-            {% endif %}
-        </div>
+    </div>
 
-        <!-- Year (readonly) -->
-        <div class="mb-3">
-            {{ form.year.label_tag }}
-            {{ form.year }}
-            {% if form.year.errors %}
-                <div class="text-danger">{{ form.year.errors }}</div>
-            {% endif %}
-        </div>
-
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
 </div>
 
+
+<!-- ========================================================= -->
+<!-- LOAD TERMS -->
+<!-- ========================================================= -->
+
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const termSelect = document.getElementById("id_term");
-    const yearInput = document.getElementById("id_year");
 
-    // Map term IDs to years from Django form
-    const termYears = {
-        {% for term in form.fields.term.queryset %}
-            "{{ term.id }}": "{{ term.year }}",
-        {% endfor %}
-    };
+document.addEventListener("DOMContentLoaded", function () {
 
-    function updateYear() {
-        const termId = termSelect.value;
-        yearInput.value = termYears[termId] || '';
+    const yearSelect =
+        document.getElementById("id_year");
+
+    const termSelect =
+        document.getElementById("id_term");
+
+
+    /*
+     * Make sure both fields exist.
+     */
+    if (!yearSelect || !termSelect) {
+
+        console.error(
+            "Year or Term field was not found."
+        );
+
+        return;
     }
 
-    // Initialize on page load
-    updateYear();
 
-    // Update whenever term changes
-    termSelect.addEventListener("change", updateYear);
+    /*
+     * Django URL for loading terms.
+     */
+    const loadTermsUrl =
+        "{% url 'academics:load_terms' %}";
 
-    // Prevent typing in year field
-    yearInput.addEventListener("keydown", function(e) {
-        e.preventDefault();
-    });
+
+    /*
+     * Existing term when editing an exam.
+     */
+    const initialTerm =
+        "{{ form.term.value|default:'' }}";
+
+
+    /*
+     * Load terms from the database.
+     */
+    function loadTerms(
+        year,
+        selectedTerm = ""
+    ) {
+
+        /*
+         * No year selected.
+         */
+        if (!year) {
+
+            termSelect.innerHTML =
+                '<option value="">Select Year First</option>';
+
+            termSelect.disabled = true;
+
+            return;
+        }
+
+
+        /*
+         * Show loading message.
+         */
+        termSelect.innerHTML =
+            '<option value="">Loading terms...</option>';
+
+        termSelect.disabled = true;
+
+
+        /*
+         * Build AJAX URL.
+         *
+         * We only send the year.
+         *
+         * The Django view gets the school
+         * from request.user.school.
+         */
+        const url =
+            `${loadTermsUrl}?year=${encodeURIComponent(year)}`;
+
+
+        console.log(
+            "Loading terms for year:",
+            year
+        );
+
+        console.log(
+            "Request URL:",
+            url
+        );
+
+
+        /*
+         * Send request to Django.
+         */
+        fetch(url, {
+
+            method: "GET",
+
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+
+        })
+
+
+        /*
+         * Check HTTP response.
+         */
+        .then(response => {
+
+            console.log(
+                "Response status:",
+                response.status
+            );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP error: ${response.status}`
+                );
+
+            }
+
+
+            return response.json();
+
+        })
+
+
+        /*
+         * Receive terms from Django.
+         */
+        .then(data => {
+
+            console.log(
+                "Terms response:",
+                data
+            );
+
+
+            /*
+             * Put the database terms
+             * into the select element.
+             */
+            termSelect.innerHTML =
+                data.options ||
+                '<option value="">No terms found</option>';
+
+
+            termSelect.disabled = false;
+
+
+            /*
+             * When editing an existing exam,
+             * select its existing term.
+             */
+            if (selectedTerm) {
+
+                termSelect.value =
+                    selectedTerm;
+
+            }
+
+        })
+
+
+        /*
+         * Handle errors.
+         */
+        .catch(error => {
+
+            console.error(
+                "Error loading academic terms:",
+                error
+            );
+
+
+            termSelect.innerHTML =
+                '<option value="">Unable to load terms</option>';
+
+            termSelect.disabled = false;
+
+        });
+
+    }
+
+
+    /*
+     * When the administrator changes the year,
+     * fetch that year's terms from the database.
+     */
+    yearSelect.addEventListener(
+        "change",
+        function () {
+
+            loadTerms(
+                this.value
+            );
+
+        }
+    );
+
+
+    /*
+     * When editing an existing exam,
+     * automatically load its terms.
+     */
+    if (yearSelect.value) {
+
+        loadTerms(
+            yearSelect.value,
+            initialTerm
+        );
+
+    } else {
+
+        termSelect.disabled = true;
+
+    }
+
 });
+
 </script>
+
 {% endblock %}

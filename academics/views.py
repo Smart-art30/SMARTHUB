@@ -29,27 +29,66 @@ from academics.models import Exam, Subject, StudentMark
 User = get_user_model()
 
 from django.http import JsonResponse
+
+
 @login_required
 def load_terms(request):
-    year = request.GET.get('year')
 
+    year = request.GET.get("year")
+
+    # Make sure a year was selected
+    if not year:
+        return JsonResponse({
+            "options": (
+                '<option value="">'
+                'Select Year First'
+                '</option>'
+            )
+        })
+
+    # Make sure the year is valid
+    try:
+        year = int(year)
+
+    except (TypeError, ValueError):
+
+        return JsonResponse({
+            "options": (
+                '<option value="">'
+                'Invalid Year'
+                '</option>'
+            )
+        })
+
+    # Academic terms are universal.
+    # They are NOT linked to a specific school.
     terms = AcademicTerm.objects.filter(
-        school=request.user.school,
         year=year
-    ).order_by('term')
+    ).order_by("term")
 
     options = '<option value="">Select Term</option>'
 
     for term in terms:
+
         options += (
-            f'<option value="{term.id}">'
-            f'{term.term}'
+            f'<option value="{term.pk}">'
+            f'{term.term} - {term.year}'
             f'</option>'
         )
 
+    # If no terms exist for the selected year
+    if not terms.exists():
+
+        options = (
+            '<option value="">'
+            f'No terms found for {year}'
+            '</option>'
+        )
+
     return JsonResponse({
-        'options': options
+        "options": options
     })
+
 
 
 def load_classes(request):
@@ -188,18 +227,26 @@ def exam_list(request):
     })
 
 
+
 @login_required
 @role_required('schooladmin')
 def exam_add(request):
-    school = request.user.school  
+
+    # The school is determined automatically
+    # from the logged-in user.
+    school = request.user.school
 
     if request.method == 'POST':
-        form = ExamForm(request.POST, school=school)
+
+        form = ExamForm(request.POST)
+
         if form.is_valid():
+
             exam_type = form.cleaned_data['exam_type']
             term = form.cleaned_data['term']
 
-            
+            # Check whether this school already has
+            # this type of exam for the selected term.
             existing_exam = Exam.objects.filter(
                 school=school,
                 term=term,
@@ -207,22 +254,56 @@ def exam_add(request):
             ).first()
 
             if existing_exam:
-                messages.error(request, f"{exam_type.capitalize()} exam already exists for {term}.")
+
+                messages.error(
+                    request,
+                    f"{exam_type.capitalize()} exam already exists for {term}."
+                )
+
             else:
+
+                # Create the exam without saving first
+                # because the school is assigned automatically.
                 exam = form.save(commit=False)
-                exam.school = school  
+
+                # Assign the logged-in user's school.
+                exam.school = school
+
+                # Save the exam.
                 exam.save()
-                messages.success(request, "Exam saved successfully!")
-                return redirect('academics:exam_list')  
+
+                messages.success(
+                    request,
+                    "Exam saved successfully!"
+                )
+
+                return redirect(
+                    'academics:exam_list'
+                )
+
         else:
-            messages.error(request, "Please correct the errors below.")
+
+            messages.error(
+                request,
+                "Please correct the errors below."
+            )
+
     else:
-        form = ExamForm(school=school)
+
+        # No school argument anymore because
+        # AcademicTerm is universal.
+        form = ExamForm()
 
     context = {
         'form': form
     }
-    return render(request, 'academics/exam_add.html', context)
+
+    return render(
+        request,
+        'academics/exam_add.html',
+        context
+    )
+
 
 @login_required
 @role_required('schooladmin')
