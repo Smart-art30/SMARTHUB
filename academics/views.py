@@ -31,64 +31,51 @@ User = get_user_model()
 from django.http import JsonResponse
 
 
-# @login_required
-# def load_terms(request):
+@login_required
+def load_terms(request):
+    year = request.GET.get("year")
 
-#     year = request.GET.get("year")
+    if not year:
+        return JsonResponse({
+            "options": '<option value="">Select Year First</option>'
+        })
 
-#     # Make sure a year was selected
-#     if not year:
-#         return JsonResponse({
-#             "options": (
-#                 '<option value="">'
-#                 'Select Year First'
-#                 '</option>'
-#             )
-#         })
+    try:
+        year = int(year)
+    except (TypeError, ValueError):
+        return JsonResponse({
+            "options": '<option value="">Invalid Year</option>'
+        })
 
-#     # Make sure the year is valid
-#     try:
-#         year = int(year)
+    # Determine school from user
+    user = request.user
+    if user.role == "teacher" and hasattr(user, "teacher"):
+        school = user.teacher.school
+    elif user.role == "schooladmin" and hasattr(user, "school"):
+        school = user.school
+    else:
+        return JsonResponse({
+            "options": '<option value="">Unauthorized</option>'
+        })
 
-#     except (TypeError, ValueError):
+    # Terms that have at least one exam for this school & year
+    terms = (
+        AcademicTerm.objects
+        .filter(exam__school=school, exam__year=year)
+        .distinct()
+        .order_by("id")
+    )
 
-#         return JsonResponse({
-#             "options": (
-#                 '<option value="">'
-#                 'Invalid Year'
-#                 '</option>'
-#             )
-#         })
+    if not terms.exists():
+        return JsonResponse({
+            "options": f'<option value="">No terms found for {year}</option>'
+        })
 
-#     # Academic terms are universal.
-#     # They are NOT linked to a specific school.
-#     terms = AcademicTerm.objects.filter(
-#         year=year
-#     ).order_by("term")
+    options = '<option value="">Select Term</option>'
+    for term in terms:
+        options += f'<option value="{term.pk}">{term.term}</option>'
 
-#     options = '<option value="">Select Term</option>'
-
-#     for term in terms:
-
-#         options += (
-#             f'<option value="{term.pk}">'
-#             f'{term.term} - {term.year}'
-#             f'</option>'
-#         )
-
-#     # If no terms exist for the selected year
-#     if not terms.exists():
-
-#         options = (
-#             '<option value="">'
-#             f'No terms found for {year}'
-#             '</option>'
-#         )
-
-#     return JsonResponse({
-#         "options": options
-#     })
-
+    return JsonResponse({"options": options})
 
 
 def load_classes(request):
@@ -950,7 +937,7 @@ def report_list(request):
 
     # Available years from AcademicTerm (better than Exam)
     years = AcademicTerm.objects.filter(school=school).values_list('year', flat=True).distinct().order_by('-year')
-    terms = AcademicTerm.objects.filter(school=school).order_by('-year', 'term')
+    terms = AcademicTerm.objects.order_by('-year', 'term')
 
     # Get selected year & term from GET params
     selected_year = request.GET.get('year')
@@ -1058,16 +1045,33 @@ def generate_overall_remark(avg):
     else:
         return "Needs significant improvement."
 
-# ===============================
-# 🔹 MAIN VIEW
-# ===============================
+
 @login_required
 @role_required('schooladmin', 'teacher')
 def class_report(request, class_id=None):
-    school = request.user.school
 
     # ============================================================
-    # DROPDOWN DATA
+    # DETERMINE SCHOOL FROM LOGGED-IN USER
+    # ============================================================
+    user = request.user
+
+    if user.role == 'teacher':
+        if not hasattr(user, 'teacher'):
+            messages.error(request, "Teacher profile required.")
+            return redirect('academics:report_list')
+        school = user.teacher.school
+
+    elif user.role == 'schooladmin':
+        if not hasattr(user, 'school'):
+            messages.error(request, "School admin not linked to a school.")
+            return redirect('academics:report_list')
+        school = user.school
+
+    else:
+        raise Http404("Unauthorized")
+
+    # ============================================================
+    # CLASSES
     # ============================================================
     classes = (
         SchoolClass.objects
@@ -1075,8 +1079,11 @@ def class_report(request, class_id=None):
         .order_by('name', 'stream')
     )
 
+    # ============================================================
+    # YEARS (from Exam, not AcademicTerm)
+    # ============================================================
     years = (
-        AcademicTerm.objects
+        Exam.objects
         .filter(school=school)
         .values_list('year', flat=True)
         .distinct()
@@ -1087,13 +1094,16 @@ def class_report(request, class_id=None):
     selected_year = request.GET.get('year')
     selected_term_id = request.GET.get('term')
 
-    # ============================================================
-    # VALIDATE CLASS
-    # ============================================================
     if not selected_class_id:
-        messages.error(request, "Please select a class to view reports.")
+        messages.error(
+            request,
+            "Please select a class to view reports."
+        )
         return redirect('academics:report_list')
 
+    # ============================================================
+    # VALIDATE CLASS AND SCHOOL
+    # ============================================================
     school_class = get_object_or_404(
         SchoolClass,
         id=selected_class_id,
@@ -1101,63 +1111,105 @@ def class_report(request, class_id=None):
     )
 
     # ============================================================
-    # GET TERMS
+    # ACADEMIC TERMS
+    #
+    # AcademicTerm is GLOBAL.
+    #
+    # It contains things such as:
+    #     Term 1
+    #     Term 2
+    #     Term 3
+    #
+    # It does NOT contain school or year.
     # ============================================================
-    terms = AcademicTerm.objects.filter(
-        school=school
-    ).order_by('-year', 'term')
+    terms = (
+        AcademicTerm.objects
+        .filter(exam__school=school)
+        .distinct()
+        .order_by('id')
+    )
 
-    # ============================================================
-    # DETERMINE SELECTED TERM
-    # ============================================================
     selected_term = None
 
+    # ============================================================
+    # CASE 1:
+    # BOTH TERM AND YEAR WERE SELECTED
+    # ============================================================
     if selected_term_id:
+
         selected_term = get_object_or_404(
             AcademicTerm,
-            id=selected_term_id,
-            school=school
+            id=selected_term_id
         )
 
-        # IMPORTANT:
-        # If both year and term were supplied, make sure the
-        # selected term actually belongs to that year.
-        if selected_year and str(selected_term.year) != str(selected_year):
-            messages.error(
-                request,
-                "The selected term does not belong to the selected year."
-            )
-            return redirect(
-                f"{request.path}?class={selected_class_id}"
-            )
+        # If a year was selected, verify that this school actually
+        # has an exam for that year and selected term.
+        if selected_year:
 
+            term_exists_for_year = Exam.objects.filter(
+                school=school,
+                year=selected_year,
+                term=selected_term
+            ).exists()
+
+            if not term_exists_for_year:
+
+                messages.error(
+                    request,
+                    "The selected year and term do not have an examination configured."
+                )
+
+                return redirect(
+                    f"{request.path}?class={selected_class_id}"
+                )
+
+    # ============================================================
+    # CASE 2:
+    # ONLY YEAR WAS SELECTED
+    # ============================================================
     elif selected_year:
-        # If only year was selected, do NOT mix terms.
-        selected_term = (
-            AcademicTerm.objects
+
+        latest_exam = (
+            Exam.objects
             .filter(
                 school=school,
                 year=selected_year
             )
-            .order_by('term')
+            .select_related('term')
+            .order_by('term__id', 'id')
             .first()
         )
 
+        if latest_exam:
+            selected_term = latest_exam.term
+
+    # ============================================================
+    # CASE 3:
+    # NOTHING WAS SELECTED
+    # ============================================================
     else:
-        # No filter supplied: use active term.
-        selected_term = (
-            AcademicTerm.objects
-            .filter(
-                school=school,
-                is_active=True
+
+        latest_exam = (
+            Exam.objects
+            .filter(school=school)
+            .select_related('term')
+            .order_by(
+                '-year',
+                '-term__id',
+                '-id'
             )
             .first()
         )
 
+        if latest_exam:
+            selected_year = latest_exam.year
+            selected_term = latest_exam.term
+
     # ============================================================
-    # NO TERM FOUND
+    # NO TERM / EXAM FOUND
     # ============================================================
     if not selected_term:
+
         messages.warning(
             request,
             "Please select a valid academic year and term."
@@ -1165,30 +1217,48 @@ def class_report(request, class_id=None):
 
         return render(
             request,
-            "academics/class_report.html",
+            'academics/class_report.html',
             {
-                "classes": classes,
-                "selected_class_id": int(selected_class_id),
-                "selected_year": selected_year,
-                "selected_term": None,
-                "school_class": school_class,
-                "exams": [],
-                "filtered_reports": [],
-                "years": years,
-                "terms": terms,
-                "school": school,
-                "now": timezone.now(),
+                'classes': classes,
+                'selected_class_id': int(selected_class_id),
+                'selected_year': selected_year,
+                'selected_term': None,
+                'school_class': school_class,
+                'exams': [],
+                'filtered_reports': [],
+                'years': years,
+                'terms': terms,
+                'school': school,
+                'now': timezone.now(),
             }
         )
 
     # ============================================================
-    # IMPORTANT:
-    # GET ONLY EXAMS BELONGING TO THIS EXACT TERM
+    # IF YEAR WAS NOT SELECTED, DERIVE IT FROM THE TERM'S EXAMS
+    # ============================================================
+    if not selected_year:
+
+        latest_term_exam = (
+            Exam.objects
+            .filter(
+                school=school,
+                term=selected_term
+            )
+            .order_by('-year', '-id')
+            .first()
+        )
+
+        if latest_term_exam:
+            selected_year = latest_term_exam.year
+
+    # ============================================================
+    # GET EXAMS
     # ============================================================
     exams_qs = (
         Exam.objects
         .filter(
             school=school,
+            year=selected_year,
             term=selected_term,
             examsubject__school_class=school_class
         )
@@ -1214,36 +1284,67 @@ def class_report(request, class_id=None):
     )
 
     # ============================================================
-    # FETCH ONLY MARKS FOR THESE EXAMS
+    # STUDENTS
     # ============================================================
-    students = Student.objects.filter(
-        student_class=school_class
-    ).select_related('user')
+    students = (
+        Student.objects
+        .filter(
+            student_class=school_class
+        )
+        .select_related('user')
+        .order_by(
+            'user__first_name',
+            'user__last_name'
+        )
+    )
 
+    # ============================================================
+    # SUBJECTS
+    # ============================================================
     subjects = (
         Subject.objects
         .filter(
             examsubject__school_class=school_class,
-            examsubject__exam__term=selected_term
+            examsubject__exam__term=selected_term,
+            examsubject__exam__year=selected_year,
+            examsubject__exam__school=school,
         )
         .distinct()
         .order_by('name')
     )
 
-    all_marks = StudentMark.objects.filter(
-        student__in=students,
-        subject__in=subjects,
-        exam__in=exams,
-        exam__term=selected_term,
-        school_class=school_class
+    # ============================================================
+    # ALL MARKS
+    # ============================================================
+    all_marks = (
+        StudentMark.objects
+        .filter(
+            student__in=students,
+            subject__in=subjects,
+            exam__in=exams,
+            exam__term=selected_term,
+            exam__year=selected_year,
+            exam__school=school,
+            school_class=school_class,
+        )
+        .select_related(
+            'student',
+            'subject',
+            'exam',
+            'facilitator'
+        )
     )
 
     # ============================================================
     # FAST MARK LOOKUP
     # ============================================================
     marks_map = {
-        (m.student_id, m.subject_id, m.exam_id): m.marks
-        for m in all_marks
+        (
+            mark.student_id,
+            mark.subject_id,
+            mark.exam_id
+        ): mark.marks
+        for mark in all_marks
     }
 
     # ============================================================
@@ -1255,16 +1356,20 @@ def class_report(request, class_id=None):
 
         report_rows = []
 
+        # One total/count for every exam.
         exam_totals = [0] * len(exams)
         exam_counts = [0] * len(exams)
 
+        # ========================================================
+        # SUBJECT REPORTS
+        # ========================================================
         for subject in subjects:
 
             marks_list = []
 
-            # --------------------------------------------
-            # Get marks ONLY from exams in selected term
-            # --------------------------------------------
+            # ----------------------------------------------------
+            # GET MARKS FOR EACH EXAM
+            # ----------------------------------------------------
             for idx, exam in enumerate(exams):
 
                 mark = marks_map.get(
@@ -1278,21 +1383,26 @@ def class_report(request, class_id=None):
 
                 marks_list.append(mark)
 
+                # Only count actual marks.
+                # Zero means no mark.
                 if mark > 0:
+
                     exam_totals[idx] += mark
                     exam_counts[idx] += 1
 
-            # --------------------------------------------
-            # Trends
-            # --------------------------------------------
+            # ====================================================
+            # PERFORMANCE TRENDS
+            # ====================================================
             trends = []
 
             for i, mark in enumerate(marks_list):
 
                 if i == 0:
+
                     trend = 'same'
 
                 else:
+
                     previous = marks_list[i - 1]
 
                     if mark > previous:
@@ -1306,12 +1416,12 @@ def class_report(request, class_id=None):
 
                 trends.append({
                     'mark': mark,
-                    'trend': trend
+                    'trend': trend,
                 })
 
-            # --------------------------------------------
-            # Dynamic remark
-            # --------------------------------------------
+            # ====================================================
+            # DYNAMIC SUBJECT REMARK
+            # ====================================================
             remark = generate_dynamic_remark(
                 subject.name,
                 marks_list,
@@ -1324,9 +1434,9 @@ def class_report(request, class_id=None):
                 'remarks': remark,
             })
 
-        # ====================================================
+        # ========================================================
         # EXAM AVERAGES
-        # ====================================================
+        # ========================================================
         exam_averages = [
             round(
                 exam_totals[i] / exam_counts[i],
@@ -1334,13 +1444,12 @@ def class_report(request, class_id=None):
             )
             if exam_counts[i]
             else 0
-
             for i in range(len(exams))
         ]
 
-        # ====================================================
+        # ========================================================
         # OVERALL AVERAGE
-        # ====================================================
+        # ========================================================
         overall_avg = (
             round(
                 sum(exam_averages) / len(exam_averages),
@@ -1350,34 +1459,46 @@ def class_report(request, class_id=None):
             else 0
         )
 
+        # ========================================================
+        # OVERALL REMARK
+        # ========================================================
         overall_remark = generate_overall_remark(
             overall_avg
         )
 
-        # ====================================================
+        # ========================================================
         # FACILITATOR
-        # ====================================================
-        student_marks = all_marks.filter(
-            student=student
-        )
+        # ========================================================
+        student_marks = [
+            mark
+            for mark in all_marks
+            if mark.student_id == student.id
+        ]
 
         facilitator = (
-            student_marks.first().facilitator
-            if student_marks.exists()
+            student_marks[0].facilitator
+            if student_marks
             else None
         )
 
+        # ========================================================
+        # FINAL STUDENT REPORT
+        # ========================================================
         filtered_reports.append({
             'student': student,
+
             'report_rows_with_trends': report_rows,
+
             'exam_totals': exam_totals,
+
             'exam_averages': exam_averages,
+
             'overall_avg': overall_avg,
+
             'overall_remark': overall_remark,
 
-            # IMPORTANT:
-            # Always use the actual selected term
-            'exam_year': selected_term.year,
+            'exam_year': selected_year,
+
             'exam_term': selected_term.term,
 
             'facilitator': facilitator,
@@ -1391,18 +1512,29 @@ def class_report(request, class_id=None):
         'academics/class_report.html',
         {
             'classes': classes,
+
             'selected_class_id': int(selected_class_id),
-            'selected_year': selected_term.year,
+
+            'selected_year': selected_year,
+
             'selected_term': selected_term,
+
             'school_class': school_class,
+
             'exams': exams,
+
             'filtered_reports': filtered_reports,
+
             'years': years,
+
             'terms': terms,
+
             'school': school,
+
             'now': timezone.now(),
         }
     )
+
 
 @login_required
 @role_required('schooladmin')
@@ -1602,16 +1734,8 @@ def admin_class_marks(request, class_id):
 
     subject_count = len(subjects)
 
-    # =========================
-    # TERM FILTERS
-    # =========================
-    years = (
-        AcademicTerm.objects.filter(school=school)
-        .values_list('year', flat=True)
-        .distinct()
-        .order_by('-year')
-    )
 
+    years = (AcademicTerm.objects.filter(school=school).values_list('year', flat=True).distinct().order_by('-year'))
     terms = (
         AcademicTerm.objects.filter(school=school)
         .order_by('-year', 'term')

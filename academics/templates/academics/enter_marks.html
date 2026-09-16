@@ -6,7 +6,7 @@
 <div class="container-fluid mt-3 watermark-container">
 
     <!-- HEADER -->
-    <div class="d-flex align-items-center mb-2 print-header">
+    <div class="d-flex align-items-center mb-2 print-header flex-wrap">
 
         <img src="{% if school_logo_url %}{{ school_logo_url }}{% else %}{% static 'images/school_logo.png' %}{% endif %}"
              style="height:45px; margin-right:10px; flex-shrink:0;">
@@ -32,14 +32,23 @@
 
         </div>
 
-        <div class="ms-auto no-print">
+        <div class="ms-auto no-print d-flex align-items-center gap-2 flex-wrap">
 
-            <button onclick="window.print()"
+            <!-- ORIENTATION SELECTOR -->
+            <div class="orientation-selector">
+                <label for="orientationSelect">Orientation:</label>
+                <select id="orientationSelect" aria-label="Print orientation">
+                    <option value="portrait" selected>Portrait</option>
+                    <option value="landscape">Landscape</option>
+                </select>
+            </div>
+
+            <button onclick="printWithOrientation()"
                     class="btn btn-sm btn-outline-dark me-1">
                 🖨 Print
             </button>
 
-            <button onclick="downloadPDF()"
+            <button onclick="printWithOrientation()"
                     class="btn btn-sm btn-outline-primary">
                 ⬇ PDF
             </button>
@@ -294,6 +303,34 @@
     font-size: 11px;
 }
 
+/* ===== ORIENTATION SELECTOR ===== */
+
+.orientation-selector {
+    background: #f8f9fa;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #ccc;
+}
+
+.orientation-selector label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 4px;
+    white-space: nowrap;
+}
+
+.orientation-selector select {
+    border-radius: 16px;
+    padding: 2px 8px;
+    font-size: 12px;
+    border: 1px solid #aaa;
+    background: white;
+    cursor: pointer;
+}
+
 /* ===== TABLE ===== */
 
 .marks-table {
@@ -324,15 +361,13 @@
 
 /* ===== INPUT ===== */
 
-/* ===== INPUT ===== */
-
 .mark-input {
     width: 38px;
     height: 24px;
     border: none;
     background: transparent;
     text-align: center;
-    font-weight: 700;   /* or 800 */
+    font-weight: 700;
     font-size: 12px;
     color: #000;
 }
@@ -353,8 +388,8 @@
 }
 
 .mark-input:focus {
-    background: #d4edda !important;
-    outline: 2px solid #e1e7e3;
+    background: #e5e9e5 !important;
+    outline: 2px solid #ff9800;
 }
 
 .mark-input.invalid {
@@ -366,6 +401,7 @@
 .student-row:hover td {
     background: #d4edda !important;
 }
+
 /* Active learner row */
 .student-row.active-row td {
     background: #fff3cd !important;
@@ -399,11 +435,6 @@
     }
 }
 
-/* Current input */
-.mark-input:focus {
-    background: #e5e9e5 !important;
-    outline: 2px solid #ff9800;
-}
 /* ===== TOTALS ===== */
 
 .total-cell,
@@ -583,7 +614,8 @@
     .logo,
     .navbar-brand,
     .smart-hub-logo,
-    .smart-header {
+    .smart-header,
+    .orientation-selector {
         display: none !important;
     }
 
@@ -615,6 +647,28 @@
 
 Chart.register(ChartDataLabels);
 
+// ===== PRINT WITH ORIENTATION =====
+function printWithOrientation() {
+    const orientation = document.getElementById('orientationSelect').value;
+
+    // Remove any previously injected print-orientation style
+    const prev = document.getElementById('print-orientation-style');
+    if (prev) prev.remove();
+
+    // Inject @page rule with the selected orientation
+    const style = document.createElement('style');
+    style.id = 'print-orientation-style';
+    style.innerHTML = `@media print { @page { size: ${orientation}; margin: 10mm; } }`;
+    document.head.appendChild(style);
+
+    window.print();
+}
+
+// Legacy PDF button (kept for compatibility, now uses orientation)
+function downloadPDF() {
+    printWithOrientation();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     const table = document.getElementById('marks-table');
@@ -622,17 +676,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = [
         ...document.querySelectorAll('.mark-input')
     ];
+
     function highlightRow(input) {
-    document
-        .querySelectorAll('.student-row')
-        .forEach(row => row.classList.remove('active-row'));
+        document
+            .querySelectorAll('.student-row')
+            .forEach(row => row.classList.remove('active-row'));
 
-    const row = input.closest('.student-row');
+        const row = input.closest('.student-row');
 
-    if (row) {
-        row.classList.add('active-row');
+        if (row) {
+            row.classList.add('active-row');
+        }
     }
-}
 
     const maxMark = {{ exam.max_mark }};
 
@@ -720,11 +775,11 @@ document.addEventListener('DOMContentLoaded', () => {
             row.querySelector('.total-cell')
                 .textContent = total;
 
-           row.querySelector('.avg-cell')
-            .textContent =
-                rowInputs.length
-                ? (total / rowInputs.length).toFixed(2)
-                : '0.00';
+            row.querySelector('.avg-cell')
+                .textContent =
+                    rowInputs.length
+                    ? (total / rowInputs.length).toFixed(2)
+                    : '0.00';
 
             row.dataset.total = total;
 
@@ -747,7 +802,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const subjId = th.dataset.subjectId;
 
-           th.textContent =
+            th.textContent =
                 subjectTotals[subjId]
                 ? (subjectTotals[subjId] / numStudents).toFixed(2)
                 : '';
@@ -767,19 +822,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ===== RANK =====
 
-function rankStudents() {
-    const rows = [...table.tBodies[0].querySelectorAll('.student-row')]
-        .map(row => ({
-            row,
-            total: parseFloat(row.dataset.total) || 0
-        }))
-        .sort((a, b) => b.total - a.total);
+    function rankStudents() {
+        const rows = [...table.tBodies[0].querySelectorAll('.student-row')]
+            .map(row => ({
+                row,
+                total: parseFloat(row.dataset.total) || 0
+            }))
+            .sort((a, b) => b.total - a.total);
 
-    rows.forEach(({ row }, i) => {
-        row.querySelector('.rank-cell').textContent = i + 1;
-        table.tBodies[0].appendChild(row);
-    });
-}
+        rows.forEach(({ row }, i) => {
+            row.querySelector('.rank-cell').textContent = i + 1;
+            table.tBodies[0].appendChild(row);
+        });
+    }
 
     // ===== CHART =====
 
@@ -886,98 +941,98 @@ function rankStudents() {
     }
 
     // ===== INPUT EVENTS =====
-// ===== INPUT EVENTS =====
 
-inputs.forEach((input) => {
+    inputs.forEach((input) => {
 
-    input.addEventListener('input', () => {
-        highlightRow(input);
-        calculate();
-        drawChart();
-    });
+        input.addEventListener('input', () => {
+            highlightRow(input);
+            calculate();
+            drawChart();
+        });
 
-    // ENTER KEY = MOVE DOWN
- input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
+        // ENTER KEY = MOVE DOWN
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
 
-        input.dispatchEvent(new Event('change'));
+                input.dispatchEvent(new Event('change'));
 
-        const currentCell = input.closest('td');
-        const currentRow = input.closest('tr');
-        const cellIndex = currentCell.cellIndex;
+                const currentCell = input.closest('td');
+                const currentRow = input.closest('tr');
+                const cellIndex = currentCell.cellIndex;
 
-        let nextRow = currentRow.nextElementSibling;
+                let nextRow = currentRow.nextElementSibling;
 
-        // Search downward for the next blank cell
-        while (nextRow) {
-            if (nextRow.classList.contains('student-row')) {
-                const nextInput =
-                    nextRow.cells[cellIndex]
-                        ?.querySelector('.mark-input');
+                // Search downward for the next blank cell
+                while (nextRow) {
+                    if (nextRow.classList.contains('student-row')) {
+                        const nextInput =
+                            nextRow.cells[cellIndex]
+                                ?.querySelector('.mark-input');
 
-                if (nextInput && nextInput.value.trim() === '') {
-                    nextInput.focus();
-                    highlightRow(nextInput);
-                    nextInput.select();
-                    return;
+                        if (nextInput && nextInput.value.trim() === '') {
+                            nextInput.focus();
+                            highlightRow(nextInput);
+                            nextInput.select();
+                            return;
+                        }
+                    }
+                    nextRow = nextRow.nextElementSibling;
+                }
+
+                // Optional: wrap to the top if no blank cell below
+                const rows = document.querySelectorAll('.student-row');
+
+                for (const row of rows) {
+                    if (row === currentRow) break;
+
+                    const nextInput =
+                        row.cells[cellIndex]
+                            ?.querySelector('.mark-input');
+
+                    if (nextInput && nextInput.value.trim() === '') {
+                        nextInput.focus();
+                        highlightRow(nextInput);
+                        nextInput.select();
+                        return;
+                    }
                 }
             }
-            nextRow = nextRow.nextElementSibling;
-        }
+        });
 
-        // Optional: wrap to the top if no blank cell below
-        const rows = document.querySelectorAll('.student-row');
+        // SAVE MARK
+        input.addEventListener('change', () => {
 
-        for (const row of rows) {
-            if (row === currentRow) break;
+            calculate();
+            rankStudents();
+            drawChart();
 
-            const nextInput =
-                row.cells[cellIndex]
-                    ?.querySelector('.mark-input');
+            const parts = input.name.split('_');
+            const studentId = parts[1];
+            const subjectId = parts[2];
 
-            if (nextInput && nextInput.value.trim() === '') {
-                nextInput.focus();
-                highlightRow(nextInput);
-                nextInput.select();
-                return;
-            }
-        }
-    }
-});
-    // SAVE MARK
-    input.addEventListener('change', () => {
-
-        calculate();
-        rankStudents();
-        drawChart();
-
-        const parts = input.name.split('_');
-        const studentId = parts[1];
-        const subjectId = parts[2];
-
-        fetch("{% url 'academics:save_mark_ajax' %}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": "{{ csrf_token }}"
-            },
-            body: JSON.stringify({
-                student_id: studentId,
-                subject_id: subjectId,
-                exam_id: {{ exam.id }},
-                mark: input.value
+            fetch("{% url 'academics:save_mark_ajax' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    subject_id: subjectId,
+                    exam_id: {{ exam.id }},
+                    mark: input.value
+                })
             })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status !== 'ok') {
-                console.error('Save failed', data);
-            }
-        })
-        .catch(error => console.error(error));
+            .then(res => res.json())
+            .then(data => {
+                if (data.status !== 'ok') {
+                    console.error('Save failed', data);
+                }
+            })
+            .catch(error => console.error(error));
+        });
     });
-});
 
     // INITIAL LOAD
     calculate();
@@ -987,14 +1042,6 @@ inputs.forEach((input) => {
     drawChart();
 
 });
-
-// PDF
-function downloadPDF() {
-
-    window.print();
-
-}
-
 
 </script>
 

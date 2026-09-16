@@ -42,9 +42,8 @@ urlpatterns = [
 
     path('student/<int:student_id>/results/', views.student_results, name='student_results'),
     path('ajax/load-classes/', views.load_classes, name='load_classes'),
-    path("exam/<int:exam_id>/class/<int:class_id>/unassign/",views.unassign_exam_class,
-    name="unassign_exam_class",
-),
+    path("exam/<int:exam_id>/class/<int:class_id>/unassign/",views.unassign_exam_class,name="unassign_exam_class",),
+    path('ajax/load-terms/', views.load_terms, name='load_terms'),
     
     
 ]
