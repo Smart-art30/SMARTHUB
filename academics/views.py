@@ -1048,183 +1048,58 @@ def generate_overall_remark(avg):
 
 @login_required
 @role_required('schooladmin', 'teacher')
-def class_report(request, class_id=None):
-    # ============================================================
-    # DETERMINE SCHOOL FROM LOGGED-IN USER
-    # ============================================================
-
+def class_report(request, class_id=None): 
     user = request.user
-
     if user.role == 'teacher':
         if not hasattr(user, 'teacher'):
             messages.error(request, "Teacher profile required.")
             return redirect('academics:report_list')
-
         school = user.teacher.school
-
     elif user.role == 'schooladmin':
         if not hasattr(user, 'school'):
-            messages.error(
-                request,
-                "School admin not linked to a school."
-            )
+            messages.error(request,"School admin not linked to a school.")
             return redirect('academics:report_list')
-
         school = user.school
-
     else:
-        raise Http404("Unauthorized")
-
-    # ============================================================
-    # CLASSES
-    # ============================================================
-
+        raise Http404("Unauthorized") 
     classes = (
         SchoolClass.objects
         .filter(school=school)
         .order_by('name', 'stream')
     )
-
-    # ============================================================
-    # YEARS
-    #
-    # Every year can have:
-    #     Term 1
-    #     Term 2
-    #     Term 3
-    #
-    # These years do NOT depend on existing exams.
-    # Therefore future years can also be selected.
-    # ============================================================
-
     years = range(2090, 2019, -1)
-
-    # ============================================================
-    # GET FILTER VALUES
-    # ============================================================
-
     selected_class_id = class_id or request.GET.get('class')
     selected_year = request.GET.get('year')
     selected_term_id = request.GET.get('term')
-
-    # ============================================================
-    # CLASS IS REQUIRED
-    # ============================================================
-
     if not selected_class_id:
-        messages.error(
-            request,
-            "Please select a class to view reports."
-        )
+        messages.error(request,"Please select a class to view reports.")
         return redirect('academics:report_list')
-
-    # ============================================================
-    # VALIDATE CLASS AND SCHOOL
-    # ============================================================
-
-    school_class = get_object_or_404(
-        SchoolClass,
-        id=selected_class_id,
-        school=school
-    )
-
-    # ============================================================
-    # ACADEMIC TERMS
-    #
-    # AcademicTerm is GLOBAL.
-    #
-    # It contains:
-    #     Term 1
-    #     Term 2
-    #     Term 3
-    #
-    # These three terms are available for EVERY academic year.
-    #
-    # IMPORTANT:
-    # We do NOT filter AcademicTerm by year.
-    # ============================================================
-
-    terms = (
-        AcademicTerm.objects
-        .all()
-        .order_by('id')
-    )
-
-    # ============================================================
-    # SELECTED YEAR
-    # ============================================================
-
+    school_class = get_object_or_404(SchoolClass,id=selected_class_id,school=school)
+    terms = (AcademicTerm.objects.all().order_by('id')) 
     if selected_year:
-
         try:
             selected_year = int(selected_year)
-
         except (TypeError, ValueError):
-            selected_year = None
-
-    # ============================================================
-    # MAKE SURE YEAR IS WITHIN AVAILABLE YEARS
-    # ============================================================
-
+            selected_year = None 
     if selected_year is not None:
-
         if selected_year not in years:
             selected_year = None
-
-    # ============================================================
-    # SELECTED TERM
-    # ============================================================
-
     selected_term = None
-
     if selected_term_id:
-
         try:
-            selected_term = AcademicTerm.objects.get(
-                id=selected_term_id
-            )
-
-        except (
-            AcademicTerm.DoesNotExist,
-            ValueError,
-            TypeError
-        ):
-            selected_term = None
-
-    # ============================================================
-    # IF YEAR IS SELECTED BUT TERM IS NOT
-    #
-    # DEFAULT TO TERM 1.
-    #
-    # This does NOT depend on whether an exam exists.
-    # ============================================================
-
+            selected_term = AcademicTerm.objects.get(id=selected_term_id)
+        except (AcademicTerm.DoesNotExist,ValueError,TypeError):
+            selected_term = None  
     if selected_year and not selected_term:
-
         selected_term = (
             AcademicTerm.objects
             .filter(term__iexact='Term 1')
             .first()
         )
-
         if selected_term:
             selected_term_id = selected_term.id
-
-    # ============================================================
-    # IF NOTHING IS SELECTED
-    #
-    # Default:
-    #
-    #     Year = 2090
-    #     Term = Term 1
-    #
-    # This allows the page to work even when there are no exams.
-    # ============================================================
-
     if not selected_year:
-
-        selected_year = 2090
-
+        selected_year = 2026
         selected_term = (
             AcademicTerm.objects
             .filter(term__iexact='Term 1')
@@ -1234,37 +1109,14 @@ def class_report(request, class_id=None):
         if selected_term:
             selected_term_id = selected_term.id
 
-    # ============================================================
-    # IMPORTANT SAFETY CHECK
-    #
-    # If AcademicTerm does not contain Term 1, use the first
-    # available term instead.
-    # ============================================================
+  
 
     if not selected_term and terms.exists():
 
         selected_term = terms.first()
         selected_term_id = selected_term.id
 
-    # ============================================================
-    # GET EXAMS
-    #
-    # Exams are filtered using:
-    #
-    #     School
-    #     Year
-    #     Term
-    #     Class
-    #
-    # Therefore:
-    #
-    # 2027 + Term 1
-    #
-    # is completely independent from:
-    #
-    # 2027 + Term 2
-    #
-    # ============================================================
+
 
     exams = []
 
@@ -1281,9 +1133,7 @@ def class_report(request, class_id=None):
             .distinct()
         )
 
-        # ========================================================
-        # EXAM ORDER
-        # ========================================================
+      
 
         EXAM_ORDER = {
             'Opener': 1,
@@ -1300,9 +1150,6 @@ def class_report(request, class_id=None):
             )
         )
 
-    # ============================================================
-    # STUDENTS
-    # ============================================================
 
     students = (
         Student.objects
@@ -1316,9 +1163,7 @@ def class_report(request, class_id=None):
         )
     )
 
-    # ============================================================
-    # SUBJECTS
-    # ============================================================
+    
 
     subjects = Subject.objects.none()
 
@@ -1678,58 +1523,117 @@ def select_classes(request):
 @login_required
 @role_required("schooladmin")
 def assign_subjects_to_exam(request):
+
     school = request.user.school
+
     assigned_subjects = ExamSubject.objects.none()
     exam = None
     school_class = None
 
-    classes = SchoolClass.objects.filter(school=school).order_by("name", "stream")
+    classes = (
+        SchoolClass.objects
+        .filter(school=school)
+        .order_by("name", "stream")
+    )
 
     if request.method == "POST":
-        form = AssignSubjectsToExamForm(request.POST, school=school)
+
+        form = AssignSubjectsToExamForm(
+            request.POST,
+            school=school
+        )
 
         if form.is_valid():
+
+            year = int(form.cleaned_data["year"])
+            term = form.cleaned_data["term"]
             exam = form.cleaned_data["exam"]
+
             school_classes = form.cleaned_data["school_class"]
             subjects = form.cleaned_data["subjects"]
 
-            for cls in school_classes:
-                for subject in subjects:
-                    ExamSubject.objects.get_or_create(
-                        exam=exam,
-                        school_class=cls,
-                        subject=subject,
-                    )
+            # -------------------------------------------------
+            # SAFETY CHECK
+            # Make sure the selected exam really belongs to
+            # the selected academic year and term.
+            # -------------------------------------------------
+            if exam.year != year or exam.term_id != term.id:
 
-            first_class = school_classes.first()
-            messages.success(request, "Subjects assigned successfully.")
+                form.add_error(
+                    "exam",
+                    "The selected exam does not match the "
+                    "academic year and term."
+                )
 
-            return redirect(
-                f"{request.path}?exam={exam.id}&class={first_class.id if first_class else ''}"
-            )
+            else:
+
+                # ---------------------------------------------
+                # ASSIGN SUBJECTS
+                # ---------------------------------------------
+                for cls in school_classes:
+
+                    for subject in subjects:
+
+                        ExamSubject.objects.get_or_create(
+                            exam=exam,
+                            school_class=cls,
+                            subject=subject,
+                        )
+
+                first_class = school_classes.first()
+
+                messages.success(
+                    request,
+                    "Subjects assigned successfully."
+                )
+
+                return redirect(
+                    f"{request.path}"
+                    f"?exam={exam.id}"
+                    f"&class={first_class.id if first_class else ''}"
+                )
+
     else:
-        form = AssignSubjectsToExamForm(school=school)
+
+        form = AssignSubjectsToExamForm(
+            school=school
+        )
+
         exam_id = request.GET.get("exam")
         class_id = request.GET.get("class")
 
         if exam_id and class_id:
-            exam = get_object_or_404(Exam, id=exam_id, school=school)
-            school_class = get_object_or_404(SchoolClass, id=class_id, school=school)
+
+            exam = get_object_or_404(
+                Exam,
+                id=exam_id,
+                school=school
+            )
+
+            school_class = get_object_or_404(
+                SchoolClass,
+                id=class_id,
+                school=school
+            )
 
             assigned_subjects = ExamSubject.objects.filter(
                 exam=exam,
                 school_class=school_class,
             )
 
-    return render(request, "academics/assign_subjects_to_exam.html", {
-        "form": form,
-        "classes": classes,
-        "assigned_subjects": assigned_subjects,
-        "exam": exam,
-        "school_class": school_class,
-        "selected_class_ids": [],
-        "assigned_ids": [],
-    })
+    return render(
+        request,
+        "academics/assign_subjects_to_exam.html",
+        {
+            "form": form,
+            "classes": classes,
+            "assigned_subjects": assigned_subjects,
+            "exam": exam,
+            "school_class": school_class,
+            "selected_class_ids": [],
+            "assigned_ids": [],
+        }
+    )
 
 @login_required
 @role_required("schooladmin")

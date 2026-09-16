@@ -35,40 +35,121 @@ class SubjectForm(forms.ModelForm):
 
 class AssignSubjectsToExamForm(forms.Form):
 
-    exam = forms.ModelChoiceField(
-        queryset=Exam.objects.none()
+    year = forms.ChoiceField(
+        label="Academic Year",
+        required=True,
+        choices=[
+            ("", "Select Academic Year")
+        ] + [
+            (str(year), str(year))
+            for year in range(2020, 2091)
+        ],
+        widget=forms.Select(
+            attrs={
+                "class": "form-select",
+                "id": "id_year",
+            }
+        ),
     )
 
+  
+    term = forms.ModelChoiceField(
+        label="Term",
+        queryset=AcademicTerm.objects.all().order_by("id"),
+        required=True,
+        empty_label="Select Term",
+        widget=forms.Select(
+            attrs={
+                "class": "form-select",
+                "id": "id_term",
+            }
+        ),
+    )
+
+  
+    exam = forms.ModelChoiceField(
+        label="Exam",
+        queryset=Exam.objects.none(),
+        required=True,
+        empty_label="Select Exam",
+        widget=forms.Select(
+            attrs={
+                "class": "form-select",
+                "id": "id_exam",
+            }
+        ),
+    )
+
+  
     school_class = forms.ModelMultipleChoiceField(
+        label="Classes",
         queryset=SchoolClass.objects.none(),
         widget=forms.CheckboxSelectMultiple,
-        required=True
+        required=True,
     )
 
+  
     subjects = forms.ModelMultipleChoiceField(
+        label="Subjects",
         queryset=Subject.objects.none(),
         widget=forms.CheckboxSelectMultiple,
-        required=True
+        required=True,
     )
 
     def __init__(self, *args, **kwargs):
+
         school = kwargs.pop("school", None)
 
         super().__init__(*args, **kwargs)
 
         if school:
-            self.fields["exam"].queryset = Exam.objects.filter(
-                school=school
+
+            self.fields["school_class"].queryset = (
+                SchoolClass.objects
+                .filter(school=school)
+                .order_by("name", "stream")
             )
 
-            self.fields["school_class"].queryset = SchoolClass.objects.filter(
-                school=school
+    
+            self.fields["subjects"].queryset = (
+                Subject.objects
+                .filter(school=school)
+                .order_by("name")
             )
 
-            self.fields["subjects"].queryset = Subject.objects.filter(
-                school=school
+         
+            self.fields["exam"].queryset = (
+                Exam.objects
+                .filter(school=school)
+                .select_related("term")
+                .order_by("-year", "term_id", "id")
             )
 
+       
+        if self.is_bound:
+
+            year = self.data.get("year")
+            term_id = self.data.get("term")
+
+            if year and term_id and school:
+
+                try:
+                    year = int(year)
+                    term_id = int(term_id)
+
+                    self.fields["exam"].queryset = (
+                        Exam.objects
+                        .filter(
+                            school=school,
+                            year=year,
+                            term_id=term_id,
+                        )
+                        .select_related("term")
+                        .order_by("id")
+                    )
+
+                except (ValueError, TypeError):
+                    pass
 
 class ExamForm(forms.ModelForm):
 

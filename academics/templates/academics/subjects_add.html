@@ -1,32 +1,117 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4 mt-md-5" style="max-width: 640px;">
 
-    <h2>
-        {% if edit %}
-            Edit Subject
-        {% else %}
-            Add New Subject
-        {% endif %}
-    </h2>
-
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-
-        <button type="submit" class="btn btn-primary">
-            {% if edit %}
-                Update Subject
-            {% else %}
-                Add Subject
-            {% endif %}
-        </button>
-
-        <a href="{% url 'academics:subject_list' %}" class="btn btn-secondary">
-            Cancel
+    <!-- Header -->
+    <div class="mb-4">
+        <a href="{% url 'academics:subject_list' %}"
+           class="text-decoration-none text-muted small d-inline-flex align-items-center gap-1 mb-2">
+            <i class="bi bi-arrow-left"></i> Back to Subjects
         </a>
-    </form>
+        <h2 class="fw-bold mb-1">
+            {% if edit %}Edit Subject{% else %}Add New Subject{% endif %}
+        </h2>
+        <p class="text-muted small mb-0">
+            {% if edit %}
+                Update the details below and save your changes.
+            {% else %}
+                Fill in the details to create a new subject.
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4 p-md-4">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger small mb-4">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold small">
+                            {{ field.label }}
+                            {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                            <div class="form-text small">{{ field.help_text }}</div>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                            <div class="invalid-feedback d-block small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <!-- Actions -->
+                <div class="d-flex flex-column flex-sm-row gap-2 pt-3 mt-2 border-top">
+                    <button type="submit" class="btn btn-primary flex-fill flex-sm-grow-0 px-4">
+                        <i class="bi bi-check-lg me-1"></i>
+                        {% if edit %}Update Subject{% else %}Add Subject{% endif %}
+                    </button>
+                    <a href="{% url 'academics:subject_list' %}"
+                       class="btn btn-outline-secondary flex-fill flex-sm-grow-0 px-4">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </div>
+
+<style>
+    /* Modern form controls */
+    .card form input[type="text"],
+    .card form input[type="email"],
+    .card form input[type="number"],
+    .card form input[type="url"],
+    .card form input[type="password"],
+    .card form select,
+    .card form textarea {
+        display: block;
+        width: 100%;
+        padding: .55rem .75rem;
+        font-size: .95rem;
+        border: 1px solid #dee2e6;
+        border-radius: .5rem;
+        background-color: #fff;
+        transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .card form input:focus,
+    .card form select:focus,
+    .card form textarea:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 .2rem rgba(99, 102, 241, .15);
+    }
+
+    .card form input.is-invalid,
+    .card form select.is-invalid,
+    .card form textarea.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .card form input[type="checkbox"] {
+        width: auto;
+        margin-right: .4rem;
+    }
+
+    /* Larger tap targets on mobile */
+    @media (max-width: 575.98px) {
+        .btn { padding-top: .6rem; padding-bottom: .6rem; }
+    }
+</style>
 {% endblock %}

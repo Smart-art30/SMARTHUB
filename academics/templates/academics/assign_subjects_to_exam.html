@@ -4,295 +4,1373 @@
 
 {% block content %}
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
 <style>
-    .page-card {
+    /* =========================================================
+       MODERN ASSIGN SUBJECTS PAGE
+    ========================================================= */
+
+    .assign-page * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont,
+                     'Segoe UI', Roboto, sans-serif;
+    }
+
+    .assign-page {
+        background: #f7f9fc;
+        min-height: 100vh;
+        padding: 1.5rem 0;
+    }
+
+    .assign-page .page-card {
         border: none;
-        border-radius: 18px;
-        box-shadow: 0 10px 30px rgba(0,0,0,.08);
+        border-radius: 22px;
+        box-shadow:
+            0 8px 24px rgba(0, 0, 0, 0.03),
+            0 2px 6px rgba(0, 0, 0, 0.02);
         overflow: hidden;
+        background: #ffffff;
     }
 
-    .page-header {
-        background: linear-gradient(135deg,#4f46e5,#7c3aed);
-        color: white;
-        padding: 1rem 1.25rem;
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
+    .assign-page .page-header {
+        background: linear-gradient(145deg, #1a2b4e, #1e3b7c);
+        color: #ffffff;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .panel-box {
+    .assign-page .page-header h3 {
+        font-weight: 700;
+        font-size: 1.35rem;
+        letter-spacing: -0.01em;
+        margin-bottom: 0.25rem;
+    }
+
+    .assign-page .page-header small {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.85rem;
+        font-weight: 400;
+    }
+
+    .assign-page .page-header i {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* =========================================================
+       FORM LABELS
+    ========================================================= */
+
+    .assign-page .form-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: #5e6f8d;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    /* =========================================================
+       SELECTS
+    ========================================================= */
+
+    .assign-page .form-select {
+        border-radius: 12px;
         border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        padding: 1rem;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+        color: #0b1e33;
+        background-color: #ffffff;
+        transition: all 0.15s ease;
+        box-shadow: none;
+    }
+
+    .assign-page .form-select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .assign-page .form-select:disabled {
+        background-color: #f1f5f9;
+        cursor: not-allowed;
+    }
+
+    /* =========================================================
+       PANEL BOXES
+    ========================================================= */
+
+    .assign-page .panel-box {
+        border: 1px solid #eef2f7;
+        border-radius: 16px;
+        padding: 0.75rem;
         max-height: 360px;
         overflow-y: auto;
-        background: #f8fafc;
+        background: #f9fbfe;
     }
 
-    .item {
+    .assign-page .panel-box::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .assign-page .panel-box::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .assign-page .panel-box::-webkit-scrollbar-thumb {
+        background: #d5deeb;
+        border-radius: 10px;
+    }
+
+    .assign-page .panel-box::-webkit-scrollbar-thumb:hover {
+        background: #b8c5d9;
+    }
+
+    /* =========================================================
+       ITEMS
+    ========================================================= */
+
+    .assign-page .item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: .75rem;
-        padding: .8rem;
-        background: white;
-        border-radius: 12px;
-        margin-bottom: .6rem;
-        border: 1px solid #eee;
+        gap: 0.75rem;
+        padding: 0.8rem 0.9rem;
+        background: #ffffff;
+        border-radius: 14px;
+        margin-bottom: 0.55rem;
+        border: 1px solid #eef2f7;
         flex-wrap: wrap;
+        transition: all 0.15s ease;
     }
 
-    .item:hover {
-        border-color: #6366f1;
+    .assign-page .item:last-child {
+        margin-bottom: 0;
     }
 
-    .badge-soft {
-        background: #e0e7ff;
-        color: #4338ca;
-        padding: .3rem .7rem;
+    .assign-page .item:hover {
+        border-color: #c7d6f0;
+        background: #fbfcff;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.04);
+    }
+
+    .assign-page .item label,
+    .assign-page .item > div {
+        font-size: 0.9rem;
+        color: #111827;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .assign-page .item small.text-muted {
+        color: #7c8ba3 !important;
+        font-size: 0.78rem;
+        margin-left: 0.25rem;
+    }
+
+    /* =========================================================
+       CHECKBOXES
+    ========================================================= */
+
+    .assign-page input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: #2563eb;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-right: 0.4rem;
+        flex-shrink: 0;
+    }
+
+    /* =========================================================
+       BADGES
+    ========================================================= */
+
+    .assign-page .badge-soft {
+        background: #e8efff;
+        color: #2563eb;
+        padding: 0.32rem 0.75rem;
         border-radius: 999px;
-        font-size: .8rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
         white-space: nowrap;
+        border: 1px solid rgba(37, 99, 235, 0.08);
     }
 
-    .remove-btn {
-        background: #dc2626;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: .35rem .65rem;
+    /* =========================================================
+       REMOVE BUTTON
+    ========================================================= */
+
+    .assign-page .remove-btn {
+        background: #fff1f1;
+        color: #b91c1c;
+        border: 1px solid #f5d4d7;
+        border-radius: 10px;
+        padding: 0.35rem 0.7rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
     }
 
-    .remove-btn:hover {
-        background: #b91c1c;
+    .assign-page .remove-btn:hover {
+        background: #fee2e2;
+        border-color: #fca5a5;
+        color: #991b1b;
+        transform: translateY(-1px);
     }
 
-    .container-box {
+    /* =========================================================
+       TWO-COLUMN LAYOUT
+    ========================================================= */
+
+    .assign-page .container-box {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 1.25rem;
     }
 
     @media (min-width: 992px) {
-        .container-box {
+        .assign-page .container-box {
             grid-template-columns: 1fr 1fr;
         }
     }
 
+    /* =========================================================
+       INNER CARDS
+    ========================================================= */
+
+    .assign-page .container-box .card.page-card .page-header {
+        padding: 0.9rem 1.15rem;
+        font-size: 0.9rem;
+    }
+
+    .assign-page .container-box .card.page-card .page-header strong {
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    .assign-page .container-box .card.page-card .panel-box {
+        border-radius: 0 0 18px 18px;
+        border: none;
+        border-top: 1px solid #eef2f7;
+        max-height: 320px;
+        background: #ffffff;
+        padding: 0.75rem 0.9rem;
+    }
+
+    /* =========================================================
+       SAVE BUTTON
+    ========================================================= */
+
+    .assign-page .btn-primary {
+        background: #2563eb;
+        border: none;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 0.85rem 1.5rem;
+        transition: all 0.15s ease;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    }
+
+    .assign-page .btn-primary:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.22);
+    }
+
+    /* =========================================================
+       SAVED ASSIGNMENTS
+    ========================================================= */
+
+    .assign-page hr {
+        border: none;
+        border-top: 1px solid #eef2f7;
+        opacity: 1;
+        margin: 2rem 0 1.5rem;
+    }
+
+    .assign-page h5 {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #0b1e33;
+        letter-spacing: -0.01em;
+        margin-bottom: 1rem;
+    }
+
+    .assign-page .text-muted.mb-0 {
+        color: #8896ab !important;
+        font-size: 0.88rem;
+        padding: 0.5rem 0.25rem;
+    }
+
+    .assign-page .item > div strong {
+        font-weight: 600;
+        color: #0b1e33;
+        font-size: 0.92rem;
+    }
+
+    .assign-page .item > div small.text-muted {
+        font-size: 0.78rem;
+        color: #7c8ba3 !important;
+    }
+
+    /* =========================================================
+       SELECTION INFO
+    ========================================================= */
+
+    .selection-info {
+        background: #f0f6ff;
+        border: 1px solid #dbeafe;
+        border-radius: 14px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 1.25rem;
+        color: #1e3a8a;
+        font-size: 0.88rem;
+    }
+
+    .selection-info strong {
+        font-weight: 700;
+    }
+
+    /* =========================================================
+       FORM ERRORS
+    ========================================================= */
+
+    .assign-page .alert-danger {
+        border-radius: 12px;
+        border: none;
+        font-size: 0.9rem;
+    }
+
+    .assign-page .invalid-feedback {
+        font-size: 0.8rem;
+    }
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
     @media (max-width: 575.98px) {
-        .page-header {
-            padding: .9rem 1rem;
+
+        .assign-page {
+            padding: 1rem 0;
         }
 
-        .panel-box {
-            padding: .75rem;
+        .assign-page .page-header {
+            padding: 1rem;
+        }
+
+        .assign-page .page-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .assign-page .panel-box {
+            padding: 0.65rem;
             max-height: 300px;
         }
 
-        .item {
-            padding: .7rem;
+        .assign-page .item {
+            padding: 0.7rem;
         }
 
-        .badge-soft {
-            font-size: .75rem;
-            padding: .25rem .6rem;
+        .assign-page .badge-soft {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.6rem;
         }
 
-        .remove-btn {
+        .assign-page .remove-btn {
             width: 100%;
+            justify-content: center;
+        }
+
+        .assign-page .btn-primary {
+            font-size: 0.9rem;
+            padding: 0.75rem 1rem;
         }
     }
 </style>
 
-<div class="container py-3 py-md-4">
-    <div class="page-card bg-white">
-        <div class="page-header">
-            <h3 class="mb-0 fw-bold fs-5 fs-md-3">
-                <i class="bi bi-book me-2"></i>
-                Assign Subjects to Exam
-            </h3>
-            <small class="d-block mt-1">Choose one exam, multiple classes, and multiple subjects.</small>
-        </div>
 
-        <div class="p-3 p-md-4">
-            <form method="POST" id="assignForm">
-                {% csrf_token %}
+<div class="assign-page">
 
-                <div class="row g-3 mb-4">
-                    <div class="col-12 col-lg-6">
-                        <label class="form-label fw-semibold">Exam</label>
-                        {{ form.exam|add_class:"form-select" }}
+    <div class="container py-3 py-md-4">
+
+        <div class="page-card bg-white">
+
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+            <div class="page-header">
+
+                <h3 class="mb-0 fw-bold">
+                    <i class="bi bi-book me-2"></i>
+                    Assign Subjects to Exam
+                </h3>
+
+                <small class="d-block mt-1">
+                    Choose an academic year, term, exam, classes,
+                    and subjects.
+                </small>
+
+            </div>
+
+
+            <div class="p-3 p-md-4">
+
+                <!-- =================================================
+                     FORM ERRORS
+                ================================================== -->
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
                     </div>
+                {% endif %}
 
-                    <div class="col-12 col-lg-6">
-                        <label class="form-label fw-semibold">Classes</label>
-                        <div class="panel-box">
-                            {% for cls in classes %}
-                                <label class="item">
-                                    <div>
-                                        <input
-                                            type="checkbox"
-                                            name="school_class"
-                                            value="{{ cls.id }}"
-                                            class="class-check me-2"
-                                            {% if cls.id in selected_class_ids %}checked{% endif %}>
-                                        <span class="fw-medium">{{ cls.name }}</span>
-                                        <small class="text-muted">
-                                            {{ cls.section }} {{ cls.stream }}
-                                        </small>
-                                    </div>
-                                    <span class="badge-soft">Add</span>
-                                </label>
-                            {% empty %}
-                                <p class="text-muted mb-0">No classes available.</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
 
-                <div class="container-box">
-                    <div class="card page-card">
-                        <div class="page-header">
-                            <strong>Available Subjects</strong>
-                        </div>
-                        <div class="panel-box">
-                            {% for subject in form.subjects.field.queryset %}
-                                <label class="item subject-item" data-id="{{ subject.id }}" data-name="{{ subject.name }}">
-                                    <div>
-                                        <input type="checkbox"
-                                               name="{{ form.subjects.name }}"
-                                               value="{{ subject.id }}"
-                                               class="subject-check me-2"
-                                               {% if subject.id in assigned_ids %}checked{% endif %}>
-                                        {{ subject.name }}
-                                    </div>
-                                    <span class="badge-soft">Add</span>
-                                </label>
-                            {% empty %}
-                                <p class="text-muted mb-0">No subjects available.</p>
-                            {% endfor %}
-                        </div>
-                    </div>
+                <form method="POST" id="assignForm">
 
-                    <div class="card page-card">
-                        <div class="page-header">
-                            <strong>Selected Subjects</strong>
-                        </div>
-                        <div class="panel-box" id="selectedList">
-                            {% if selected_subjects %}
-                                {% for subject in selected_subjects %}
-                                    <div class="item selected-item" data-id="{{ subject.id }}">
-                                        <div>
-                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                            {{ subject.name }}
-                                        </div>
-                                        <button type="button"
-                                                class="remove-btn"
-                                                onclick="removeSubject({{ subject.id }})">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                {% endfor %}
-                            {% else %}
-                                <p class="text-muted mb-0" id="emptySelected">No subjects selected</p>
+                    {% csrf_token %}
+
+
+                    <!-- =================================================
+                         YEAR + TERM + EXAM
+                    ================================================== -->
+
+                    <div class="row g-3 mb-4">
+
+                        <!-- ACADEMIC YEAR -->
+                        <div class="col-12 col-md-4">
+
+                            <label
+                                for="id_year"
+                                class="form-label fw-semibold"
+                            >
+                                Academic Year
+                            </label>
+
+                            {{ form.year|add_class:"form-select" }}
+
+                            {% if form.year.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.year.errors }}
+                                </div>
                             {% endif %}
-                        </div>
-                    </div>
-                </div>
 
-                <div class="mt-4">
-                    <button class="btn btn-primary w-100 py-2" type="submit">
-                        <i class="bi bi-save me-1"></i> Save Assignment
-                    </button>
-                </div>
-            </form>
-
-            <hr class="my-4">
-
-            {% if assigned_subjects %}
-                <h5 class="mb-3">Saved Assignments</h5>
-
-                {% for exam_subject in assigned_subjects %}
-                    <div class="item">
-                        <div>
-                            <strong>{{ exam_subject.subject.name }}</strong><br>
-                            <small class="text-muted">
-                                Class: {{ exam_subject.school_class.name }} {{ exam_subject.school_class.section }} {{ exam_subject.school_class.stream }}
-                            </small>
                         </div>
 
-                        <form method="POST" action="{% url 'academics:remove_exam_subject' exam_subject.id %}">
-                            {% csrf_token %}
-                            <button class="remove-btn" type="submit">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
+
+                        <!-- TERM -->
+                        <div class="col-12 col-md-4">
+
+                            <label
+                                for="id_term"
+                                class="form-label fw-semibold"
+                            >
+                                Academic Term
+                            </label>
+
+                            {{ form.term|add_class:"form-select" }}
+
+                            {% if form.term.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.term.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- EXAM -->
+                        <div class="col-12 col-md-4">
+
+                            <label
+                                for="id_exam"
+                                class="form-label fw-semibold"
+                            >
+                                Exam
+                            </label>
+
+                            <select
+                                name="exam"
+                                id="id_exam"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="">
+                                    Select Exam
+                                </option>
+
+                                {% for exam_option in form.exam.field.queryset %}
+
+                                    <option
+                                        value="{{ exam_option.id }}"
+                                        data-year="{{ exam_option.year }}"
+                                        data-term="{{ exam_option.term_id }}"
+                                        {% if form.exam.value|stringformat:"s" == exam_option.id|stringformat:"s" %}
+                                            selected
+                                        {% endif %}
+                                    >
+
+                                        {{ exam_option.name }}
+                                        —
+                                        {{ exam_option.exam_type }}
+                                        —
+                                        {{ exam_option.year }}
+                                        —
+                                        {{ exam_option.term.term }}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                            {% if form.exam.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.exam.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
                     </div>
-                {% endfor %}
-            {% endif %}
+
+
+                    <!-- =================================================
+                         CURRENT SELECTION INFORMATION
+                    ================================================== -->
+
+                    <div
+                        class="selection-info"
+                        id="selectionInfo"
+                    >
+
+                        <i class="bi bi-info-circle me-1"></i>
+
+                        <strong>Selection:</strong>
+
+                        <span id="selectionText">
+                            Select an academic year and term.
+                        </span>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         CLASSES
+                    ================================================== -->
+
+                    <div class="row g-3 mb-4">
+
+                        <div class="col-12">
+
+                            <label class="form-label fw-semibold">
+                                Classes
+                            </label>
+
+                            <div class="panel-box">
+
+                                {% for cls in classes %}
+
+                                    <label class="item">
+
+                                        <div>
+
+                                            <input
+                                                type="checkbox"
+                                                name="school_class"
+                                                value="{{ cls.id }}"
+                                                class="class-check me-2"
+
+                                                {% if cls.id in selected_class_ids %}
+                                                    checked
+                                                {% endif %}
+                                            >
+
+                                            <span class="fw-medium">
+                                                {{ cls.name }}
+                                            </span>
+
+                                            {% if cls.section %}
+                                                <small class="text-muted">
+                                                    {{ cls.section }}
+                                                </small>
+                                            {% endif %}
+
+                                            {% if cls.stream %}
+                                                <small class="text-muted">
+                                                    {{ cls.stream }}
+                                                </small>
+                                            {% endif %}
+
+                                        </div>
+
+                                        <span class="badge-soft">
+                                            Select
+                                        </span>
+
+                                    </label>
+
+                                {% empty %}
+
+                                    <p class="text-muted mb-0">
+                                        No classes available.
+                                    </p>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SUBJECTS + SELECTED SUBJECTS
+                    ================================================== -->
+
+                    <div class="container-box">
+
+
+                        <!-- =================================================
+                             AVAILABLE SUBJECTS
+                        ================================================== -->
+
+                        <div class="card page-card">
+
+                            <div class="page-header">
+
+                                <strong>
+                                    Available Subjects
+                                </strong>
+
+                            </div>
+
+
+                            <div class="panel-box">
+
+                                {% for subject in form.subjects.field.queryset %}
+
+                                    <label
+                                        class="item subject-item"
+                                        data-id="{{ subject.id }}"
+                                        data-name="{{ subject.name }}"
+                                    >
+
+                                        <div>
+
+                                            <input
+                                                type="checkbox"
+                                                name="{{ form.subjects.name }}"
+                                                value="{{ subject.id }}"
+                                                class="subject-check me-2"
+
+                                                {% if subject.id in assigned_ids %}
+                                                    checked
+                                                {% endif %}
+                                            >
+
+                                            {{ subject.name }}
+
+                                            {% if subject.code %}
+                                                <small class="text-muted">
+                                                    ({{ subject.code }})
+                                                </small>
+                                            {% endif %}
+
+                                        </div>
+
+                                        <span class="badge-soft">
+                                            Add
+                                        </span>
+
+                                    </label>
+
+                                {% empty %}
+
+                                    <p class="text-muted mb-0">
+                                        No subjects available.
+                                    </p>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             SELECTED SUBJECTS
+                        ================================================== -->
+
+                        <div class="card page-card">
+
+                            <div class="page-header">
+
+                                <strong>
+                                    Selected Subjects
+                                </strong>
+
+                            </div>
+
+
+                            <div
+                                class="panel-box"
+                                id="selectedList"
+                            >
+
+                                <p
+                                    class="text-muted mb-0"
+                                    id="emptySelected"
+                                >
+                                    No subjects selected
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SAVE BUTTON
+                    ================================================== -->
+
+                    <div class="mt-4">
+
+                        <button
+                            class="btn btn-primary w-100 py-2"
+                            type="submit"
+                        >
+
+                            <i class="bi bi-save me-1"></i>
+
+                            Save Assignment
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+                <!-- =================================================
+                     SAVED ASSIGNMENTS
+                ================================================== -->
+
+                <hr class="my-4">
+
+
+                {% if assigned_subjects %}
+
+                    <h5 class="mb-3">
+
+                        <i class="bi bi-check2-circle me-1"></i>
+
+                        Saved Assignments
+
+                    </h5>
+
+
+                    <div class="selection-info">
+
+                        <strong>
+                            {{ exam.name }}
+                        </strong>
+
+                        <br>
+
+                        Academic Year:
+                        <strong>{{ exam.year }}</strong>
+
+                        &nbsp; | &nbsp;
+
+                        Term:
+                        <strong>{{ exam.term.term }}</strong>
+
+                        {% if school_class %}
+                            &nbsp; | &nbsp;
+
+                            Class:
+                            <strong>
+                                {{ school_class.name }}
+                                {% if school_class.section %}
+                                    {{ school_class.section }}
+                                {% endif %}
+                                {% if school_class.stream %}
+                                    {{ school_class.stream }}
+                                {% endif %}
+                            </strong>
+                        {% endif %}
+
+                    </div>
+
+
+                    {% for exam_subject in assigned_subjects %}
+
+                        <div class="item">
+
+                            <div>
+
+                                <strong>
+                                    {{ exam_subject.subject.name }}
+                                </strong>
+
+                                {% if exam_subject.subject.code %}
+                                    <small class="text-muted">
+                                        ({{ exam_subject.subject.code }})
+                                    </small>
+                                {% endif %}
+
+                                <br>
+
+                                <small class="text-muted">
+
+                                    Class:
+
+                                    {{ exam_subject.school_class.name }}
+
+                                    {% if exam_subject.school_class.section %}
+                                        {{ exam_subject.school_class.section }}
+                                    {% endif %}
+
+                                    {% if exam_subject.school_class.stream %}
+                                        {{ exam_subject.school_class.stream }}
+                                    {% endif %}
+
+                                </small>
+
+                            </div>
+
+
+                            <form
+                                method="POST"
+                                action="{% url 'academics:remove_exam_subject' exam_subject.id %}"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    class="remove-btn"
+                                    type="submit"
+                                    onclick="return confirm(
+                                        'Remove this subject from the exam?'
+                                    );"
+                                >
+
+                                    <i class="bi bi-trash"></i>
+
+                                    Remove
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            </div>
+
         </div>
+
     </div>
+
 </div>
 
+
+<!-- =============================================================
+     JAVASCRIPT
+============================================================== -->
+
 <script>
-function removeSubject(id) {
-    const cb = document.querySelector(`input.subject-check[value="${id}"]`);
-    if (cb) cb.checked = false;
 
-    const el = document.querySelector(`.selected-item[data-id="${id}"]`);
-    if (el) el.remove();
+document.addEventListener("DOMContentLoaded", function () {
 
-    refreshEmptyState();
-}
+    const yearSelect = document.getElementById("id_year");
+    const termSelect = document.getElementById("id_term");
+    const examSelect = document.getElementById("id_exam");
 
-function refreshEmptyState() {
-    const selectedList = document.getElementById('selectedList');
-    const hasItems = selectedList.querySelectorAll('.selected-item').length > 0;
-    const empty = document.getElementById('emptySelected');
+    const selectionText =
+        document.getElementById("selectionText");
 
-    if (!hasItems && !empty) {
-        selectedList.innerHTML = '<p class="text-muted mb-0" id="emptySelected">No subjects selected</p>';
-    } else if (hasItems && empty) {
-        empty.remove();
-    }
-}
+    const selectedList =
+        document.getElementById("selectedList");
 
-document.querySelectorAll('.subject-check').forEach(cb => {
-    cb.addEventListener('change', function () {
-        const subjectItem = this.closest('.subject-item');
-        const id = this.value;
-        const name = subjectItem.dataset.name;
-        const selectedList = document.getElementById('selectedList');
+    const emptySelected =
+        document.getElementById("emptySelected");
 
-        if (this.checked) {
-            const existing = document.querySelector(`.selected-item[data-id="${id}"]`);
-            if (!existing) {
-                const div = document.createElement('div');
-                div.className = 'item selected-item';
-                div.setAttribute('data-id', id);
-                div.innerHTML = `
-                    <div>
-                        <i class="bi bi-check-circle-fill text-success me-2"></i>
-                        ${name}
-                    </div>
-                    <button type="button" class="remove-btn" onclick="removeSubject(${id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                `;
-                const empty = document.getElementById('emptySelected');
-                if (empty) empty.remove();
-                selectedList.appendChild(div);
+
+    /* =========================================================
+       FILTER EXAMS BY YEAR + TERM
+    ========================================================= */
+
+    function filterExams() {
+
+        const selectedYear = yearSelect.value;
+        const selectedTerm = termSelect.value;
+
+        const currentExam = examSelect.value;
+
+        let validExamExists = false;
+
+
+        Array.from(examSelect.options).forEach(function (option) {
+
+            /*
+             * Keep the placeholder visible.
+             */
+            if (!option.value) {
+                option.hidden = false;
+                return;
             }
-        } else {
-            const existing = document.querySelector(`.selected-item[data-id="${id}"]`);
-            if (existing) existing.remove();
+
+
+            const examYear =
+                option.dataset.year;
+
+            const examTerm =
+                option.dataset.term;
+
+
+            /*
+             * Show only exams matching:
+             *
+             * Year
+             * +
+             * Term
+             */
+            if (
+                selectedYear &&
+                selectedTerm &&
+                examYear === selectedYear &&
+                examTerm === selectedTerm
+            ) {
+
+                option.hidden = false;
+
+                validExamExists = true;
+
+            } else {
+
+                option.hidden = true;
+
+            }
+
+        });
+
+
+        /*
+         * If the currently selected exam does not belong
+         * to the selected year/term, clear it.
+         */
+        const selectedOption =
+            examSelect.options[examSelect.selectedIndex];
+
+        if (
+            selectedOption &&
+            selectedOption.value &&
+            selectedOption.hidden
+        ) {
+
+            examSelect.value = "";
+
         }
 
+
+        /*
+         * Enable exam only after year and term are selected.
+         */
+        examSelect.disabled =
+            !(selectedYear && selectedTerm);
+
+
+        /*
+         * Update information message.
+         */
+        if (!selectedYear) {
+
+            selectionText.textContent =
+                "Select an academic year and term.";
+
+        } else if (!selectedTerm) {
+
+            selectionText.textContent =
+                "Select a term for " + selectedYear + ".";
+
+        } else if (!validExamExists) {
+
+            selectionText.textContent =
+                "No exam has been created for " +
+                selectedYear +
+                " / " +
+                getTermName() +
+                ". Create the exam first.";
+
+        } else {
+
+            selectionText.textContent =
+                "Showing exams for " +
+                selectedYear +
+                " / " +
+                getTermName() +
+                ".";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       GET TERM NAME
+    ========================================================= */
+
+    function getTermName() {
+
+        if (!termSelect.value) {
+            return "";
+        }
+
+        const option =
+            termSelect.options[termSelect.selectedIndex];
+
+        return option ? option.text : "";
+
+    }
+
+
+    /* =========================================================
+       YEAR CHANGE
+    ========================================================= */
+
+    yearSelect.addEventListener(
+        "change",
+        function () {
+
+            filterExams();
+
+        }
+    );
+
+
+    /* =========================================================
+       TERM CHANGE
+    ========================================================= */
+
+    termSelect.addEventListener(
+        "change",
+        function () {
+
+            filterExams();
+
+        }
+    );
+
+
+    /* =========================================================
+       EXAM CHANGE
+    ========================================================= */
+
+    examSelect.addEventListener(
+        "change",
+        function () {
+
+            const selectedOption =
+                examSelect.options[
+                    examSelect.selectedIndex
+                ];
+
+            if (
+                selectedOption &&
+                selectedOption.value
+            ) {
+
+                selectionText.textContent =
+                    "Selected: " +
+                    selectedOption.text;
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       REMOVE SUBJECT
+    ========================================================= */
+
+    window.removeSubject = function (id) {
+
+        const checkbox =
+            document.querySelector(
+                `input.subject-check[value="${id}"]`
+            );
+
+        if (checkbox) {
+            checkbox.checked = false;
+        }
+
+
+        const selectedItem =
+            document.querySelector(
+                `.selected-item[data-id="${id}"]`
+            );
+
+        if (selectedItem) {
+            selectedItem.remove();
+        }
+
+
         refreshEmptyState();
+
+    };
+
+
+    /* =========================================================
+       EMPTY SELECTED SUBJECTS MESSAGE
+    ========================================================= */
+
+    function refreshEmptyState() {
+
+        const hasItems =
+            selectedList.querySelectorAll(
+                ".selected-item"
+            ).length > 0;
+
+
+        const empty =
+            document.getElementById(
+                "emptySelected"
+            );
+
+
+        if (!hasItems && !empty) {
+
+            const message =
+                document.createElement("p");
+
+            message.className =
+                "text-muted mb-0";
+
+            message.id =
+                "emptySelected";
+
+            message.textContent =
+                "No subjects selected";
+
+            selectedList.appendChild(
+                message
+            );
+
+        } else if (hasItems && empty) {
+
+            empty.remove();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       SUBJECT CHECKBOXES
+    ========================================================= */
+
+    document.querySelectorAll(
+        ".subject-check"
+    ).forEach(function (checkbox) {
+
+        checkbox.addEventListener(
+            "change",
+            function () {
+
+                const subjectItem =
+                    this.closest(
+                        ".subject-item"
+                    );
+
+                if (!subjectItem) {
+                    return;
+                }
+
+
+                const id =
+                    this.value;
+
+                const name =
+                    subjectItem.dataset.name;
+
+
+                if (this.checked) {
+
+                    const existing =
+                        document.querySelector(
+                            `.selected-item[data-id="${id}"]`
+                        );
+
+
+                    if (!existing) {
+
+                        const div =
+                            document.createElement("div");
+
+                        div.className =
+                            "item selected-item";
+
+                        div.dataset.id =
+                            id;
+
+
+                        div.innerHTML = `
+                            <div>
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                ${name}
+                            </div>
+
+                            <button
+                                type="button"
+                                class="remove-btn"
+                                onclick="removeSubject(${id})"
+                            >
+                                <i class="bi bi-trash"></i>
+                                Remove
+                            </button>
+                        `;
+
+
+                        const empty =
+                            document.getElementById(
+                                "emptySelected"
+                            );
+
+                        if (empty) {
+                            empty.remove();
+                        }
+
+
+                        selectedList.appendChild(
+                            div
+                        );
+
+                    }
+
+                } else {
+
+                    const existing =
+                        document.querySelector(
+                            `.selected-item[data-id="${id}"]`
+                        );
+
+                    if (existing) {
+                        existing.remove();
+                    }
+
+                }
+
+
+                refreshEmptyState();
+
+            }
+        );
+
     });
+
+
+    /* =========================================================
+       INITIALISE PAGE
+    ========================================================= */
+
+    filterExams();
+
+
+    /*
+     * Build the selected-subject panel from the subjects
+     * that are already checked.
+     */
+    document.querySelectorAll(
+        ".subject-check:checked"
+    ).forEach(function (checkbox) {
+
+        const subjectItem =
+            checkbox.closest(
+                ".subject-item"
+            );
+
+        if (!subjectItem) {
+            return;
+        }
+
+
+        const id =
+            checkbox.value;
+
+        const name =
+            subjectItem.dataset.name;
+
+
+        const existing =
+            document.querySelector(
+                `.selected-item[data-id="${id}"]`
+            );
+
+
+        if (!existing) {
+
+            const div =
+                document.createElement("div");
+
+            div.className =
+                "item selected-item";
+
+            div.dataset.id =
+                id;
+
+
+            div.innerHTML = `
+                <div>
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    ${name}
+                </div>
+
+                <button
+                    type="button"
+                    class="remove-btn"
+                    onclick="removeSubject(${id})"
+                >
+                    <i class="bi bi-trash"></i>
+                    Remove
+                </button>
+            `;
+
+
+            selectedList.appendChild(
+                div
+            );
+
+        }
+
+    });
+
+
+    refreshEmptyState();
+
 });
 
-refreshEmptyState();
 </script>
 
 {% endblock %}

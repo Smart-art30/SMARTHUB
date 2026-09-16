@@ -3,340 +3,569 @@
 
 {% block content %}
 
-<div class="container-fluid py-4">
-
-    <!-- HEADER -->
-    <div class="dashboard-header mb-4">
-
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-
-            <div>
-                <h1 class="fw-bold mb-1">
-                    <i class="bi bi-journal-text me-2 text-primary"></i>
-                    Exams Dashboard
-                </h1>
-
-                <p class="text-muted mb-0">
-                    Manage exams, assign classes, and enter marks efficiently.
-                </p>
-            </div>
-
-            <div class="d-flex gap-2 flex-wrap">
-
-                <a href="{% url 'academics:exam_add' %}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Add Exam
-                </a>
-
-                <a href="{% url 'academics:assign_subjects_to_exam' %}" class="btn btn-outline-secondary">
-                    <i class="bi bi-diagram-3 me-2"></i>
-                    Assign Classes
-                </a>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    {% if exams %}
-
-    <!-- GRID -->
-    <div class="row g-4">
-
-        {% for e in exams %}
-
-        <div class="col-12 col-md-6 col-xl-4">
-
-            <div class="card exam-card border-0 shadow-sm">
-
-                <!-- HEADER -->
-                <div class="card-header exam-header text-white">
-
-                    <div class="d-flex justify-content-between align-items-start">
-
-                        <div class="d-flex align-items-center gap-3">
-
-                            <div class="exam-icon">
-                                <i class="bi bi-file-earmark-text-fill"></i>
-                            </div>
-
-                            <div>
-                                <h5 class="mb-1 fw-bold">
-                                    {{ e.name|default:"Unnamed Exam" }}
-                                </h5>
-
-                                <div class="d-flex gap-2 flex-wrap">
-
-                                    <span class="badge bg-light text-dark">
-                                        {{ e.term }}
-                                    </span>
-
-                                    <span class="badge bg-light text-dark">
-                                        {{ e.year }}
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <!-- MENU -->
-                        <div class="dropdown">
-
-                            <button class="btn btn-sm btn-light"
-                                    data-bs-toggle="dropdown">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-
-                            <ul class="dropdown-menu dropdown-menu-end">
-
-                                <li>
-                                    <a class="dropdown-item"
-                                       href="{% url 'academics:exam_edit' e.id %}">
-                                        Edit
-                                    </a>
-                                </li>
-
-                                <li><hr class="dropdown-divider"></li>
-
-                                <li>
-                                    <a class="dropdown-item text-danger"
-                                       href="{% url 'academics:exam_delete' e.id %}"
-                                       onclick="return confirm('Delete exam?');">
-                                        Delete
-                                    </a>
-                                </li>
-
-                            </ul>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- BODY -->
-                <div class="card-body">
-
-                    {% if e.assigned_classes %}
-
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-
-                        <strong>Assigned Classes</strong>
-
-                        <span class="badge bg-success">
-                            {{ e.assigned_classes|length }}
-                        </span>
-
-                    </div>
-
-                    <!-- FIRST 4 CLASSES -->
-   {% for sc in e.assigned_classes|slice:":4" %}
-
-<div class="class-item mb-2">
-
-    <div class="d-flex justify-content-between align-items-center">
-
-        <div>
-            <i class="bi bi-mortarboard-fill text-primary me-2"></i>
-            {{ sc.name }}
-        </div>
-
-        <div class="btn-group btn-group-sm">
-
-            <a href="{% url 'academics:enter_marks' class_id=sc.id exam_id=e.id %}"
-               class="btn btn-success">
-                Marks
-            </a>
-
-            <a href="{% url 'academics:assign_subjects_to_exam' %}?exam={{ e.id }}&class={{ sc.id }}"
-               class="btn btn-outline-primary">
-                Subjects
-            </a>
-
-            <form method="post"
-                  action="{% url 'academics:unassign_exam_class' e.id sc.id %}"
-                  onsubmit="return confirm('Remove this class from the exam?');"
-                  style="display:inline;">
-
-                {% csrf_token %}
-
-                <button type="submit" class="btn btn-outline-danger">
-                    <i class="bi bi-x-circle"></i>
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</div>
-
-{% endfor %}
-{% if e.assigned_classes|length > 4 %}
-
-<div class="collapse" id="cls{{ e.id }}">
-
-   {% for sc in e.assigned_classes|slice:"4:" %}
-
-<div class="class-item mb-2">
-
-    <div class="d-flex justify-content-between align-items-center">
-
-        <div>
-            <i class="bi bi-mortarboard-fill text-primary me-2"></i>
-            {{ sc.name }}
-        </div>
-
-        <div class="btn-group btn-group-sm">
-
-            <a href="{% url 'academics:enter_marks' class_id=sc.id exam_id=e.id %}"
-               class="btn btn-success">
-                Marks
-            </a>
-
-            <a href="{% url 'academics:assign_subjects_to_exam' %}?exam={{ e.id }}&class={{ sc.id }}"
-               class="btn btn-outline-primary">
-                Subjects
-            </a>
-
-            <form method="post"
-                  action="{% url 'academics:unassign_exam_class' e.id sc.id %}"
-                  onsubmit="return confirm('Remove this class from the exam?');"
-                  style="display:inline;">
-
-                {% csrf_token %}
-
-                <button type="submit" class="btn btn-outline-danger">
-                    <i class="bi bi-x-circle"></i>
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</div>
-
-{% endfor %}
-</div>
-
-<button class="btn btn-light border w-100 mt-2"
-        data-bs-toggle="collapse"
-        data-bs-target="#cls{{ e.id }}">
-    View More Classes
-</button>
-
-{% endif %}
-
-                    {% else %}
-
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-folder-x display-6"></i>
-                        <p class="mt-2 mb-0">No classes assigned</p>
-                    </div>
-
-                    {% endif %}
-
-                </div>
-
-                <!-- FOOTER -->
-                <div class="card-footer bg-light">
-
-                    <small class="text-muted">
-                        {{ e.year }}
-                    </small>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-    {% else %}
-
-    <!-- EMPTY -->
-    <div class="text-center py-5">
-
-        <i class="bi bi-journal-x display-1 text-muted"></i>
-
-        <h3 class="mt-3">No Exams Yet</h3>
-
-        <p class="text-muted">Create your first exam to get started.</p>
-
-        <a href="{% url 'academics:exam_add' %}" class="btn btn-primary">
-            Create Exam
-        </a>
-
-    </div>
-
-    {% endif %}
-
-</div>
-
 <style>
-
-.dashboard-header{
-    background: #fff;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-}
-
-.exam-card{
-    border-radius: 16px;
-    overflow: hidden;
-}
-
-.exam-header{
-    background: linear-gradient(135deg,#2563eb,#4f46e5);
-    padding: 18px;
-}
-
-.exam-icon{
-    width: 50px;
-    height: 50px;
-    background: rgba(255,255,255,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    color: #fff;
-}
-
-.class-item{
-    padding: 10px 12px;
-    background: #f8fafc;
-    border-radius: 10px;
-    text-decoration: none;
-    color: #111;
-    transition: 0.2s;
-}
-
-.class-item:hover{
-    background: #eef2ff;
-    transform: translateX(3px);
-}
-
-@media(max-width:768px){
-
-    .dashboard-header{
-        text-align: center;
+    /* ===== MODERN EXAMS DASHBOARD ===== */
+    .exams-dashboard * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    .btn{
-        width: 100%;
+    .exams-dashboard {
+        background: #f7f9fc;
+        padding: 1.5rem 0;
+        min-height: 100vh;
     }
-}
 
+    /* Header */
+    .exams-dashboard .dashboard-header {
+        background: #ffffff;
+        padding: 1.5rem 2rem;
+        border-radius: 24px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(0, 0, 0, 0.02);
+    }
+
+    .exams-dashboard .dashboard-header h1 {
+        font-weight: 700;
+        font-size: 1.9rem;
+        letter-spacing: -0.02em;
+        color: #0b1e33;
+    }
+
+    .exams-dashboard .dashboard-header .text-muted {
+        color: #5e6f8d !important;
+        font-weight: 400;
+        font-size: 0.98rem;
+    }
+
+    .exams-dashboard .btn-primary {
+        background: #2563eb;
+        border: none;
+        border-radius: 12px;
+        font-weight: 500;
+        padding: 0.6rem 1.4rem;
+        transition: all 0.15s ease;
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15);
+    }
+
+    .exams-dashboard .btn-primary:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+    }
+
+    .exams-dashboard .btn-outline-secondary {
+        border: 1px solid #dde3ec;
+        border-radius: 12px;
+        color: #2f405c;
+        font-weight: 500;
+        padding: 0.6rem 1.4rem;
+        background: #ffffff;
+        transition: all 0.15s ease;
+    }
+
+    .exams-dashboard .btn-outline-secondary:hover {
+        background: #f2f5f9;
+        border-color: #cbd5e1;
+        color: #0b1e33;
+    }
+
+    /* Exam cards */
+    .exams-dashboard .exam-card {
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(0, 0, 0, 0.02) !important;
+        transition: transform 0.2s ease, box-shadow 0.25s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .exams-dashboard .exam-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.08), 0 6px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .exams-dashboard .exam-header {
+        background: linear-gradient(145deg, #1a2b4e, #1e3b7c);
+        padding: 1.1rem 1.1rem;
+        border-radius: 20px 20px 0 0;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .exams-dashboard .exam-icon {
+        width: 44px;
+        height: 44px;
+        background: rgba(255, 255, 255, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 1.4rem;
+        backdrop-filter: blur(2px);
+        flex-shrink: 0;
+    }
+
+    .exams-dashboard .exam-header h5 {
+        font-weight: 600;
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
+        color: #ffffff;
+        word-break: break-word;
+    }
+
+    .exams-dashboard .exam-header .badge {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+        font-weight: 500;
+        padding: 0.3rem 0.75rem;
+        border-radius: 30px;
+        font-size: 0.7rem;
+        letter-spacing: 0.01em;
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .exams-dashboard .exam-header .btn-light {
+        background: rgba(255, 255, 255, 0.12);
+        border: none;
+        color: #ffffff;
+        border-radius: 10px;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+        flex-shrink: 0;
+    }
+
+    .exams-dashboard .exam-header .btn-light:hover {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+    }
+
+    .exams-dashboard .dropdown-menu {
+        border: 1px solid #f0f3f9;
+        border-radius: 14px;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .exams-dashboard .dropdown-item {
+        border-radius: 10px;
+        padding: 0.5rem 0.9rem;
+        font-weight: 500;
+        color: #1e2e4a;
+    }
+
+    .exams-dashboard .dropdown-item:hover {
+        background: #f4f7fe;
+    }
+
+    .exams-dashboard .dropdown-item.text-danger:hover {
+        background: #fee9e9;
+        color: #b91c1c;
+    }
+
+    .exams-dashboard .dropdown-divider {
+        border-color: #eef2f6;
+    }
+
+    /* Card body */
+    .exams-dashboard .card-body {
+        padding: 1.2rem 1.1rem;
+        flex: 1;
+    }
+
+    .exams-dashboard .card-body strong {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: #5e6f8d;
+        font-weight: 600;
+    }
+
+    .exams-dashboard .badge.bg-success {
+        background: #e3f5e9 !important;
+        color: #0f6e3f !important;
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        border-radius: 30px;
+        font-size: 0.7rem;
+    }
+
+    /* Class items */
+    .exams-dashboard .class-item {
+        padding: 0.7rem 0.85rem;
+        background: #f9fbfe;
+        border-radius: 14px;
+        text-decoration: none;
+        color: #111827;
+        transition: all 0.18s ease;
+        border: 1px solid transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .exams-dashboard .class-item:hover {
+        background: #eff4ff;
+        border-color: #d0e0ff;
+        transform: translateX(3px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.04);
+    }
+
+    .exams-dashboard .class-item .bi-mortarboard-fill {
+        color: #2563eb;
+        font-size: 0.95rem;
+    }
+
+    .exams-dashboard .class-item > .d-flex > div:first-child {
+        font-size: 0.9rem;
+        font-weight: 500;
+        min-width: 0;
+        word-break: break-word;
+    }
+
+    .exams-dashboard .class-item .btn-group .btn {
+        border-radius: 9px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        padding: 0.3rem 0.7rem;
+        border: 1px solid transparent;
+        transition: all 0.12s;
+        white-space: nowrap;
+    }
+
+    .exams-dashboard .btn-success {
+        background: #0f6e3f;
+        border: none;
+        color: #ffffff;
+    }
+
+    .exams-dashboard .btn-success:hover {
+        background: #0b5530;
+        transform: translateY(-1px);
+    }
+
+    .exams-dashboard .btn-outline-primary {
+        border: 1px solid #cbd9f0;
+        color: #1e3a8a;
+        background: #ffffff;
+    }
+
+    .exams-dashboard .btn-outline-primary:hover {
+        background: #e8f0fe;
+        border-color: #2563eb;
+        color: #1e3a8a;
+    }
+
+    .exams-dashboard .btn-outline-danger {
+        border: 1px solid #f1d7db;
+        color: #b91c1c;
+        background: #ffffff;
+    }
+
+    .exams-dashboard .btn-outline-danger:hover {
+        background: #fee9e9;
+        border-color: #dc2626;
+        color: #b91c1c;
+    }
+
+    /* Collapse button */
+    .exams-dashboard .btn-light.border {
+        border-radius: 12px;
+        font-weight: 500;
+        font-size: 0.85rem;
+        color: #1e3a8a;
+        background: #ffffff;
+        border: 1px solid #e2e8f0 !important;
+        padding: 0.5rem 1rem;
+        transition: all 0.15s;
+    }
+
+    .exams-dashboard .btn-light.border:hover {
+        background: #f2f6ff;
+        border-color: #b8c9e8 !important;
+    }
+
+    /* Footer */
+    .exams-dashboard .card-footer {
+        background: transparent;
+        border-top: 1px solid #f0f3f9;
+        padding: 0.75rem 1.1rem;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .exams-dashboard .card-footer small {
+        color: #6d7e9c;
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+    }
+
+    /* Empty state */
+    .exams-dashboard .bi-journal-x.display-1 {
+        color: #b7c4d9;
+        font-size: 5rem;
+    }
+
+    .exams-dashboard .py-5 h3 {
+        font-weight: 600;
+        color: #1a2639;
+        font-size: 1.6rem;
+    }
+
+    .exams-dashboard .py-5 .text-muted {
+        font-size: 1rem;
+    }
+
+    .exams-dashboard .bi-folder-x.display-6 {
+        color: #b7c4d9;
+        font-size: 2.6rem;
+    }
+
+    /* Responsive */
+    @media(max-width: 768px) {
+        .exams-dashboard .dashboard-header {
+            text-align: center;
+            padding: 1.25rem;
+        }
+
+        .exams-dashboard .dashboard-header .d-flex {
+            flex-direction: column;
+            align-items: center !important;
+        }
+
+        .exams-dashboard .dashboard-header .d-flex.gap-2 {
+            width: 100%;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .exams-dashboard .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .exams-dashboard .exam-header .d-flex.align-items-center.gap-3 {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 0.75rem !important;
+        }
+
+        .exams-dashboard .class-item .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 0.6rem;
+        }
+
+        .exams-dashboard .class-item .btn-group {
+            width: 100%;
+        }
+
+        .exams-dashboard .class-item .btn-group .btn {
+            flex: 1;
+        }
+
+        .exams-dashboard .exam-header .d-flex.justify-content-between {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+
+        .exams-dashboard .exam-header .dropdown {
+            align-self: flex-end;
+        }
+    }
 </style>
+
+<div class="exams-dashboard">
+    <div class="container-fluid py-4 px-3 px-md-4">
+
+        <!-- HEADER -->
+        <div class="dashboard-header mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="fw-bold mb-1">
+                        <i class="bi bi-journal-text me-2 text-primary" style="color: #2563eb !important;"></i>
+                        Exams Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">
+                        Manage exams, assign classes, and enter marks efficiently.
+                    </p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{% url 'academics:exam_add' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Add Exam
+                    </a>
+                    <a href="{% url 'academics:assign_subjects_to_exam' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-diagram-3 me-2"></i>
+                        Assign Classes
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if exams %}
+
+        <!-- GRID: 1 / 2 / 3 / 4 columns -->
+        <div class="row g-4">
+            {% for e in exams %}
+            <div class="col-12 col-md-6 col-xl-4 col-xxl-3">
+                <div class="card exam-card border-0 shadow-sm">
+
+                    <!-- HEADER -->
+                    <div class="card-header exam-header text-white">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="exam-icon">
+                                    <i class="bi bi-file-earmark-text-fill"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 fw-bold">
+                                        {{ e.name|default:"Unnamed Exam" }}
+                                    </h5>
+                                    <div class="d-flex gap-2 flex-wrap mt-1">
+                                        <span class="badge bg-light text-dark">
+                                            {{ e.term }}
+                                        </span>
+                                        <span class="badge bg-light text-dark">
+                                            {{ e.year }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MENU -->
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'academics:exam_edit' e.id %}">
+                                            <i class="bi bi-pencil-square me-2"></i>Edit
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="{% url 'academics:exam_delete' e.id %}"
+                                           onclick="return confirm('Delete exam?');">
+                                            <i class="bi bi-trash3 me-2"></i>Delete
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BODY -->
+                    <div class="card-body">
+                        {% if e.assigned_classes %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <strong>Assigned Classes</strong>
+                            <span class="badge bg-success">{{ e.assigned_classes|length }}</span>
+                        </div>
+
+                        <!-- FIRST 4 CLASSES -->
+                        {% for sc in e.assigned_classes|slice:":4" %}
+                        <div class="class-item mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-mortarboard-fill text-primary me-2"></i>
+                                    {{ sc.name }}
+                                </div>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'academics:enter_marks' class_id=sc.id exam_id=e.id %}"
+                                       class="btn btn-success">Marks</a>
+                                    <a href="{% url 'academics:assign_subjects_to_exam' %}?exam={{ e.id }}&class={{ sc.id }}"
+                                       class="btn btn-outline-primary">Subjects</a>
+                                    <form method="post"
+                                          action="{% url 'academics:unassign_exam_class' e.id sc.id %}"
+                                          onsubmit="return confirm('Remove this class from the exam?');"
+                                          style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% if e.assigned_classes|length > 4 %}
+                        <div class="collapse" id="cls{{ e.id }}">
+                            {% for sc in e.assigned_classes|slice:"4:" %}
+                            <div class="class-item mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-mortarboard-fill text-primary me-2"></i>
+                                        {{ sc.name }}
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'academics:enter_marks' class_id=sc.id exam_id=e.id %}"
+                                           class="btn btn-success">Marks</a>
+                                        <a href="{% url 'academics:assign_subjects_to_exam' %}?exam={{ e.id }}&class={{ sc.id }}"
+                                           class="btn btn-outline-primary">Subjects</a>
+                                        <form method="post"
+                                              action="{% url 'academics:unassign_exam_class' e.id sc.id %}"
+                                              onsubmit="return confirm('Remove this class from the exam?');"
+                                              style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="btn btn-light border w-100 mt-2" data-bs-toggle="collapse" data-bs-target="#cls{{ e.id }}">
+                            <i class="bi bi-chevron-down me-1"></i> View More Classes
+                        </button>
+                        {% endif %}
+
+                        {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-folder-x display-6"></i>
+                            <p class="mt-2 mb-0">No classes assigned</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="card-footer bg-light">
+                        <small class="text-muted">
+                            <i class="bi bi-calendar3 me-1"></i> {{ e.year }}
+                        </small>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+
+        <!-- EMPTY -->
+        <div class="text-center py-5">
+            <i class="bi bi-journal-x display-1 text-muted"></i>
+            <h3 class="mt-3">No Exams Yet</h3>
+            <p class="text-muted">Create your first exam to get started.</p>
+            <a href="{% url 'academics:exam_add' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i> Create Exam
+            </a>
+        </div>
+
+        {% endif %}
+
+    </div>
+</div>
 
 {% endblock %}
