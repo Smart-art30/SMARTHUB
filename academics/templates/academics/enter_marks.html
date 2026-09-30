@@ -26,7 +26,15 @@
             <div class="exam-info">
                 Facilitator:
                 <strong>
-                    {{ request.user.get_full_name|default:"____________________" }}
+                    {% if facilitator_name %}
+                        {{ facilitator_name }}
+                    {% elif class_teacher %}
+                        {{ class_teacher.get_full_name|default:class_teacher.username }}
+                    {% elif request.user.get_full_name %}
+                        {{ request.user.get_full_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
                 </strong>
             </div>
 
@@ -94,14 +102,22 @@
                             R
                         </th>
 
+                        <th style="width:35px">
+                            Pts
+                        </th>
+
                     {% endfor %}
 
-                    <th style="width:60px">
+                    <th style="width:55px">
                         Total
                     </th>
 
-                    <th style="width:50px">
+                    <th style="width:45px">
                         Avg
+                    </th>
+
+                    <th style="width:48px" class="total-pts-head">
+                        T-Pts
                     </th>
 
                 </tr>
@@ -137,11 +153,15 @@
 
                     <td class="rubric-cell"></td>
 
+                    <td class="points-cell"></td>
+
                     {% endfor %}
 
                     <td class="total-cell"></td>
 
                     <td class="avg-cell"></td>
+
+                    <td class="total-points-cell"></td>
 
                 </tr>
 
@@ -164,11 +184,16 @@
 
                         <th></th>
 
+                        <th class="subject-points-total"
+                            data-subject-id="{{ subject.id }}"></th>
+
                     {% endfor %}
 
                     <th class="class-total"></th>
 
                     <th class="class-avg"></th>
+
+                    <th class="class-total-points"></th>
 
                 </tr>
 
@@ -185,11 +210,16 @@
 
                         <th></th>
 
+                        <th class="subject-points-mean"
+                            data-subject-id="{{ subject.id }}"></th>
+
                     {% endfor %}
 
                     <th class="class-total-mean"></th>
 
                     <th class="class-avg-mean"></th>
+
+                    <th class="class-points-mean"></th>
 
                 </tr>
 
@@ -208,14 +238,14 @@
 
         <div class="legend-grid">
 
-            <div class="legend-item ee1">EE1 = 90–100</div>
-            <div class="legend-item ee2">EE2 = 75–89</div>
-            <div class="legend-item me1">ME1 = 58–74</div>
-            <div class="legend-item me2">ME2 = 41–57</div>
-            <div class="legend-item ae1">AE1 = 31–40</div>
-            <div class="legend-item ae2">AE2 = 21–30</div>
-            <div class="legend-item be1">BE1 = 11–20</div>
-            <div class="legend-item be2">BE2 = 1–10</div>
+            <div class="legend-item ee1">EE1 = 90–100 (8 pts)</div>
+            <div class="legend-item ee2">EE2 = 75–89 (7 pts)</div>
+            <div class="legend-item me1">ME1 = 58–74 (6 pts)</div>
+            <div class="legend-item me2">ME2 = 41–57 (5 pts)</div>
+            <div class="legend-item ae1">AE1 = 31–40 (4 pts)</div>
+            <div class="legend-item ae2">AE2 = 21–30 (3 pts)</div>
+            <div class="legend-item be1">BE1 = 11–20 (2 pts)</div>
+            <div class="legend-item be2">BE2 = 1–10 (1 pt)</div>
 
         </div>
 
@@ -256,24 +286,182 @@
 
 <style>
 
-/* ===== WATERMARK ===== */
+/* ============================================================
+   THEME SYSTEM
+   Priority order (highest first):
+     1. Explicit [data-theme="light|dark"] on <html> or <body>
+     2. OS preference via prefers-color-scheme
+     3. Default: LIGHT
+   ============================================================ */
+
+:root {
+    --brand-navy:    #1B2A4A;
+    --brand-steel:   #2E4A7D;
+    --brand-gold:    #B8860B;
+    --brand-ruby:    #8B1E3F;
+
+    --page-bg:       #F5F7FA;
+    --surface:       #FFFFFF;
+    --surface-alt:   #FAF7F0;
+    --table-head-bg: #1B2A4A;
+    --table-head-fg: #FFFFFF;
+    --table-foot-bg: #EEF1F6;
+
+    --text-primary:  #1B2A4A;
+    --text-secondary:#4A5568;
+    --text-muted:    #6B7280;
+
+    --border:        #8A93A6;
+    --border-soft:   #D6DCE5;
+    --shadow-sm:     0 1px 2px rgba(27,42,74,0.08);
+    --shadow-md:     0 2px 8px rgba(27,42,74,0.10);
+
+    --row-hover:     #EEF3FB;
+    --row-active:    #FFF7E0;
+    --input-focus:   #FFF8DC;
+    --input-invalid: #F8D7DA;
+
+    --wm-opacity:    0.05;
+    --wm-filter:     none;
+
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+
+    html:not([data-theme="light"]):not([data-theme="dark"]) {
+        --brand-navy:    #C9D4E8;
+        --brand-steel:   #A9B8D4;
+        --brand-gold:    #E5C158;
+        --brand-ruby:    #E083A0;
+
+        --page-bg:       #0F1420;
+        --surface:       #161D2E;
+        --surface-alt:   #1B2337;
+        --table-head-bg: #0B1220;
+        --table-head-fg: #E6ECF6;
+        --table-foot-bg: #1B2337;
+
+        --text-primary:  #E6ECF6;
+        --text-secondary:#B4BFD3;
+        --text-muted:    #8A96AC;
+
+        --border:        #3A4560;
+        --border-soft:   #2A344A;
+        --shadow-sm:     0 1px 2px rgba(0,0,0,0.45);
+        --shadow-md:     0 2px 10px rgba(0,0,0,0.55);
+
+        --row-hover:     #1F2A44;
+        --row-active:    #2B2410;
+        --input-focus:   #2B2410;
+        --input-invalid: #4A1F27;
+
+        --wm-opacity:    0.06;
+        --wm-filter:     invert(1) brightness(1.6);
+
+        color-scheme: dark;
+    }
+}
+
+html[data-theme="dark"],
+body[data-theme="dark"],
+html[data-theme="dark"] body {
+    --brand-navy:    #C9D4E8;
+    --brand-steel:   #A9B8D4;
+    --brand-gold:    #E5C158;
+    --brand-ruby:    #E083A0;
+
+    --page-bg:       #0F1420;
+    --surface:       #161D2E;
+    --surface-alt:   #1B2337;
+    --table-head-bg: #0B1220;
+    --table-head-fg: #E6ECF6;
+    --table-foot-bg: #1B2337;
+
+    --text-primary:  #E6ECF6;
+    --text-secondary:#B4BFD3;
+    --text-muted:    #8A96AC;
+
+    --border:        #3A4560;
+    --border-soft:   #2A344A;
+    --shadow-sm:     0 1px 2px rgba(0,0,0,0.45);
+    --shadow-md:     0 2px 10px rgba(0,0,0,0.55);
+
+    --row-hover:     #1F2A44;
+    --row-active:    #2B2410;
+    --input-focus:   #2B2410;
+    --input-invalid: #4A1F27;
+
+    --wm-opacity:    0.06;
+    --wm-filter:     invert(1) brightness(1.6);
+
+    color-scheme: dark;
+}
+
+html[data-theme="light"],
+body[data-theme="light"],
+html[data-theme="light"] body {
+    --brand-navy:    #1B2A4A;
+    --brand-steel:   #2E4A7D;
+    --brand-gold:    #B8860B;
+    --brand-ruby:    #8B1E3F;
+
+    --page-bg:       #F5F7FA;
+    --surface:       #FFFFFF;
+    --surface-alt:   #FAF7F0;
+    --table-head-bg: #1B2A4A;
+    --table-head-fg: #FFFFFF;
+    --table-foot-bg: #EEF1F6;
+
+    --text-primary:  #1B2A4A;
+    --text-secondary:#4A5568;
+    --text-muted:    #6B7280;
+
+    --border:        #8A93A6;
+    --border-soft:   #D6DCE5;
+    --shadow-sm:     0 1px 2px rgba(27,42,74,0.08);
+    --shadow-md:     0 2px 8px rgba(27,42,74,0.10);
+
+    --row-hover:     #EEF3FB;
+    --row-active:    #FFF7E0;
+    --input-focus:   #FFF8DC;
+    --input-invalid: #F8D7DA;
+
+    --wm-opacity:    0.05;
+    --wm-filter:     none;
+
+    color-scheme: light;
+}
+
+/* ===== BASE PAGE ===== */
+
+body {
+    background: var(--page-bg) !important;
+    color: var(--text-primary);
+    transition: background 0.25s ease, color 0.25s ease;
+}
 
 .watermark-container {
     position: relative;
     min-height: 100vh;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--text-primary);
 }
+
+/* ===== WATERMARK ===== */
 
 .watermark {
     position: fixed !important;
     pointer-events: none;
     z-index: 1;
+    filter: var(--wm-filter);
 }
 
 .diagonal-1 {
     top: 15%;
     left: 10%;
     width: 280px;
-    opacity: 0.08;
+    opacity: var(--wm-opacity);
     transform: rotate(-25deg);
 }
 
@@ -281,7 +469,7 @@
     top: 65%;
     right: 10%;
     width: 280px;
-    opacity: 0.08;
+    opacity: var(--wm-opacity);
     transform: rotate(25deg);
 }
 
@@ -289,30 +477,42 @@
     top: 45%;
     left: 50%;
     width: 320px;
-    opacity: 0.06;
+    opacity: calc(var(--wm-opacity) * 0.8);
     transform: translateX(-50%);
 }
 
 /* ===== HEADER ===== */
 
+.print-header {
+    border-bottom: 2px solid var(--brand-navy);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    transition: border-color 0.25s ease;
+}
+
 .exam-title {
     font-weight: 700;
+    color: var(--brand-navy);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-size: 15px;
 }
 
 .exam-info {
     font-size: 11px;
+    color: var(--text-secondary);
 }
 
 /* ===== ORIENTATION SELECTOR ===== */
 
 .orientation-selector {
-    background: #f8f9fa;
+    background: var(--surface-alt);
     padding: 4px 10px;
-    border-radius: 20px;
+    border-radius: 4px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border);
 }
 
 .orientation-selector label {
@@ -320,95 +520,149 @@
     font-weight: 600;
     margin-right: 4px;
     white-space: nowrap;
+    color: var(--brand-navy);
 }
 
 .orientation-selector select {
-    border-radius: 16px;
+    border-radius: 4px;
     padding: 2px 8px;
     font-size: 12px;
-    border: 1px solid #aaa;
-    background: white;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-primary);
     cursor: pointer;
 }
 
 /* ===== TABLE ===== */
 
 .marks-table {
-    font-size: 9px;
+    font-size: 10px;
     border-collapse: collapse;
-    background: white;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-primary);
+    transition: background 0.25s ease, color 0.25s ease;
+    table-layout: fixed;
+    width: 100%;
 }
 
 .marks-table th,
 .marks-table td {
-    border: 1px solid #999 !important;
+    border: 1px solid var(--border) !important;
     vertical-align: middle;
-    padding: 1px 2px;
+    padding: 2px 3px;
     height: 28px;
+    background: var(--surface);
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+.marks-table thead tr {
+    background: var(--table-head-bg) !important;
+    color: var(--table-head-fg) !important;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    font-size: 10px;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.marks-table thead tr th {
+    border: 1px solid var(--border) !important;
+    color: var(--table-head-fg) !important;
+    background: var(--table-head-bg) !important;
+    text-align: center;
+}
+
+.marks-table tfoot tr {
+    background: var(--table-foot-bg) !important;
+    color: var(--brand-navy) !important;
+    font-weight: 700;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.marks-table tfoot tr th {
+    background: var(--table-foot-bg) !important;
+    color: var(--brand-navy) !important;
+    border: 1px solid var(--border) !important;
 }
 
 .student-name {
     font-size: 12px;
     font-weight: 600;
-    padding-left: 5px !important;
+    padding-left: 6px !important;
+    color: var(--brand-navy);
 }
 
 .enlarged-rank {
-    font-size: 13px;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--brand-steel);
+}
+
+/* ===== COMPACT TOTAL PTS COLUMN ===== */
+
+.total-pts-head,
+.total-points-cell {
+    width: 48px !important;
+    max-width: 48px !important;
+    min-width: 42px !important;
+    white-space: nowrap;
+    padding: 1px 2px !important;
+    font-size: 11px !important;
     text-align: center;
 }
 
-/* ===== INPUT ===== */
+/* ===== INPUT — BOLD / BLACK WEIGHT ===== */
 
 .mark-input {
-    width: 38px;
+    width: 100%;
+    max-width: 38px;
     height: 24px;
     border: none;
     background: transparent;
     text-align: center;
-    font-weight: 700;
-    font-size: 12px;
-    color: #000;
+    font-weight: 900 !important;
+    font-size: 13px;
+    color: var(--text-primary);
+    margin: 0 auto;
+    display: block;
 }
 
-/* Remove number input arrows */
-
-/* Chrome, Edge, Safari */
 .mark-input::-webkit-outer-spin-button,
 .mark-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-/* Firefox */
 .mark-input {
     -moz-appearance: textfield;
     appearance: textfield;
 }
 
 .mark-input:focus {
-    background: #e5e9e5 !important;
-    outline: 2px solid #ff9800;
+    background: var(--input-focus) !important;
+    outline: 2px solid var(--brand-gold);
 }
 
 .mark-input.invalid {
-    background: #f8d7da !important;
+    background: var(--input-invalid) !important;
 }
 
 /* ===== ROW HOVER ===== */
 
 .student-row:hover td {
-    background: #d4edda !important;
+    background: var(--row-hover) !important;
 }
 
-/* Active learner row */
 .student-row.active-row td {
-    background: #fff3cd !important;
+    background: var(--row-active) !important;
     transition: background 0.3s ease;
 }
 
-/* Animated sweep effect */
 .student-row.active-row td {
     position: relative;
     overflow: hidden;
@@ -421,147 +675,219 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: rgba(40, 167, 69, 0.25);
+    background: rgba(184, 134, 11, 0.18);
     animation: rowSweep 0.35s forwards;
     pointer-events: none;
 }
 
 @keyframes rowSweep {
-    from {
-        left: -100%;
-    }
-    to {
-        left: 0;
-    }
+    from { left: -100%; }
+    to   { left: 0; }
 }
 
 /* ===== TOTALS ===== */
 
 .total-cell,
 .avg-cell,
+.points-cell,
+.total-points-cell,
 .subject-total,
 .subject-mean,
+.subject-points-total,
+.subject-points-mean,
 .class-total,
 .class-avg,
 .class-total-mean,
-.class-avg-mean {
-    font-weight: bold;
+.class-avg-mean,
+.class-total-points,
+.class-points-mean {
+    font-weight: 900;
     text-align: center;
     font-size: 12px;
+    color: var(--brand-navy);
 }
 
-/* ===== RUBRICS ===== */
+/* ===== RUBRIC CELLS ===== */
 
 .rubric-cell {
-    font-size: 9px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 900 !important;
     text-align: center;
     padding: 2px !important;
-    color: #000 !important;
-    border: 1px solid #999 !important;
+    border: 1px solid var(--border) !important;
+    letter-spacing: 0.3px;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
 }
 
-.rubric-cell.EE1 {
-    background-color: #2e8b57 !important;
-    color: #ffffff !important;
+.rubric-cell.EE1 { background-color: #1E5631 !important; color: #ffffff !important; }
+.rubric-cell.EE2 { background-color: #4C9A2A !important; color: #ffffff !important; }
+.rubric-cell.ME1 { background-color: #1F4E79 !important; color: #ffffff !important; }
+.rubric-cell.ME2 { background-color: #A9C9E8 !important; color: #1B2A4A !important; }
+.rubric-cell.AE1 { background-color: #C99A2E !important; color: #ffffff !important; }
+.rubric-cell.AE2 { background-color: #F2E1B5 !important; color: #4A3B10 !important; }
+.rubric-cell.BE1 { background-color: #8B1E3F !important; color: #ffffff !important; }
+.rubric-cell.BE2 { background-color: #E3B7C4 !important; color: #5A0F27 !important; }
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]):not([data-theme="dark"]) .rubric-cell.EE1 { background-color: #2A7043 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .rubric-cell.EE2 { background-color: #5FB33C !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .rubric-cell.ME1 { background-color: #2A6094 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .rubric-cell.ME2 { background-color: #7FA6C9 !important; color: #0F1420 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .rubric-cell.AE1 { background-color: #D9AE45 !important; color: #0F1420 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .rubric-cell.AE2 { background-color: #C8B487 !important; color: #2B2410 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .rubric-cell.BE1 { background-color: #A62E52 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .rubric-cell.BE2 { background-color: #C68A9A !important; color: #2B0A14 !important; }
 }
 
-.rubric-cell.EE2 {
-    background-color: #7bd389 !important;
+html[data-theme="dark"] .rubric-cell.EE1 { background-color: #2A7043 !important; }
+html[data-theme="dark"] .rubric-cell.EE2 { background-color: #5FB33C !important; }
+html[data-theme="dark"] .rubric-cell.ME1 { background-color: #2A6094 !important; }
+html[data-theme="dark"] .rubric-cell.ME2 { background-color: #7FA6C9 !important; color: #0F1420 !important; }
+html[data-theme="dark"] .rubric-cell.AE1 { background-color: #D9AE45 !important; color: #0F1420 !important; }
+html[data-theme="dark"] .rubric-cell.AE2 { background-color: #C8B487 !important; color: #2B2410 !important; }
+html[data-theme="dark"] .rubric-cell.BE1 { background-color: #A62E52 !important; }
+html[data-theme="dark"] .rubric-cell.BE2 { background-color: #C68A9A !important; color: #2B0A14 !important; }
+
+body[data-theme="dark"] .rubric-cell.EE1 { background-color: #2A7043 !important; }
+body[data-theme="dark"] .rubric-cell.EE2 { background-color: #5FB33C !important; }
+body[data-theme="dark"] .rubric-cell.ME1 { background-color: #2A6094 !important; }
+body[data-theme="dark"] .rubric-cell.ME2 { background-color: #7FA6C9 !important; color: #0F1420 !important; }
+body[data-theme="dark"] .rubric-cell.AE1 { background-color: #D9AE45 !important; color: #0F1420 !important; }
+body[data-theme="dark"] .rubric-cell.AE2 { background-color: #C8B487 !important; color: #2B2410 !important; }
+body[data-theme="dark"] .rubric-cell.BE1 { background-color: #A62E52 !important; }
+body[data-theme="dark"] .rubric-cell.BE2 { background-color: #C68A9A !important; color: #2B0A14 !important; }
+
+/* ===== POINTS CELL — SAME GRADIENT AS RUBRIC, BOLD ===== */
+
+.points-cell {
+    font-weight: 900 !important;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    border: 1px solid var(--border) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
 }
 
-.rubric-cell.ME1 {
-    background-color: #74c0fc !important;
+.points-cell.p-EE1 { background-color: #1E5631 !important; color: #ffffff !important; }
+.points-cell.p-EE2 { background-color: #4C9A2A !important; color: #ffffff !important; }
+.points-cell.p-ME1 { background-color: #1F4E79 !important; color: #ffffff !important; }
+.points-cell.p-ME2 { background-color: #A9C9E8 !important; color: #1B2A4A !important; }
+.points-cell.p-AE1 { background-color: #C99A2E !important; color: #ffffff !important; }
+.points-cell.p-AE2 { background-color: #F2E1B5 !important; color: #4A3B10 !important; }
+.points-cell.p-BE1 { background-color: #8B1E3F !important; color: #ffffff !important; }
+.points-cell.p-BE2 { background-color: #E3B7C4 !important; color: #5A0F27 !important; }
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]):not([data-theme="dark"]) .points-cell.p-EE1 { background-color: #2A7043 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .points-cell.p-EE2 { background-color: #5FB33C !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .points-cell.p-ME1 { background-color: #2A6094 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .points-cell.p-ME2 { background-color: #7FA6C9 !important; color: #0F1420 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .points-cell.p-AE1 { background-color: #D9AE45 !important; color: #0F1420 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .points-cell.p-AE2 { background-color: #C8B487 !important; color: #2B2410 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .points-cell.p-BE1 { background-color: #A62E52 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .points-cell.p-BE2 { background-color: #C68A9A !important; color: #2B0A14 !important; }
 }
 
-.rubric-cell.ME2 {
-    background-color: #d0ebff !important;
+html[data-theme="dark"] .points-cell.p-EE1 { background-color: #2A7043 !important; }
+html[data-theme="dark"] .points-cell.p-EE2 { background-color: #5FB33C !important; }
+html[data-theme="dark"] .points-cell.p-ME1 { background-color: #2A6094 !important; }
+html[data-theme="dark"] .points-cell.p-ME2 { background-color: #7FA6C9 !important; color: #0F1420 !important; }
+html[data-theme="dark"] .points-cell.p-AE1 { background-color: #D9AE45 !important; color: #0F1420 !important; }
+html[data-theme="dark"] .points-cell.p-AE2 { background-color: #C8B487 !important; color: #2B2410 !important; }
+html[data-theme="dark"] .points-cell.p-BE1 { background-color: #A62E52 !important; }
+html[data-theme="dark"] .points-cell.p-BE2 { background-color: #C68A9A !important; color: #2B0A14 !important; }
+
+body[data-theme="dark"] .points-cell.p-EE1 { background-color: #2A7043 !important; }
+body[data-theme="dark"] .points-cell.p-EE2 { background-color: #5FB33C !important; }
+body[data-theme="dark"] .points-cell.p-ME1 { background-color: #2A6094 !important; }
+body[data-theme="dark"] .points-cell.p-ME2 { background-color: #7FA6C9 !important; color: #0F1420 !important; }
+body[data-theme="dark"] .points-cell.p-AE1 { background-color: #D9AE45 !important; color: #0F1420 !important; }
+body[data-theme="dark"] .points-cell.p-AE2 { background-color: #C8B487 !important; color: #2B2410 !important; }
+body[data-theme="dark"] .points-cell.p-BE1 { background-color: #A62E52 !important; }
+body[data-theme="dark"] .points-cell.p-BE2 { background-color: #C68A9A !important; color: #2B0A14 !important; }
+
+/* Total Pts cell — same gradient scale, bold */
+
+.total-points-cell {
+    font-weight: 900 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.total-points-cell.tp-high     { background-color: #1E5631 !important; color: #ffffff !important; }
+.total-points-cell.tp-mid-high { background-color: #4C9A2A !important; color: #ffffff !important; }
+.total-points-cell.tp-mid      { background-color: #1F4E79 !important; color: #ffffff !important; }
+.total-points-cell.tp-mid-low  { background-color: #C99A2E !important; color: #ffffff !important; }
+.total-points-cell.tp-low      { background-color: #8B1E3F !important; color: #ffffff !important; }
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]):not([data-theme="dark"]) .total-points-cell.tp-high     { background-color: #2A7043 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .total-points-cell.tp-mid-high { background-color: #5FB33C !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .total-points-cell.tp-mid      { background-color: #2A6094 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .total-points-cell.tp-mid-low  { background-color: #D9AE45 !important; color: #0F1420 !important; }
+    html:not([data-theme="light"]):not([data-theme="dark"]) .total-points-cell.tp-low      { background-color: #A62E52 !important; }
 }
 
-.rubric-cell.AE1 {
-    background-color: #ffe066 !important;
-}
+html[data-theme="dark"] .total-points-cell.tp-high     { background-color: #2A7043 !important; }
+html[data-theme="dark"] .total-points-cell.tp-mid-high { background-color: #5FB33C !important; }
+html[data-theme="dark"] .total-points-cell.tp-mid      { background-color: #2A6094 !important; }
+html[data-theme="dark"] .total-points-cell.tp-mid-low  { background-color: #D9AE45 !important; color: #0F1420 !important; }
+html[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E52 !important; }
 
-.rubric-cell.AE2 {
-    background-color: #fff3bf !important;
-}
-
-.rubric-cell.BE1 {
-    background-color: #ff8787 !important;
-}
-
-.rubric-cell.BE2 {
-    background-color: #ffc9c9 !important;
-}
+body[data-theme="dark"] .total-points-cell.tp-high     { background-color: #2A7043 !important; }
+body[data-theme="dark"] .total-points-cell.tp-mid-high { background-color: #5FB33C !important; }
+body[data-theme="dark"] .total-points-cell.tp-mid      { background-color: #2A6094 !important; }
+body[data-theme="dark"] .total-points-cell.tp-mid-low  { background-color: #D9AE45 !important; color: #0F1420 !important; }
+body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E52 !important; }
 
 /* ===== LEGEND ===== */
 
 .rubric-legend {
-    border: 1px solid #ccc;
-    background: #f8f9fa;
-    border-radius: 6px;
-    padding: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface-alt);
+    border-radius: 4px;
+    padding: 10px 12px;
     margin-top: 15px;
+    color: var(--text-primary);
+    transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.rubric-legend h6 {
+    color: var(--brand-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
 }
 
 .legend-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
+    margin-top: 8px;
 }
 
 .legend-item {
-    padding: 8px;
+    padding: 7px 8px;
     text-align: center;
-    border-radius: 4px;
+    border-radius: 3px;
     font-size: 11px;
-    font-weight: bold;
-    border: 1px solid #999;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    letter-spacing: 0.2px;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
 }
 
-.legend-item.ee1 {
-    background-color: #2e8b57 !important;
-    color: #ffffff !important;
-}
-
-.legend-item.ee2 {
-    background-color: #7bd389 !important;
-    color: #000000 !important;
-}
-
-.legend-item.me1 {
-    background-color: #74c0fc !important;
-    color: #000000 !important;
-}
-
-.legend-item.me2 {
-    background-color: #d0ebff !important;
-    color: #000000 !important;
-}
-
-.legend-item.ae1 {
-    background-color: #ffe066 !important;
-    color: #000000 !important;
-}
-
-.legend-item.ae2 {
-    background-color: #fff3bf !important;
-    color: #000000 !important;
-}
-
-.legend-item.be1 {
-    background-color: #ff8787 !important;
-    color: #000000 !important;
-}
-
-.legend-item.be2 {
-    background-color: #ffc9c9 !important;
-    color: #000000 !important;
-}
+.legend-item.ee1 { background-color: #1E5631 !important; color: #ffffff !important; }
+.legend-item.ee2 { background-color: #4C9A2A !important; color: #ffffff !important; }
+.legend-item.me1 { background-color: #1F4E79 !important; color: #ffffff !important; }
+.legend-item.me2 { background-color: #A9C9E8 !important; color: #1B2A4A !important; }
+.legend-item.ae1 { background-color: #C99A2E !important; color: #ffffff !important; }
+.legend-item.ae2 { background-color: #F2E1B5 !important; color: #4A3B10 !important; }
+.legend-item.be1 { background-color: #8B1E3F !important; color: #ffffff !important; }
+.legend-item.be2 { background-color: #E3B7C4 !important; color: #5A0F27 !important; }
 
 /* ===== CHART ===== */
 
@@ -569,19 +895,60 @@
     width: 100%;
     overflow-x: auto;
     page-break-inside: avoid;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 8px 8px 8px;
+    background: var(--surface);
+    transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.chart-title {
+    color: var(--brand-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-size: 12px;
+    margin-bottom: 6px;
 }
 
 .chart-container {
     position: relative;
     width: 100%;
     min-width: 900px;
-    height: 350px;
+    height: 340px;
     margin: auto;
 }
 
 .chart-container canvas {
     width: 100% !important;
     height: 100% !important;
+}
+
+/* ===== FOOTER ===== */
+
+.container-fluid > .mt-4.text-center {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+/* ===== BOOTSTRAP BUTTON OVERRIDES ===== */
+
+.btn-outline-dark {
+    color: var(--brand-navy);
+    border-color: var(--brand-navy);
+}
+.btn-outline-dark:hover {
+    background: var(--brand-navy);
+    color: var(--surface);
+}
+.btn-outline-primary {
+    color: var(--brand-steel);
+    border-color: var(--brand-steel);
+}
+.btn-outline-primary:hover {
+    background: var(--brand-steel);
+    color: var(--surface);
 }
 
 /* ===== MOBILE ===== */
@@ -594,11 +961,32 @@
 
 }
 
-/* ===== PRINT ===== */
+/* ===== PRINT (always light, always exact) ===== */
 
 @media print {
 
+    :root,
+    html,
+    body,
+    html[data-theme="dark"],
+    body[data-theme="dark"] {
+
+        --page-bg: #ffffff;
+        --surface: #ffffff;
+        --surface-alt: #f8f9fa;
+        --text-primary: #000000;
+        --text-secondary: #333333;
+        --border: #666666;
+        --table-head-bg: #1B2A4A;
+        --table-head-fg: #ffffff;
+        --table-foot-bg: #EEF1F6;
+        --wm-opacity: 0.06;
+        --wm-filter: none;
+    }
+
     body {
+        background: #ffffff !important;
+        color: #000000 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
@@ -627,11 +1015,14 @@
 
     .chart-container {
         min-width: 100% !important;
-        height: 300px !important;
+        height: 280px !important;
     }
 
     .legend-item,
-    .rubric-cell {
+    .rubric-cell,
+    .points-cell,
+    .total-points-cell,
+    .marks-table thead tr {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
@@ -651,11 +1042,9 @@ Chart.register(ChartDataLabels);
 function printWithOrientation() {
     const orientation = document.getElementById('orientationSelect').value;
 
-    // Remove any previously injected print-orientation style
     const prev = document.getElementById('print-orientation-style');
     if (prev) prev.remove();
 
-    // Inject @page rule with the selected orientation
     const style = document.createElement('style');
     style.id = 'print-orientation-style';
     style.innerHTML = `@media print { @page { size: ${orientation}; margin: 10mm; } }`;
@@ -664,9 +1053,27 @@ function printWithOrientation() {
     window.print();
 }
 
-// Legacy PDF button (kept for compatibility, now uses orientation)
 function downloadPDF() {
     printWithOrientation();
+}
+
+// ===== THEME HELPERS =====
+
+function getExplicitTheme() {
+    const bodyAttr = document.body.getAttribute('data-theme');
+    if (bodyAttr === 'dark' || bodyAttr === 'light') return bodyAttr;
+
+    const htmlAttr = document.documentElement.getAttribute('data-theme');
+    if (htmlAttr === 'dark' || htmlAttr === 'light') return htmlAttr;
+
+    return null;
+}
+
+function isDarkMode() {
+    const explicit = getExplicitTheme();
+    if (explicit === 'dark')  return true;
+    if (explicit === 'light') return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -691,8 +1098,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const maxMark = {{ exam.max_mark }};
 
-    const numStudents = {{ students|length }};
-
     const subjectTotals = {};
 
     // ===== RUBRIC =====
@@ -711,36 +1116,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
+    // ===== RUBRIC → POINTS =====
+
+    function rubricPoints(grade) {
+
+        switch (grade) {
+            case 'EE1': return 8;
+            case 'EE2': return 7;
+            case 'ME1': return 6;
+            case 'ME2': return 5;
+            case 'AE1': return 4;
+            case 'AE2': return 3;
+            case 'BE1': return 2;
+            case 'BE2': return 1;
+            default:    return 0;
+        }
+
+    }
+
     // ===== CALCULATE =====
 
     function calculate() {
 
         let classTotal = 0;
+        let classTotalPoints = 0;
 
         Object.keys(subjectTotals).forEach(
             key => subjectTotals[key] = 0
         );
 
+        const subjectCounts = {};
+        const subjectPointsTotals = {};
+
         [...table.tBodies[0].rows].forEach(row => {
 
             let total = 0;
+            let rowPointsTotal = 0;
+            let filledCount = 0;
 
             const rowInputs =
                 row.querySelectorAll('.mark-input');
 
             rowInputs.forEach(input => {
 
-                const val =
-                    input.value
+                const hasValue =
+                    input.value !== '' && input.value !== null;
+
+                const val = hasValue
                     ? Math.round(parseFloat(input.value))
                     : 0;
 
-                total += val;
+                if (hasValue) {
+                    total += val;
+                    filledCount++;
+                }
 
                 const rubricEl =
                     input.parentElement.nextElementSibling;
 
-                if (input.value !== '') {
+                const pointsEl =
+                    rubricEl.nextElementSibling;
+
+                const subject =
+                    input.name.split('_').pop();
+
+                if (hasValue) {
 
                     const grade = rubric(val);
 
@@ -749,41 +1189,83 @@ document.addEventListener('DOMContentLoaded', () => {
                     rubricEl.className =
                         `rubric-cell ${grade}`;
 
+                    const pts = rubricPoints(grade);
+
+                    pointsEl.textContent = pts;
+
+                    pointsEl.className = `points-cell p-${grade}`;
+
+                    rowPointsTotal += pts;
+
+                    subjectTotals[subject] =
+                        (subjectTotals[subject] || 0) + val;
+
+                    subjectPointsTotals[subject] =
+                        (subjectPointsTotals[subject] || 0) + pts;
+
+                    subjectCounts[subject] =
+                        (subjectCounts[subject] || 0) + 1;
+
                 } else {
 
                     rubricEl.textContent = '';
 
-                    rubricEl.className =
-                        'rubric-cell';
+                    rubricEl.className = 'rubric-cell';
+
+                    pointsEl.textContent = '';
+
+                    pointsEl.className = 'points-cell';
 
                 }
 
-                if (val > maxMark) {
+                if (hasValue && val > maxMark) {
                     input.classList.add('invalid');
                 } else {
                     input.classList.remove('invalid');
                 }
 
-                const subject =
-                    input.name.split('_').pop();
-
-                subjectTotals[subject] =
-                    (subjectTotals[subject] || 0) + val;
-
             });
 
             row.querySelector('.total-cell')
-                .textContent = total;
+                .textContent = filledCount ? total : '';
+
+            row.querySelector('.total-points-cell')
+                .textContent = filledCount ? rowPointsTotal : '';
+
+            const totalPtsEl = row.querySelector('.total-points-cell');
+
+            if (filledCount > 0) {
+
+                const maxPossiblePts = filledCount * 8;
+                const ratio = rowPointsTotal / maxPossiblePts;
+
+                let cls = 'total-points-cell ';
+
+                if (ratio >= 0.85)      cls += 'tp-high';
+                else if (ratio >= 0.65) cls += 'tp-mid-high';
+                else if (ratio >= 0.45) cls += 'tp-mid';
+                else if (ratio >= 0.25) cls += 'tp-mid-low';
+                else                    cls += 'tp-low';
+
+                totalPtsEl.className = cls;
+
+            } else {
+
+                totalPtsEl.className = 'total-points-cell';
+
+            }
 
             row.querySelector('.avg-cell')
-                .textContent =
-                    rowInputs.length
-                    ? (total / rowInputs.length).toFixed(2)
-                    : '0.00';
+                .textContent = filledCount
+                    ? (total / filledCount).toFixed(2)
+                    : '';
 
             row.dataset.total = total;
+            row.dataset.totalPoints = rowPointsTotal;
+            row.dataset.filled = filledCount;
 
             classTotal += total;
+            classTotalPoints += rowPointsTotal;
 
         });
 
@@ -797,43 +1279,88 @@ document.addEventListener('DOMContentLoaded', () => {
 
         });
 
-        table.querySelectorAll('.subject-mean')
+        table.querySelectorAll('.subject-points-total')
         .forEach(th => {
 
             const subjId = th.dataset.subjectId;
 
             th.textContent =
-                subjectTotals[subjId]
-                ? (subjectTotals[subjId] / numStudents).toFixed(2)
+                subjectPointsTotals[subjId] || '';
+
+        });
+
+        table.querySelectorAll('.subject-mean')
+        .forEach(th => {
+
+            const subjId = th.dataset.subjectId;
+            const cnt = subjectCounts[subjId] || 0;
+
+            th.textContent = cnt
+                ? (subjectTotals[subjId] / cnt).toFixed(2)
                 : '';
 
         });
 
+        table.querySelectorAll('.subject-points-mean')
+        .forEach(th => {
+
+            const subjId = th.dataset.subjectId;
+            const cnt = subjectCounts[subjId] || 0;
+
+            th.textContent = cnt
+                ? (subjectPointsTotals[subjId] / cnt).toFixed(2)
+                : '';
+
+        });
+
+        const totalFilled = [...table.tBodies[0].rows]
+            .reduce((s, r) => s + (parseInt(r.dataset.filled) || 0), 0);
+
         table.querySelector('.class-total')
             .textContent = classTotal;
 
+        table.querySelector('.class-total-points')
+            .textContent = classTotalPoints;
+
         table.querySelector('.class-avg')
-            .textContent =
-                numStudents
-                ? (classTotal / numStudents).toFixed(2)
-                : '0.00';
+            .textContent = totalFilled
+                ? (classTotal / totalFilled).toFixed(2)
+                : '';
+
+        table.querySelector('.class-total-mean')
+            .textContent = table.tBodies[0].rows.length
+                ? (classTotal / table.tBodies[0].rows.length).toFixed(2)
+                : '';
+
+        table.querySelector('.class-avg-mean')
+            .textContent = table.tBodies[0].rows.length
+                ? (classTotal / table.tBodies[0].rows.length).toFixed(2)
+                : '';
+
+        table.querySelector('.class-points-mean')
+            .textContent = table.tBodies[0].rows.length
+                ? (classTotalPoints / table.tBodies[0].rows.length).toFixed(2)
+                : '';
 
     }
 
     // ===== RANK =====
 
     function rankStudents() {
+
         const rows = [...table.tBodies[0].querySelectorAll('.student-row')]
             .map(row => ({
                 row,
+                pts: parseFloat(row.dataset.totalPoints) || 0,
                 total: parseFloat(row.dataset.total) || 0
             }))
-            .sort((a, b) => b.total - a.total);
+            .sort((a, b) => b.pts - a.pts || b.total - a.total);
 
         rows.forEach(({ row }, i) => {
             row.querySelector('.rank-cell').textContent = i + 1;
             table.tBodies[0].appendChild(row);
         });
+
     }
 
     // ===== CHART =====
@@ -846,14 +1373,42 @@ document.addEventListener('DOMContentLoaded', () => {
             {% endfor %}
         ];
 
+        const counts = {};
+
+        [...table.tBodies[0].rows].forEach(row => {
+
+            row.querySelectorAll('.mark-input').forEach(input => {
+
+                if (input.value !== '') {
+
+                    const subj = input.name.split('_').pop();
+
+                    counts[subj] = (counts[subj] || 0) + 1;
+
+                }
+
+            });
+
+        });
+
         const data = [
             {% for subject in subjects %}
-            Math.round(
-                (subjectTotals['{{ subject.id }}'] || 0)
-                / {{ students|length }}
-            ),
+            (function() {
+                const id = '{{ subject.id }}';
+                const total = subjectTotals[id] || 0;
+                const cnt = counts[id] || 0;
+                return cnt ? Math.round(total / cnt) : 0;
+            })(),
             {% endfor %}
         ];
+
+        const dark = isDarkMode();
+
+        const barColor   = dark ? '#7FA6C9' : '#2E4A7D';
+        const barBorder  = dark ? '#C9D4E8' : '#1B2A4A';
+        const labelColor = dark ? '#E6ECF6' : '#1B2A4A';
+        const gridColor  = dark ? '#2A344A' : '#E2E6EC';
+        const tickColor  = dark ? '#B4BFD3' : '#4A5568';
 
         if (window.summaryChartObj) {
             window.summaryChartObj.destroy();
@@ -874,8 +1429,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             data,
 
-                            backgroundColor:
-                                'rgba(54,162,235,0.8)'
+                            backgroundColor: barColor,
+                            borderColor: barBorder,
+                            borderWidth: 1,
+                            borderRadius: 2
 
                         }]
 
@@ -908,7 +1465,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                 align: 'top',
 
-                                color: '#000',
+                                color: labelColor,
 
                                 font: {
                                     weight: 'bold',
@@ -926,7 +1483,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             y: {
                                 beginAtZero: true,
-                                max: {{ exam.max_mark }}
+                                max: {{ exam.max_mark }},
+                                grid: {
+                                    color: gridColor
+                                },
+                                ticks: {
+                                    color: tickColor
+                                }
+                            },
+
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: tickColor,
+                                    font: {
+                                        weight: '600'
+                                    }
+                                }
                             }
 
                         }
@@ -963,7 +1538,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let nextRow = currentRow.nextElementSibling;
 
-                // Search downward for the next blank cell
                 while (nextRow) {
                     if (nextRow.classList.contains('student-row')) {
                         const nextInput =
@@ -980,7 +1554,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     nextRow = nextRow.nextElementSibling;
                 }
 
-                // Optional: wrap to the top if no blank cell below
                 const rows = document.querySelectorAll('.student-row');
 
                 for (const row of rows) {
@@ -1032,6 +1605,31 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => console.error(error));
         });
+    });
+
+    // ===== REACT TO THEME CHANGES =====
+
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function handleThemeChange() {
+        drawChart();
+    }
+
+    if (mq.addEventListener) {
+        mq.addEventListener('change', handleThemeChange);
+    } else if (mq.addListener) {
+        mq.addListener(handleThemeChange);
+    }
+
+    const observer = new MutationObserver(handleThemeChange);
+
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme']
+    });
+    observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['data-theme']
     });
 
     // INITIAL LOAD
