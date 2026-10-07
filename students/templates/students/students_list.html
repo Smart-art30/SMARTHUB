@@ -3,126 +3,655 @@
 
 {% block extra_css %}
 <style>
-@media screen {
-    .print-only {
-        display: none !important;
+/* ============================================================
+   MODERN STUDENT LIST – FULLY RESPONSIVE LIGHT / DARK
+   ============================================================ */
+
+/* ---------- LIGHT THEME (default) ---------- */
+:root,
+[data-bs-theme="light"] {
+    --bg-body: #f8fafc;
+    --surface: #ffffff;
+    --surface-alt: #f9fafb;
+    --surface-border: #e9edf4;
+    --text-primary: #0b1a2e;
+    --text-secondary: #4a5a72;
+    --text-muted: #6b7a90;
+    --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.03);
+    --card-shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+    --header-bg: #1e293b;
+    --header-text: #ffffff;
+    --table-hover: rgba(59, 130, 246, 0.04);
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --accent-soft: #dbeafe;
+    --border-light: #eef2f6;
+    --badge-info-bg: #dbeafe;
+    --badge-info-text: #1e4d8c;
+    --badge-secondary-bg: #e9eef3;
+    --badge-secondary-text: #4b5b6e;
+    --input-bg: #ffffff;
+    --input-border: #e2e8f0;
+    --input-placeholder: #94a3b8;
+    --table-head-bg: rgba(0, 0, 0, 0.02);
+    --scrollbar-thumb: #cbd5e1;
+    --scrollbar-track: #f1f5f9;
+}
+
+/* ---------- DARK THEME ---------- */
+[data-bs-theme="dark"] {
+    --bg-body: #0b111e;
+    --surface: #141b2b;
+    --surface-alt: #1a2335;
+    --surface-border: #283044;
+    --text-primary: #eef2f9;
+    --text-secondary: #a0b0c9;
+    --text-muted: #7c8ba1;
+    --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    --card-shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.7), 0 4px 12px rgba(0, 0, 0, 0.4);
+    --header-bg: #1e2a3a;
+    --header-text: #f1f5f9;
+    --table-hover: rgba(255, 255, 255, 0.03);
+    --accent: #5b8ef7;
+    --accent-hover: #4a7df0;
+    --accent-soft: #1e2f4a;
+    --border-light: #232d40;
+    --badge-info-bg: #1a3555;
+    --badge-info-text: #a8cbff;
+    --badge-secondary-bg: #2a3346;
+    --badge-secondary-text: #cbd5e1;
+    --input-bg: #1a2335;
+    --input-border: #2a3a54;
+    --input-placeholder: #64748b;
+    --table-head-bg: rgba(255, 255, 255, 0.02);
+    --scrollbar-thumb: #2a3a54;
+    --scrollbar-track: #0b111e;
+}
+
+/* ---------- BASE ---------- */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-body) !important;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-primary) !important;
+    padding-bottom: 2rem;
+    min-height: 100vh;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ---------- SCROLLBAR ---------- */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 10px;
+}
+
+/* ---------- CARD ---------- */
+.class-card {
+    background-color: var(--surface) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-radius: 1.25rem;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.class-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* ---------- CARD HEADER ---------- */
+.card-header {
+    background-color: var(--header-bg) !important;
+    color: var(--header-text) !important;
+    border-bottom: 1px solid var(--surface-border) !important;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.card-header .badge {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: var(--header-text) !important;
+    font-weight: 500;
+    padding: 0.35rem 0.9rem;
+    border-radius: 30px;
+    font-size: 0.78rem;
+}
+
+/* ---------- TABLE ---------- */
+.table {
+    --bs-table-bg: transparent !important;
+    --bs-table-color: var(--text-primary) !important;
+    --bs-table-border-color: var(--border-light) !important;
+    margin-bottom: 0;
+    color: var(--text-primary) !important;
+}
+
+.table > :not(caption) > * > * {
+    background-color: transparent !important;
+    border-bottom-color: var(--border-light) !important;
+    padding: 0.9rem 0.75rem;
+    vertical-align: middle;
+    color: var(--text-primary) !important;
+}
+
+.table thead th {
+    background-color: var(--table-head-bg) !important;
+    color: var(--text-secondary) !important;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--surface-border) !important;
+    white-space: nowrap;
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--table-hover) !important;
+}
+
+.table-hover tbody tr:hover > * {
+    background-color: var(--table-hover) !important;
+}
+
+/* ---------- BADGES ---------- */
+.badge-gender {
+    background-color: var(--badge-info-bg) !important;
+    color: var(--badge-info-text) !important;
+    font-weight: 500;
+    padding: 0.35rem 0.85rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    display: inline-block;
+    letter-spacing: 0.01em;
+}
+
+.badge-na {
+    background-color: var(--badge-secondary-bg) !important;
+    color: var(--badge-secondary-text) !important;
+    padding: 0.35rem 0.85rem;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 0.75rem;
+    display: inline-block;
+}
+
+/* ---------- AVATARS ---------- */
+.avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--surface-border);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.avatar-fallback {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, var(--accent-soft), var(--surface-border)) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent) !important;
+    border: 2px solid var(--surface-border);
+    text-transform: uppercase;
+}
+
+/* ---------- FORM CONTROLS ---------- */
+.form-control,
+.form-select {
+    background-color: var(--input-bg) !important;
+    border: 1px solid var(--input-border) !important;
+    color: var(--text-primary) !important;
+    border-radius: 2rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    background-color: var(--input-bg) !important;
+    color: var(--text-primary) !important;
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: var(--input-placeholder) !important;
+    opacity: 1;
+}
+
+.form-select option {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+    border-radius: 2rem;
+    font-weight: 500;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn-primary {
+    background-color: var(--accent) !important;
+    border: none !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+    background-color: var(--surface-border) !important;
+    border: none !important;
+    color: var(--text-primary) !important;
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent-soft) !important;
+    color: var(--accent) !important;
+}
+
+.btn-success {
+    background-color: #10b981 !important;
+    border: none !important;
+    color: #ffffff !important;
+}
+
+.btn-success:hover {
+    background-color: #059669 !important;
+    transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+    border: 1px solid var(--surface-border) !important;
+    color: var(--text-primary) !important;
+    background: transparent !important;
+}
+
+.btn-outline-primary:hover {
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: #ffffff !important;
+}
+
+.btn-sm {
+    padding: 0.35rem 0.85rem;
+    font-size: 0.78rem;
+}
+
+/* ---------- THEME TOGGLE ---------- */
+.theme-toggle-btn {
+    background: var(--surface) !important;
+    border: 1px solid var(--surface-border) !important;
+    color: var(--text-primary) !important;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1rem;
+}
+
+.theme-toggle-btn:hover {
+    background: var(--accent-soft) !important;
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+    transform: rotate(15deg);
+}
+
+/* ---------- TEXT UTILITIES ---------- */
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* ---------- EMPTY STATE ---------- */
+.empty-icon {
+    color: var(--text-muted) !important;
+    opacity: 0.5;
+    font-size: 2.8rem;
+}
+
+/* ---------- STAT PILLS ---------- */
+.stat-pill {
+    background: var(--surface) !important;
+    border: 1px solid var(--surface-border) !important;
+    color: var(--text-secondary) !important;
+    border-radius: 30px;
+    padding: 0.4rem 1rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 992px) {
+    .card-header {
+        padding: 0.9rem 1.1rem;
     }
 }
 
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 1rem;
+    }
+
+    .table-responsive {
+        border-radius: 0.75rem;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 0.65rem 0.5rem;
+        font-size: 0.82rem;
+    }
+
+    .table thead th {
+        font-size: 0.7rem;
+        padding: 0.5rem 0.4rem;
+    }
+
+    .avatar,
+    .avatar-fallback {
+        width: 34px;
+        height: 34px;
+        font-size: 0.75rem;
+    }
+
+    .badge-gender,
+    .badge-na {
+        padding: 0.2rem 0.55rem;
+        font-size: 0.68rem;
+    }
+
+    .btn {
+        padding: 0.4rem 0.85rem;
+        font-size: 0.78rem;
+    }
+
+    .btn-sm {
+        padding: 0.3rem 0.65rem;
+        font-size: 0.72rem;
+    }
+
+    .card-header {
+        padding: 0.8rem 0.9rem;
+        font-size: 0.9rem;
+    }
+
+    .card-header .badge {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.65rem;
+    }
+
+    .theme-toggle-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .class-card {
+        border-radius: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .table > :not(caption) > * > * {
+        padding: 0.5rem 0.35rem;
+        font-size: 0.76rem;
+    }
+
+    .table thead th {
+        font-size: 0.65rem;
+        padding: 0.4rem 0.3rem;
+    }
+
+    .avatar,
+    .avatar-fallback {
+        width: 30px;
+        height: 30px;
+        font-size: 0.68rem;
+    }
+
+    .stat-pill {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.75rem;
+    }
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
 @media print {
-
-    @page{
-        margin:10mm;
-    }
-    html,
-    body{
-        margin:0 !important;
-        padding:0 !important;
-        background:#fff !important;
-    }
-
+    .no-print,
     nav,
     footer,
-    .no-print,
     #studentSearch,
     #classJump,
     .btn,
     button,
     input,
-    select{
-        display:none !important;
+    select,
+    .theme-toggle-btn,
+    .stat-pill {
+        display: none !important;
+    }
+
+    @page {
+        margin: 12mm 10mm;
+        size: A4 portrait;
+    }
+
+    html,
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+        line-height: 1.4;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
     html,
     body,
     .container,
     .container-fluid,
-    .print-area{
-
-        width:100% !important;
-        max-width:none !important;
-
-        margin:0 !important;
-        padding:0 !important;
-    }
-    .class-card{
-        page-break-before:always;
-        break-before:page;
-        page-break-inside:avoid;
-        break-inside:avoid;
-
-        margin:0 !important;
-        margin-bottom:10mm !important;
-
-        box-shadow:none !important;
-        border:1px solid #000 !important;
+    .container-xl,
+    .print-area {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
-    .class-card:first-child{
-        page-break-before:auto;
-        break-before:auto;
+    .class-card {
+        page-break-before: always;
+        break-before: page;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        margin: 0 !important;
+        margin-bottom: 10mm !important;
+        box-shadow: none !important;
+        border: 1.5px solid #000000 !important;
+        border-radius: 0 !important;
+        background: #ffffff !important;
+        transform: none !important;
     }
 
-    .table-responsive{
-        overflow:visible !important;
+    .class-card:first-child {
+        page-break-before: auto;
+        break-before: auto;
     }
 
-    .class-card{
-        width:100% !important;
+    .card-header {
+        background: #343a40 !important;
+        color: #ffffff !important;
+        border-bottom: 1.5px solid #000000 !important;
+        padding: 6px 10px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        border-radius: 0 !important;
     }
 
-    .table-responsive{
-        width:100% !important;
-        overflow:visible !important;
+    .card-header .badge {
+        background: rgba(255, 255, 255, 0.3) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        padding: 2px 8px !important;
+        font-size: 9pt !important;
     }
 
-    table{
-        width:100% !important;
-        table-layout:fixed;
+    .table-responsive {
+        overflow: visible !important;
+        width: 100% !important;
+        border: none !important;
     }
+
+    table {
+        width: 100% !important;
+        table-layout: fixed;
+        border-collapse: collapse !important;
+        font-size: 10pt;
+    }
+
     th,
-    td{
-        border:1px solid #000 !important;
-        padding:5px !important;
+    td {
+        border: 1px solid #000000 !important;
+        padding: 4px 6px !important;
+        color: #000000 !important;
+        background: #ffffff !important;
+        font-size: 9.5pt;
+        word-wrap: break-word;
     }
 
-    .card-header{
-        background:#343a40 !important;
-        color:#fff !important;
-        -webkit-print-color-adjust:exact;
-        print-color-adjust:exact;
-    }
-
-    img{
-        width:30px !important;
-        height:30px !important;
-        border-radius:50%;
+    th {
+        background: #e9ecef !important;
+        font-weight: 700;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        text-transform: uppercase;
+        font-size: 8.5pt !important;
     }
 
     th:last-child,
-    td:last-child{
-        display:none !important;
+    td:last-child {
+        display: none !important;
+    }
+
+    img,
+    .avatar,
+    .avatar-fallback {
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 50% !important;
+        border: 1px solid #000000 !important;
+        box-shadow: none !important;
+        font-size: 8pt !important;
+    }
+
+    .badge-gender,
+    .badge-na {
+        background: #e9ecef !important;
+        color: #000000 !important;
+        border: 1px solid #999999 !important;
+        padding: 1px 6px !important;
+        font-size: 8pt !important;
+        border-radius: 20px !important;
+    }
+
+    .class-card:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+    html {
+        scroll-behavior: auto;
     }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4 print-area">
-    <div class="row g-2 align-items-center mb-4 no-print">
-        <div class="col-12 col-md-4">
-            <h4 class="mb-0">
-                <i class="bi bi-people me-2"></i>
-                Students – {{ request.user.school.name }}
+<div class="container-xl px-3 px-md-4 mt-4 print-area">
+
+    <!-- ========== TOP BAR ========== -->
+    <div class="row g-3 align-items-center mb-4 no-print">
+
+        <div class="col-12 col-lg-4">
+            <h4 class="mb-0 fw-semibold d-flex align-items-center gap-2" style="color: var(--text-primary);">
+                <i class="bi bi-people-fill" style="color: var(--accent); font-size: 1.3rem;"></i>
+                <span>Students · {{ request.user.school.name|default:"School" }}</span>
             </h4>
         </div>
 
-        <div class="col-12 col-md-3">
-            <input type="text" id="studentSearch" class="form-control"
-                   placeholder="Search name or admission number...">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="position-relative">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3"
+                   style="color: var(--text-secondary); font-size: 0.85rem; pointer-events: none;"></i>
+                <input type="text" id="studentSearch" class="form-control ps-5"
+                       placeholder="Search name or admission..." autocomplete="off">
+            </div>
         </div>
 
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-sm-6 col-lg-2">
             <select class="form-select" onchange="jumpToClass(this.value)" id="classJump">
                 <option value="">📍 Jump to class</option>
                 {% for class in classes %}
@@ -131,34 +660,52 @@
             </select>
         </div>
 
-        <div class="col-12 col-md-2 d-grid gap-2">
+        <div class="col-12 col-lg-3 d-flex flex-wrap justify-content-lg-end align-items-center gap-2">
             <a href="{% url 'students:student_add' %}" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-circle"></i> Add Learner
             </a>
             <button class="btn btn-secondary btn-sm" type="button" onclick="printAllClasses()">
-                <i class="bi bi-printer"></i> Print All
+                <i class="bi bi-printer"></i> Print
+            </button>
+            <button class="theme-toggle-btn" id="themeToggle" type="button"
+                    title="Toggle light/dark mode" aria-label="Toggle theme">
+                <i class="bi bi-moon-stars"></i>
             </button>
         </div>
     </div>
 
-    {% for class in classes %}
-    <div class="card mb-4 shadow-sm class-card" id="class-{{ class.id }}">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <div>
-                <strong>{{ class.name }}</strong>
-                <span class="badge bg-light text-dark ms-2">{{ class.student_set.count }}</span>
-            </div>
+    <!-- ========== STATS BAR ========== -->
+    {% if classes %}
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-4 no-print">
+        <span class="stat-pill">
+            <i class="bi bi-building"></i> {{ classes|length }} Class{{ classes|length|pluralize:"es" }}
+        </span>
+        <span class="stat-pill">
+            <i class="bi bi-person-badge"></i> {{ total_students|default:"All" }} Learners
+        </span>
+    </div>
+    {% endif %}
 
+    <!-- ========== CLASS CARDS ========== -->
+    {% for class in classes %}
+    <div class="class-card mb-4" id="class-{{ class.id }}">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-mortarboard-fill fs-5"></i>
+                <span class="fw-semibold">{{ class.name }}</span>
+                <span class="badge rounded-pill">{{ class.student_set.count }} learners</span>
+            </div>
             <div class="no-print">
-                <a href="{% url 'students:class_download' class.id %}" class="btn btn-sm btn-success">
+                <a href="{% url 'students:class_download' class.id %}" class="btn btn-success btn-sm"
+                   title="Download class list">
                     <i class="bi bi-download"></i>
                 </a>
             </div>
         </div>
 
         <div class="table-responsive">
-            <table class="table table-bordered table-hover table-sm align-middle mb-0">
-                <thead class="table-secondary text-center">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
                     <tr>
                         <th style="width: 5%;">#</th>
                         <th style="width: 10%;">Photo</th>
@@ -167,62 +714,60 @@
                         <th style="width: 15%;">Admission</th>
                         <th style="width: 10%;">Gender</th>
                         <th style="width: 12%;">DOB</th>
-                        <th class="no-print" style="width:12%;">Action</th>
+                        <th class="no-print" style="width: 12%;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for s in class.student_set.all %}
-                    <tr class="student-row" data-name="{{ s.user.first_name|lower }} {{ s.user.last_name|lower }}"
+                    <tr class="student-row"
+                        data-name="{{ s.user.first_name|lower }} {{ s.user.last_name|lower }}"
                         data-admission="{{ s.admission_number|lower }}">
-                        <td>{{ forloop.counter }}</td>
+                        <td class="fw-medium">{{ forloop.counter }}</td>
                         <td class="text-center">
                             {% if s.photo %}
-                                <img src="{{ s.photo.url }}" width="40" height="40" class="rounded-circle"
+                                <img src="{{ s.photo.url }}" class="avatar"
                                      alt="{{ s.user.first_name }} photo">
                             {% else %}
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center"
-                                     style="width:40px;height:40px;font-size:10px;color:#6c757d;">
-                                    {{ s.user.first_name.0|upper }}
+                                <div class="avatar-fallback">
+                                    {{ s.user.first_name|first|upper|default:"?" }}
                                 </div>
                             {% endif %}
                         </td>
-                        <td>{{ s.user.first_name|default:"N/A" }}</td>
+                        <td class="fw-medium">{{ s.user.first_name|default:"N/A" }}</td>
                         <td>{{ s.user.last_name|default:"N/A" }}</td>
-                        <td><strong>{{ s.admission_number|default:"N/A" }}</strong></td>
+                        <td><span class="fw-semibold">{{ s.admission_number|default:"N/A" }}</span></td>
                         <td class="text-center">
                             {% if s.gender %}
-                                <span class="badge bg-info text-dark">{{ s.gender|title }}</span>
+                                <span class="badge-gender">{{ s.gender|title }}</span>
                             {% else %}
-                                <span class="badge bg-secondary">N/A</span>
+                                <span class="badge-na">N/A</span>
                             {% endif %}
                         </td>
                         <td class="text-nowrap">{{ s.date_of_birth|date:"d M Y"|default:"N/A" }}</td>
-                       <td class="text-center no-print">
-                        <a href="{% url 'students:student_detail' s.id %}"
-                        class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                    </td>
-                                        </tr>
+                        <td class="text-center no-print">
+                            <a href="{% url 'students:student_detail' s.id %}"
+                               class="btn btn-sm btn-outline-primary" title="View details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="8" class="text-center text-muted py-4">
-                            <i class="bi bi-person-x fs-1 opacity-50 mb-2 d-block"></i>
-                            No students in this class
+                        <td colspan="8" class="text-center py-5">
+                            <i class="bi bi-person-x empty-icon d-block mb-2"></i>
+                            <span class="text-secondary">No students in this class</span>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
-   
     </div>
     {% empty %}
-    <div class="text-center py-5 text-muted no-print">
-        <i class="bi bi-building-school fs-1 opacity-50 mb-3 d-block"></i>
-        <h5>No classes found</h5>
-        <p class="mb-0">Add your first class to get started</p>
+    <div class="text-center py-5 no-print">
+        <i class="bi bi-building-school empty-icon d-block mb-3"></i>
+        <h5 class="fw-semibold">No classes found</h5>
+        <p class="text-secondary mb-0">Add your first class to get started</p>
     </div>
     {% endfor %}
 </div>
@@ -230,45 +775,118 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('studentSearch');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const value = this.value.toLowerCase().trim();
-            document.body.classList.add('loading');
+/* ============================================================
+   STUDENT LIST – INTERACTIONS
+   ============================================================ */
 
-            setTimeout(() => {
-                document.querySelectorAll('.student-row').forEach(row => {
+(function () {
+    'use strict';
+
+    /* ---------- THEME INIT (run immediately, before paint) ---------- */
+    const THEME_KEY = 'studentListTheme';
+    const htmlElement = document.documentElement;
+
+    function applyTheme(theme) {
+        htmlElement.setAttribute('data-bs-theme', theme);
+        // Also toggle Bootstrap's `.dark` class if base template uses it
+        if (theme === 'dark') {
+            document.body?.classList.add('dark');
+        } else {
+            document.body?.classList.remove('dark');
+        }
+        // Update toggle icon
+        const icon = document.querySelector('#themeToggle i');
+        if (icon) {
+            icon.classList.remove('bi-moon-stars', 'bi-sun');
+            icon.classList.add(theme === 'dark' ? 'bi-sun' : 'bi-moon-stars');
+        }
+    }
+
+    // Determine initial theme: saved preference → OS preference → light
+    function getInitialTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved === 'light' || saved === 'dark') return saved;
+        // Check OS preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
+        }
+        return 'light';
+    }
+
+    // Apply immediately to avoid flash
+    applyTheme(getInitialTheme());
+
+    /* ---------- DOM READY ---------- */
+    document.addEventListener('DOMContentLoaded', function () {
+
+        /* ---------- THEME TOGGLE BUTTON ---------- */
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function () {
+                const current = htmlElement.getAttribute('data-bs-theme') || 'light';
+                const next = current === 'dark' ? 'light' : 'dark';
+                localStorage.setItem(THEME_KEY, next);
+                applyTheme(next);
+            });
+        }
+
+        /* ---------- SEARCH ---------- */
+        const searchInput = document.getElementById('studentSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const value = this.value.toLowerCase().trim();
+                const rows = document.querySelectorAll('.student-row');
+                const classCards = document.querySelectorAll('.class-card');
+
+                // Filter rows
+                rows.forEach(function (row) {
                     const name = row.dataset.name || '';
                     const admission = row.dataset.admission || '';
-                    row.style.display = (name.includes(value) || admission.includes(value)) ? '' : 'none';
+                    const matches = !value || name.includes(value) || admission.includes(value);
+                    row.style.display = matches ? '' : 'none';
                 });
 
-                document.querySelectorAll('.class-card').forEach(card => {
-                    const rows = card.querySelectorAll('.student-row');
-                    const visibleRows = Array.from(rows).some(r => r.style.display !== 'none');
-                    const emptyMsg = card.querySelector('.text-center.text-muted.py-4, .text-center.py-5.text-muted');
-                    if (emptyMsg) emptyMsg.style.display = visibleRows || !value ? 'none' : '';
+                // Handle empty-state per class
+                classCards.forEach(function (card) {
+                    const cardRows = card.querySelectorAll('.student-row');
+                    const hasRows = cardRows.length > 0;
+                    const visibleRows = Array.from(cardRows).some(function (row) {
+                        return row.style.display !== 'none';
+                    });
+
+                    const emptyRow = card.querySelector('tbody tr td[colspan="8"]');
+                    const emptyTr = emptyRow ? emptyRow.closest('tr') : null;
+
+                    if (!emptyTr) return;
+
+                    if (!hasRows) {
+                        emptyTr.style.display = '';
+                    } else if (value === '') {
+                        emptyTr.style.display = 'none';
+                    } else {
+                        emptyTr.style.display = visibleRows ? 'none' : '';
+                    }
                 });
+            });
+        }
+    });
 
-                document.body.classList.remove('loading');
-            }, 100);
-        });
-    }
-});
+    /* ---------- JUMP TO CLASS ---------- */
+    window.jumpToClass = function (id) {
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const jump = document.getElementById('classJump');
+            if (jump) jump.value = '';
+        }
+    };
 
-function jumpToClass(id) {
-    const target = document.getElementById(id);
-    if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const jump = document.getElementById('classJump');
-        if (jump) jump.value = '';
-    }
-}
+    /* ---------- PRINT ALL ---------- */
+    window.printAllClasses = function () {
+        window.print();
+    };
 
-window.printAllClasses = function () {
-    window.print();
-};
-
+})();
 </script>
 {% endblock %}

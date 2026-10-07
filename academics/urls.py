@@ -20,8 +20,11 @@ urlpatterns = [
     # ===== EXAMS =====
     path('exams/', views.exam_list, name='exam_list'),
     path('exams/add/', views.exam_add, name='exam_add'),
-    path('exam/<int:pk>/edit/', views.exam_edit, name='exam_edit'),
-    path('exam/<int:pk>/delete/', views.exam_delete, name='exam_delete'),
+    # academics/urls.py
+    path('exam/<int:exam_id>/edit/', views.exam_edit, name='exam_edit'),
+    path('exam/<int:exam_id>/delete/', views.exam_delete, name='exam_delete'),
+    #path('exam/<int:pk>/edit/', views.exam_edit, name='exam_edit'),
+    #path('exam/<int:pk>/delete/', views.exam_delete, name='exam_delete'),
     path('exams/assign-subjects/', views.assign_subjects_to_exam, name='assign_subjects_to_exam'),
     path('exams/<int:exam_id>/assign-subjects/', views.exam_subject_add, name='exam_subject_add'),
     path('exam-subjects/<int:pk>/remove/', views.remove_exam_subject, name='remove_exam_subject'),
@@ -33,7 +36,7 @@ urlpatterns = [
     path('marks/classes/<int:class_id>/exam/<int:exam_id>/', views.enter_marks, name='enter_marks'),
     path('ajax/save-mark/', views.save_mark_ajax, name='save_mark_ajax'),
 
-    # ===== REPORTS =====
+   
     path('reports/class/<int:class_id>/', views.class_report, name='class_report'),
    
     path('reports/<int:student_id>/', views.student_report, name='student_report'),

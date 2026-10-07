@@ -19,11 +19,8 @@
 
             <div class="exam-info">
                 <strong>{{ school_class }}</strong> <br>
-
                 Term: <strong>{{ exam.term|default:"—" }}</strong> <br>
-
                 Year: <strong>{{ exam.year|default:"—" }}</strong> <br>
-
                 Max: <strong>{{ exam.max_mark }}</strong>
             </div>
 
@@ -50,8 +47,8 @@
             <div class="orientation-selector">
                 <label for="orientationSelect">Orientation:</label>
                 <select id="orientationSelect" aria-label="Print orientation">
-                    <option value="portrait" selected>Portrait</option>
-                    <option value="landscape">Landscape</option>
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape" selected>Landscape</option>
                 </select>
             </div>
 
@@ -89,40 +86,29 @@
 
                 <tr class="table-primary">
 
-                    <th style="width:35px">#</th>
+                    <th style="width:2.5%">#</th>
 
-                    <th style="width:180px"
-                        class="text-start">
+                    <th style="width:11%" class="text-start">
                         Student
                     </th>
 
                     {% for subject in subjects %}
 
-                        <th style="width:70px">
+                        <th style="width:{{ subject_col_width }}%">
                             {{ subject.short_name|default:subject.name|slice:":3" }}
                         </th>
 
-                        <th style="width:40px">
-                            R
-                        </th>
+                        <th style="width:2.5%">R</th>
 
-                        <th style="width:40px">
-                            Pts
-                        </th>
+                        <th style="width:3%">Pts</th>
 
                     {% endfor %}
 
-                    <th style="width:55px">
-                        Total
-                    </th>
+                    <th style="width:4%">Total</th>
 
-                    <th style="width:45px">
-                        Avg
-                    </th>
+                    <th style="width:4%">Avg</th>
 
-                    <th style="width:48px" class="total-pts-head">
-                        T-Pts
-                    </th>
+                    <th style="width:4%" class="total-pts-head">T-Pts</th>
 
                 </tr>
 
@@ -292,10 +278,6 @@
 
 /* ============================================================
    THEME SYSTEM
-   Priority order (highest first):
-     1. Explicit [data-theme="light|dark"] on <html> or <body>
-     2. OS preference via prefers-color-scheme
-     3. Default: LIGHT
    ============================================================ */
 
 :root {
@@ -320,8 +302,8 @@
     --shadow-sm:     0 1px 2px rgba(27,42,74,0.08);
     --shadow-md:     0 2px 8px rgba(27,42,74,0.10);
 
-    --row-hover:     #D6E4F7;   /* strengthened */
-    --row-active:    #FFEFC2;   /* strengthened */
+    --row-hover:     #D6E4F7;
+    --row-active:    #FFEFC2;
     --input-focus:   #FFF8DC;
     --input-invalid: #F8D7DA;
 
@@ -332,7 +314,6 @@
 }
 
 @media (prefers-color-scheme: dark) {
-
     html:not([data-theme="light"]):not([data-theme="dark"]) {
         --brand-navy:    #C9D4E8;
         --brand-steel:   #A9B8D4;
@@ -355,8 +336,8 @@
         --shadow-sm:     0 1px 2px rgba(0,0,0,0.45);
         --shadow-md:     0 2px 10px rgba(0,0,0,0.55);
 
-        --row-hover:     #2A3A5C;   /* strengthened */
-        --row-active:    #3A2E10;   /* strengthened */
+        --row-hover:     #2A3A5C;
+        --row-active:    #3A2E10;
         --input-focus:   #2B2410;
         --input-invalid: #4A1F27;
 
@@ -600,16 +581,19 @@ body {
 }
 
 .student-name {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    padding-left: 6px !important;
+    padding-left: 4px !important;
     color: var(--brand-navy);
     transition: color 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .enlarged-rank {
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 900 !important;
     text-align: center;
     color: var(--brand-steel);
     transition: color 0.15s ease;
@@ -619,20 +603,16 @@ body {
 
 .total-pts-head,
 .total-points-cell {
-    width: 48px !important;
-    max-width: 48px !important;
-    min-width: 42px !important;
     white-space: nowrap;
     padding: 1px 2px !important;
     font-size: 11px !important;
     text-align: center;
 }
 
-/* ===== INPUT — BOLD / BLACK WEIGHT / WIDER ===== */
+/* ===== INPUT ===== */
 
 .mark-input {
     width: 100%;
-    max-width: 62px;
     height: 26px;
     border: none;
     background: transparent;
@@ -665,7 +645,7 @@ body {
     background: var(--input-invalid) !important;
 }
 
-/* ===== ROW HOVER — STRONG AND CLEARLY VISIBLE ===== */
+/* ===== ROW HOVER ===== */
 
 .student-row {
     transition: box-shadow 0.15s ease;
@@ -682,14 +662,12 @@ body {
     z-index: 2;
 }
 
-/* Gold accents for name, rank and marks on hover */
 .student-row:hover .student-name,
 .student-row:hover .enlarged-rank,
 .student-row:hover .mark-input {
     color: var(--brand-gold);
 }
 
-/* Give mark inputs a subtle gold inset ring while the row is hovered */
 .student-row:hover .mark-input {
     background: var(--input-focus);
     border-radius: 2px;
@@ -699,14 +677,11 @@ body {
     box-shadow: 0 0 0 1px var(--brand-gold) inset;
 }
 
-/* ===== ACTIVE ROW (focused) — still stands above hover ===== */
+/* ===== ACTIVE ROW ===== */
 
 .student-row.active-row td {
     background: var(--row-active) !important;
     transition: background 0.3s ease;
-}
-
-.student-row.active-row td {
     position: relative;
     overflow: hidden;
 }
@@ -744,7 +719,7 @@ body {
 .class-avg-mean,
 .class-total-points,
 .class-points-mean {
-    font-weight: 900;
+    font-weight: 900 !important;
     text-align: center;
     font-size: 12px;
     color: var(--brand-navy);
@@ -801,7 +776,7 @@ body[data-theme="dark"] .rubric-cell.AE2 { background-color: #C8B487 !important;
 body[data-theme="dark"] .rubric-cell.BE1 { background-color: #A62E52 !important; }
 body[data-theme="dark"] .rubric-cell.BE2 { background-color: #C68A9A !important; color: #2B0A14 !important; }
 
-/* ===== POINTS CELL — SAME GRADIENT AS RUBRIC, BOLD ===== */
+/* ===== POINTS CELL ===== */
 
 .points-cell {
     font-weight: 900 !important;
@@ -850,7 +825,7 @@ body[data-theme="dark"] .points-cell.p-AE2 { background-color: #C8B487 !importan
 body[data-theme="dark"] .points-cell.p-BE1 { background-color: #A62E52 !important; }
 body[data-theme="dark"] .points-cell.p-BE2 { background-color: #C68A9A !important; color: #2B0A14 !important; }
 
-/* Total Pts cell — same gradient scale, bold */
+/* ===== TOTAL PTS ===== */
 
 .total-points-cell {
     font-weight: 900 !important;
@@ -994,17 +969,44 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
     color: var(--surface);
 }
 
+/* ============================================================
+   FORCE BOLD NUMBERS EVERYWHERE
+   ============================================================ */
+
+.marks-table td,
+.marks-table th,
+.marks-table tfoot th,
+.mark-input,
+.rubric-cell,
+.points-cell,
+.total-cell,
+.avg-cell,
+.total-points-cell,
+.enlarged-rank,
+.subject-total,
+.subject-mean,
+.subject-points-total,
+.subject-points-mean,
+.class-total,
+.class-avg,
+.class-total-mean,
+.class-avg-mean,
+.class-total-points,
+.class-points-mean {
+    font-weight: 900 !important;
+}
+
 /* ===== MOBILE ===== */
 
 @media (max-width: 768px) {
-
     .legend-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-
 }
 
-/* ===== PRINT (always light, always exact) ===== */
+/* ============================================================
+   PRINT — A4 LANDSCAPE, SAME VISUAL DENSITY AS SCREEN
+   ============================================================ */
 
 @media print {
 
@@ -1013,7 +1015,6 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
     body,
     html[data-theme="dark"],
     body[data-theme="dark"] {
-
         --page-bg: #ffffff;
         --surface: #ffffff;
         --surface-alt: #f8f9fa;
@@ -1023,8 +1024,13 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
         --table-head-bg: #1B2A4A;
         --table-head-fg: #ffffff;
         --table-foot-bg: #EEF1F6;
-        --wm-opacity: 0.06;
+        --wm-opacity: 0.04;
         --wm-filter: none;
+    }
+
+    @page {
+        size: A4 landscape;
+        margin: 8mm;
     }
 
     body {
@@ -1052,29 +1058,95 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
 
     body,
     .container-fluid {
-        margin-top: 0 !important;
-        padding-top: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 
-    /* Disable hover accents when printing */
-    .student-row:hover {
+    .table-responsive {
+        overflow: visible !important;
+        width: 100% !important;
+    }
+
+    .marks-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed !important;
+    }
+
+    .marks-table thead { display: table-header-group; }
+    .marks-table tfoot { display: table-footer-group; }
+    .marks-table tr    { page-break-inside: avoid; }
+
+    .student-row:hover,
+    .student-row:hover td,
+    .student-row.active-row td {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+    .student-row:hover .mark-input,
+    .student-row:hover .mark-input:not(:focus) {
+        background: transparent !important;
+        box-shadow: none !important;
+        color: var(--text-primary) !important;
+    }
+    .student-row:hover .student-name,
+    .student-row:hover .enlarged-rank {
+        color: #000000 !important;
+    }
+    .student-row.active-row td::after { display: none !important; }
+    .mark-input:focus {
+        background: transparent !important;
+        outline: none !important;
         box-shadow: none !important;
     }
 
+    .watermark {
+        position: fixed !important;
+        opacity: 0.04 !important;
+        z-index: 1;
+    }
+
+    /* ===== CHART PRINT FIX ===== */
+
+    .chart-wrapper {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-top: 8px !important;
+        border: 1px solid #999 !important;
+        padding: 6px 4px !important;
+    }
+
+    .chart-title {
+        font-size: 10px !important;
+    }
+
     .chart-container {
-        min-width: 100% !important;
-        height: 280px !important;
+        position: relative !important;
+        min-width: 0 !important;       /* removes 900px that breaks layout */
+        width: 100% !important;
+        height: 220px !important;
+    }
+
+    .chart-container canvas {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
     }
 
     .legend-item,
     .rubric-cell,
     .points-cell,
     .total-points-cell,
-    .marks-table thead tr {
+    .marks-table thead tr,
+    .marks-table thead tr th,
+    .marks-table tfoot tr,
+    .marks-table tfoot th {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
-
 }
 
 </style>
@@ -1095,10 +1167,20 @@ function printWithOrientation() {
 
     const style = document.createElement('style');
     style.id = 'print-orientation-style';
-    style.innerHTML = `@media print { @page { size: ${orientation}; margin: 10mm; } }`;
+    style.innerHTML = `
+        @media print {
+            @page { size: A4 ${orientation}; margin: 8mm; }
+            .chart-container { min-width: 0 !important; width: 100% !important; height: 220px !important; }
+        }
+    `;
     document.head.appendChild(style);
 
-    window.print();
+    // Force chart redraw at print dimensions BEFORE the browser captures it
+    redrawForPrint();
+
+    setTimeout(() => {
+        window.print();
+    }, 150);
 }
 
 function downloadPDF() {
@@ -1124,6 +1206,32 @@ function isDarkMode() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
+// ===== FORCE CHART REDRAW FOR PRINT =====
+// Chart.js canvases can print blank because the browser re-lays-out
+// the page and the canvas bitmap becomes stale. This resizes and
+// repaints the chart right before the print dialog captures it.
+
+function redrawForPrint() {
+    const canvas = document.getElementById('summaryChart');
+    if (!canvas || !window.summaryChartObj) return;
+
+    const wrapper = canvas.closest('.chart-container');
+    if (wrapper) {
+        wrapper.style.minWidth = '100%';
+        wrapper.style.width = '100%';
+        wrapper.style.height = '220px';
+    }
+
+    try {
+        window.summaryChartObj.resize();
+        window.summaryChartObj.update('none');
+    } catch (e) {
+        // ignore — will render at whatever size is current
+    }
+}
+
+window.addEventListener('beforeprint', redrawForPrint);
+
 document.addEventListener('DOMContentLoaded', () => {
 
     const table = document.getElementById('marks-table');
@@ -1148,7 +1256,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const subjectTotals = {};
 
-    // pre-seed all subjects so empty ones don't create keys later
     {% for subject in subjects %}
     subjectTotals['{{ subject.id }}'] = 0;
     {% endfor %}
@@ -1156,7 +1263,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===== RUBRIC =====
 
     function rubric(mark) {
-
         if (mark >= 90) return 'EE1';
         if (mark >= 75) return 'EE2';
         if (mark >= 58) return 'ME1';
@@ -1164,15 +1270,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mark >= 31) return 'AE1';
         if (mark >= 21) return 'AE2';
         if (mark >= 11) return 'BE1';
-
         return 'BE2';
-
     }
 
-    // ===== RUBRIC → POINTS =====
-
     function rubricPoints(grade) {
-
         switch (grade) {
             case 'EE1': return 8;
             case 'EE2': return 7;
@@ -1184,7 +1285,6 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'BE2': return 1;
             default:    return 0;
         }
-
     }
 
     // ===== CALCULATE =====
@@ -1207,8 +1307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let rowPointsTotal = 0;
             let filledCount = 0;
 
-            const rowInputs =
-                row.querySelectorAll('.mark-input');
+            const rowInputs = row.querySelectorAll('.mark-input');
 
             rowInputs.forEach(input => {
 
@@ -1241,14 +1340,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const grade = rubric(val);
 
                     rubricEl.textContent = grade;
-
-                    rubricEl.className =
-                        `rubric-cell ${grade}`;
+                    rubricEl.className = `rubric-cell ${grade}`;
 
                     const pts = rubricPoints(grade);
 
                     pointsEl.textContent = pts;
-
                     pointsEl.className = `points-cell p-${grade}`;
 
                     rowPointsTotal += pts;
@@ -1265,13 +1361,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
 
                     rubricEl.textContent = '';
-
                     rubricEl.className = 'rubric-cell';
 
                     pointsEl.textContent = '';
-
                     pointsEl.className = 'points-cell';
-
                 }
 
                 if (hasValue && val > maxMark) {
@@ -1306,9 +1399,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalPtsEl.className = cls;
 
             } else {
-
                 totalPtsEl.className = 'total-points-cell';
-
             }
 
             row.querySelector('.avg-cell')
@@ -1327,46 +1418,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         table.querySelectorAll('.subject-total')
         .forEach(th => {
-
             const subjId = th.dataset.subjectId;
-
-            th.textContent =
-                subjectTotals[subjId] || '';
-
+            th.textContent = subjectTotals[subjId] || '';
         });
 
         table.querySelectorAll('.subject-points-total')
         .forEach(th => {
-
             const subjId = th.dataset.subjectId;
-
-            th.textContent =
-                subjectPointsTotals[subjId] || '';
-
+            th.textContent = subjectPointsTotals[subjId] || '';
         });
 
         table.querySelectorAll('.subject-mean')
         .forEach(th => {
-
             const subjId = th.dataset.subjectId;
             const cnt = subjectCounts[subjId] || 0;
 
             th.textContent = cnt
                 ? (subjectTotals[subjId] / cnt).toFixed(2)
                 : '';
-
         });
 
         table.querySelectorAll('.subject-points-mean')
         .forEach(th => {
-
             const subjId = th.dataset.subjectId;
             const cnt = subjectCounts[subjId] || 0;
 
             th.textContent = cnt
                 ? (subjectPointsTotals[subjId] / cnt).toFixed(2)
                 : '';
-
         });
 
         const totalFilled = [...table.tBodies[0].rows]
@@ -1397,7 +1476,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .textContent = table.tBodies[0].rows.length
                 ? (classTotalPoints / table.tBodies[0].rows.length).toFixed(2)
                 : '';
-
     }
 
     // ===== RANK =====
@@ -1416,7 +1494,6 @@ document.addEventListener('DOMContentLoaded', () => {
             row.querySelector('.rank-cell').textContent = i + 1;
             table.tBodies[0].appendChild(row);
         });
-
     }
 
     // ===== CHART =====
@@ -1432,19 +1509,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const counts = {};
 
         [...table.tBodies[0].rows].forEach(row => {
-
             row.querySelectorAll('.mark-input').forEach(input => {
-
                 if (input.value !== '') {
-
                     const subj = input.name.split('_').pop();
-
                     counts[subj] = (counts[subj] || 0) + 1;
-
                 }
-
             });
-
         });
 
         const data = [
@@ -1474,32 +1544,22 @@ document.addEventListener('DOMContentLoaded', () => {
             new Chart(
                 document.getElementById('summaryChart'),
                 {
-
                     type: 'bar',
-
                     data: {
-
                         labels,
-
                         datasets: [{
-
                             data,
-
                             backgroundColor: barColor,
                             borderColor: barBorder,
                             borderWidth: 1,
                             borderRadius: 2
-
                         }]
-
                     },
-
                     options: {
-
                         responsive: true,
-
                         maintainAspectRatio: false,
-
+                        animation: false,
+                        devicePixelRatio: 2,
                         layout: {
                             padding: {
                                 top: 20,
@@ -1508,67 +1568,42 @@ document.addEventListener('DOMContentLoaded', () => {
                                 right: 10
                             }
                         },
-
                         plugins: {
-
-                            legend: {
-                                display: false
-                            },
-
+                            legend: { display: false },
                             datalabels: {
-
                                 anchor: 'end',
-
                                 align: 'top',
-
                                 color: labelColor,
-
                                 font: {
-                                    weight: 'bold',
-                                    size: 10
+                                    weight: '900',
+                                    size: 11,
+                                    family: '"Segoe UI", "Helvetica Neue", Arial, sans-serif'
                                 },
-
-                                formatter:
-                                    value => value || ''
-
+                                formatter: value => value || ''
                             }
-
                         },
-
                         scales: {
-
                             y: {
                                 beginAtZero: true,
                                 max: {{ exam.max_mark }},
-                                grid: {
-                                    color: gridColor
-                                },
-                                ticks: {
-                                    color: tickColor
-                                }
-                            },
-
-                            x: {
-                                grid: {
-                                    display: false
-                                },
+                                grid: { color: gridColor },
                                 ticks: {
                                     color: tickColor,
-                                    font: {
-                                        weight: '600'
-                                    }
+                                    font: { weight: '900' }
+                                }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    color: tickColor,
+                                    font: { weight: '900' }
                                 }
                             }
-
                         }
-
                     },
-
                     plugins: [ChartDataLabels]
-
                 }
             );
-
     }
 
     // ===== INPUT EVENTS =====
@@ -1581,7 +1616,6 @@ document.addEventListener('DOMContentLoaded', () => {
             drawChart();
         });
 
-        // ENTER KEY = MOVE DOWN
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -1629,7 +1663,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // SAVE MARK
         input.addEventListener('change', () => {
 
             calculate();
@@ -1663,7 +1696,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ===== REACT TO THEME CHANGES =====
+    // ===== THEME CHANGE REACTIONS =====
 
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -1690,11 +1723,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // INITIAL LOAD
     calculate();
-
     rankStudents();
-
     drawChart();
-
 });
 
 </script>
