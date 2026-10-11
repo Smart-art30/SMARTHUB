@@ -4,30 +4,67 @@
 {% block content %}
 
 <style>
+    /* =========================================================
+       THEME TOKENS
+       ========================================================= */
     :root {
-        --register-bg: #f4f7fb;
-        --register-card: #ffffff;
-        --register-border: #dfe5ec;
-        --register-text: #172033;
-        --register-muted: #667085;
+        --register-bg:      #f4f7fb;
+        --register-card:    #ffffff;
+        --register-border:  #dfe5ec;
+        --register-text:    #172033;
+        --register-muted:   #667085;
         --register-primary: #0f172a;
         --register-success: #198754;
-        --register-soft: #f8fafc;
-        --register-radius: 16px;
+        --register-soft:    #f8fafc;
+        --register-radius:  16px;
+
+        --register-row-alt: #fbfcfe;
+        --register-chip-bg: #f2f4f7;
+        --register-chip-fg: #344054;
+        --register-title-bg:#eef6f1;
+        --register-warning: #b42318;
+        --register-sig-bg:  #fafbfc;
+        --register-sig-bd:  #cbd5e1;
+        --register-sig-ln:  #344054;
+        --register-head-bg: #0f172a;
+        --register-head-fg: #ffffff;
+    }
+
+    html[data-theme="dark"],
+    body[data-theme="dark"] {
+        --register-bg:      #0b111e;
+        --register-card:    #141e30;
+        --register-border:  #2a3a55;
+        --register-text:    #eef2f8;
+        --register-muted:   #a0b4d0;
+        --register-primary: #eef2f8;
+        --register-success: #4ade80;
+        --register-soft:    #1b2337;
+
+        --register-row-alt: #182338;
+        --register-chip-bg: #1e2d48;
+        --register-chip-fg: #c9d6ea;
+        --register-title-bg:#1e3a2e;
+        --register-warning: #fca5a5;
+        --register-sig-bg:  #182338;
+        --register-sig-bd:  #3a4d6e;
+        --register-sig-ln:  #a0b4d0;
+        --register-head-bg: #0b1220;
+        --register-head-fg: #e6ecf6;
     }
 
     /* =========================================================
        SCREEN
     ========================================================= */
+    * { box-sizing: border-box; }
 
     body {
         background: var(--register-bg);
         color: var(--register-text);
+        transition: background 0.25s ease, color 0.25s ease;
     }
 
-    .register-page {
-        padding: 1.5rem 0 3rem;
-    }
+    .register-page { padding: 1.5rem 0 3rem; }
 
     .register-card {
         background: var(--register-card);
@@ -35,16 +72,19 @@
         border-radius: var(--register-radius);
         box-shadow: 0 10px 35px rgba(15, 23, 42, 0.07);
         overflow: hidden;
+        transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
-    .register-inner {
-        padding: 1.5rem;
+    html[data-theme="dark"] .register-card,
+    body[data-theme="dark"] .register-card {
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
     }
+
+    .register-inner { padding: 1.5rem; }
 
     /* =========================================================
        HEADER
     ========================================================= */
-
     .register-header {
         display: grid;
         grid-template-columns: 90px 1fr 90px;
@@ -53,6 +93,7 @@
         padding-bottom: 1rem;
         margin-bottom: 1rem;
         border-bottom: 1px solid var(--register-border);
+        transition: border-color 0.25s ease;
     }
 
     .logo-box {
@@ -64,7 +105,8 @@
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        background: #fff;
+        background: var(--register-card);
+        transition: background 0.25s ease, border-color 0.25s ease;
     }
 
     .logo-box img {
@@ -81,14 +123,9 @@
         text-align: center;
     }
 
-    .header-spacer {
-        width: 80px;
-        height: 80px;
-    }
+    .header-spacer { width: 80px; height: 80px; }
 
-    .title-box {
-        text-align: center;
-    }
+    .title-box { text-align: center; }
 
     .title-box .eyebrow {
         margin: 0;
@@ -103,7 +140,7 @@
         margin: .15rem 0;
         font-size: .85rem;
         font-weight: 600;
-        color: #475467;
+        color: var(--register-muted);
     }
 
     .title-box h1 {
@@ -118,7 +155,7 @@
         margin-top: .2rem;
         padding: .3rem .7rem;
         border-radius: 999px;
-        background: #eef6f1;
+        background: var(--register-title-bg);
         color: var(--register-success);
         font-size: .7rem;
         font-weight: 800;
@@ -134,7 +171,6 @@
     /* =========================================================
        INFORMATION
     ========================================================= */
-
     .info-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -148,6 +184,7 @@
         border-radius: 10px;
         background: var(--register-soft);
         min-height: 72px;
+        transition: background 0.25s ease, border-color 0.25s ease;
     }
 
     .info-label {
@@ -175,14 +212,11 @@
         font-weight: 500;
     }
 
-    .teacher-warning {
-        color: #b42318;
-    }
+    .teacher-warning { color: var(--register-warning); }
 
     /* =========================================================
        SUMMARY
     ========================================================= */
-
     .summary-bar {
         display: flex;
         justify-content: space-between;
@@ -192,43 +226,41 @@
         margin-bottom: .7rem;
         border: 1px solid var(--register-border);
         border-radius: 10px;
-        background: #fff;
+        background: var(--register-card);
+        transition: background 0.25s ease, border-color 0.25s ease;
     }
 
     .summary-title {
         font-size: .78rem;
         font-weight: 800;
+        color: var(--register-text);
     }
 
-    .summary-meta {
-        display: flex;
-        gap: .35rem;
-        flex-wrap: wrap;
-    }
+    .summary-meta { display: flex; gap: .35rem; flex-wrap: wrap; }
 
     .summary-badge {
         display: inline-flex;
         padding: .25rem .5rem;
         border-radius: 999px;
-        background: #f2f4f7;
-        color: #344054;
+        background: var(--register-chip-bg);
+        color: var(--register-chip-fg);
         font-size: .62rem;
         font-weight: 700;
     }
 
     .summary-badge.success {
-        background: #ecfdf3;
-        color: #027a48;
+        background: var(--register-title-bg);
+        color: var(--register-success);
     }
 
     /* =========================================================
        TABLE
     ========================================================= */
-
     .register-table-wrapper {
         overflow-x: auto;
         border: 1px solid var(--register-border);
         border-radius: 10px;
+        transition: border-color 0.25s ease;
     }
 
     .table-modern {
@@ -238,12 +270,13 @@
         border-collapse: separate;
         border-spacing: 0;
         table-layout: fixed;
+        color: var(--register-text);
     }
 
     .table-modern thead th {
         padding: .55rem .35rem;
-        background: var(--register-primary);
-        color: #fff;
+        background: var(--register-head-bg);
+        color: var(--register-head-fg);
         border: none;
         font-size: .62rem;
         font-weight: 800;
@@ -252,6 +285,8 @@
         text-align: center;
         vertical-align: middle;
         white-space: nowrap;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
     .table-modern tbody td {
@@ -263,62 +298,27 @@
     }
 
     .table-modern tbody tr:nth-child(even) {
-        background: #fbfcfe;
+        background: var(--register-row-alt);
     }
 
     /* =========================================================
-       COLUMN WIDTHS
-       IMPORTANT: STUDENT NAME IS DELIBERATELY SMALLER
+       COLUMN WIDTHS (screen)
     ========================================================= */
-
-    .col-no {
-        width: 35px;
-    }
-
-    .col-photo {
-        width: 62px;
-    }
-
-    .col-admission {
-        width: 90px;
-    }
-
-    .col-student {
-        width: 125px;
-    }
-
-    .col-dob {
-        width: 78px;
-    }
-
-    .col-student-gender {
-        width: 62px;
-    }
-
-    .col-parent {
-        width: 170px;
-    }
-
-    .col-parent-gender {
-        width: 65px;
-    }
-
-    .col-relationship {
-        width: 80px;
-    }
-
-    .col-phone {
-        width: 105px;
-    }
-
-    .col-remarks {
-        width: 105px;
-    }
+    .col-no              { width: 35px; }
+    .col-photo           { width: 62px; }
+    .col-admission       { width: 90px; }
+    .col-student         { width: 125px; }
+    .col-dob             { width: 78px; }
+    .col-student-gender  { width: 62px; }
+    .col-parent          { width: 170px; }
+    .col-parent-gender   { width: 65px; }
+    .col-relationship    { width: 80px; }
+    .col-phone           { width: 105px; }
+    .col-remarks         { width: 105px; }
 
     /* =========================================================
        PHOTO
     ========================================================= */
-
     .student-photo,
     .photo-placeholder {
         width: 45px;
@@ -330,19 +330,19 @@
         align-items: center;
         justify-content: center;
         margin: auto;
-        background: #f8fafc;
+        background: var(--register-soft);
+        transition: background 0.25s ease, border-color 0.25s ease;
     }
 
     .photo-placeholder {
-        color: #98a2b3;
+        color: var(--register-muted);
         font-size: .5rem;
         font-weight: 800;
     }
 
     /* =========================================================
-       STUDENT NAME
+       STUDENT NAME / BADGES
     ========================================================= */
-
     .student-name {
         display: block;
         max-width: 125px;
@@ -358,35 +358,36 @@
         display: inline-block;
         padding: .2rem .35rem;
         border-radius: 5px;
-        background: #f2f4f7;
-        color: #344054;
+        background: var(--register-chip-bg);
+        color: var(--register-chip-fg);
         font-size: .62rem;
         font-weight: 700;
         overflow-wrap: anywhere;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
     .gender-badge {
         display: inline-block;
         padding: .2rem .35rem;
         border-radius: 999px;
-        background: #f2f4f7;
-        color: #344054;
+        background: var(--register-chip-bg);
+        color: var(--register-chip-fg);
         font-size: .6rem;
         font-weight: 700;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
     /* =========================================================
        PARENT / GUARDIAN
     ========================================================= */
-
-    .guardian-row {
-        line-height: 1.25;
-    }
+    .guardian-row { line-height: 1.25; }
 
     .guardian-row + .guardian-row {
         margin-top: .3rem;
         padding-top: .3rem;
-        border-top: 1px dashed #dfe3e8;
+        border-top: 1px dashed var(--register-border);
     }
 
     .guardian-name {
@@ -400,49 +401,45 @@
         display: inline-block;
         padding: .16rem .3rem;
         border-radius: 999px;
-        background: #f2f4f7;
-        color: #475467;
+        background: var(--register-chip-bg);
+        color: var(--register-chip-fg);
         font-size: .56rem;
         font-weight: 700;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
     .relationship-badge {
         display: inline-block;
         padding: .16rem .3rem;
         border-radius: 5px;
-        background: #eef6f1;
-        color: #027a48;
+        background: var(--register-title-bg);
+        color: var(--register-success);
         font-size: .56rem;
         font-weight: 800;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
     .guardian-phone {
         font-size: .62rem;
         font-weight: 700;
         white-space: nowrap;
+        color: var(--register-text);
     }
 
-    .guardian-phone-icon {
-        color: var(--register-success);
-    }
+    .guardian-phone-icon { color: var(--register-success); }
 
     .guardian-empty {
-        color: #98a2b3;
+        color: var(--register-muted);
         font-size: .58rem;
         font-style: italic;
     }
 
     /* =========================================================
-       REMARKS
+       REMARKS / EMPTY
     ========================================================= */
-
-    .remarks-cell {
-        height: 36px;
-    }
-
-    /* =========================================================
-       EMPTY
-    ========================================================= */
+    .remarks-cell { height: 36px; }
 
     .empty-state {
         padding: 2rem !important;
@@ -453,17 +450,15 @@
     /* =========================================================
        SIGNATURES
     ========================================================= */
-
-    .signature-grid {
-        margin-top: 1rem;
-    }
+    .signature-grid { margin-top: 1rem; }
 
     .signature-box {
         min-height: 90px;
         padding: .75rem;
-        border: 1px dashed #cbd5e1;
+        border: 1px dashed var(--register-sig-bd);
         border-radius: 10px;
-        background: #fafbfc;
+        background: var(--register-sig-bg);
+        transition: background 0.25s ease, border-color 0.25s ease;
     }
 
     .signature-title {
@@ -476,7 +471,7 @@
 
     .signature-line {
         margin-top: 2.2rem;
-        border-top: 1px solid #344054;
+        border-top: 1px solid var(--register-sig-ln);
     }
 
     .signature-caption {
@@ -486,9 +481,88 @@
     }
 
     /* =========================================================
-       BUTTONS
+       TOOLBAR
     ========================================================= */
+    .register-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: .5rem;
+        flex-wrap: wrap;
+        margin-bottom: .75rem;
+    }
 
+    .register-toolbar .btn-back,
+    .register-toolbar .btn-print {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .5rem 1rem;
+        border-radius: 9px;
+        font-size: .8rem;
+        font-weight: 700;
+        border: 1px solid var(--register-border);
+        background: var(--register-card);
+        color: var(--register-text);
+        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        cursor: pointer;
+    }
+
+    .register-toolbar .btn-print {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+    }
+
+    html[data-theme="dark"] .register-toolbar .btn-print,
+    body[data-theme="dark"] .register-toolbar .btn-print {
+        background: #e6ecf6;
+        color: #0b1220;
+        border-color: #e6ecf6;
+    }
+
+    .register-toolbar .btn-back:hover {
+        background: var(--register-chip-bg);
+        border-color: var(--register-muted);
+    }
+
+    .register-toolbar .btn-print:hover { opacity: .92; }
+
+    .register-toolbar .orientation-selector {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .35rem .6rem;
+        border: 1px solid var(--register-border);
+        border-radius: 9px;
+        background: var(--register-card);
+        color: var(--register-text);
+        font-size: .78rem;
+        font-weight: 700;
+    }
+
+    .register-toolbar .orientation-selector label {
+        margin: 0;
+        color: var(--register-muted);
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .register-toolbar .orientation-selector select {
+        border: 1px solid var(--register-border);
+        border-radius: 6px;
+        padding: .2rem .4rem;
+        background: var(--register-card);
+        color: var(--register-text);
+        font-size: .78rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    /* =========================================================
+       ACTION BAR
+    ========================================================= */
     .action-bar {
         display: flex;
         justify-content: center;
@@ -510,1077 +584,876 @@
     /* =========================================================
        MOBILE
     ========================================================= */
-
     @media (max-width: 768px) {
-
-        .register-page {
-            padding: .75rem 0 2rem;
-        }
-
-        .register-inner {
-            padding: .85rem;
-        }
-
-        .register-header {
-            grid-template-columns: 1fr;
-        }
-
-        .logo-box {
-            margin: auto;
-        }
-
-        .header-spacer {
-            display: none;
-        }
-
-        .info-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .summary-bar {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .action-bar .btn {
-            width: 100%;
-        }
+        .register-page { padding: .75rem 0 2rem; }
+        .register-inner { padding: .85rem; }
+        .register-header { grid-template-columns: 1fr; }
+        .logo-box { margin: auto; }
+        .header-spacer { display: none; }
+        .info-grid { grid-template-columns: 1fr; }
+        .summary-bar { flex-direction: column; align-items: flex-start; }
+        .action-bar .btn { width: 100%; }
+        .register-toolbar { justify-content: center; }
     }
 
     /* =========================================================
        A4 PRINT
-    ========================================================= */
-
+       ------------------------------------------------------------
+       IMPORTANT: print always uses the LIGHT theme, regardless of
+       what the user is viewing on screen. We force every CSS
+       variable back to its light value inside @media print so
+       that dark mode never bleeds through to the paper.
+       ========================================================= */
     @page {
-        size: A4 landscape;
-        margin: 6mm;
+        margin: 10mm;
     }
 
     @media print {
 
+        /* ---------- FORCE LIGHT THEME IN PRINT ----------
+           This re-declares every variable to its light value,
+           overriding any dark-mode rules that were active on
+           screen. Highest specificity wins in print. */
+        :root,
         html,
-        body {
-            width: 297mm;
-            background: #fff !important;
-            color: #000 !important;
+        body,
+        html[data-theme="dark"],
+        body[data-theme="dark"],
+        html[data-theme="light"],
+        body[data-theme="light"] {
+            --register-bg:      #ffffff;
+            --register-card:    #ffffff;
+            --register-border:  #333333;
+            --register-text:    #000000;
+            --register-muted:   #444444;
+            --register-primary: #000000;
+            --register-success: #0a6b32;
+            --register-soft:    #ffffff;
+
+            --register-row-alt: #f7f8fa;
+            --register-chip-bg: #f0f2f5;
+            --register-chip-fg: #1f2937;
+            --register-title-bg:#e9f7ee;
+            --register-warning: #b42318;
+            --register-sig-bg:  #ffffff;
+            --register-sig-bd:  #666666;
+            --register-sig-ln:  #333333;
+            --register-head-bg: #0f172a;
+            --register-head-fg: #ffffff;
+
+            color-scheme: light !important;
         }
 
-        body {
+        *,
+        *::before,
+        *::after { box-sizing: border-box !important; }
+
+        html, body {
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
             margin: 0 !important;
             padding: 0 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            font-size: 11px !important;
+            line-height: 1.35 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
         }
 
-        nav,
-        footer,
-        .navbar,
-        .sidebar,
+        nav, footer, .navbar, .sidebar,
         .btn,
         .no-print,
-        .action-bar {
+        .action-bar,
+        .register-toolbar {
             display: none !important;
         }
 
-        .register-page {
+        /* Neutralise Bootstrap wrappers */
+        .container,
+        .container-fluid,
+        .container-sm,
+        .container-md,
+        .container-lg,
+        .container-xl,
+        .container-xxl {
             width: 100% !important;
-            padding: 0 !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
             margin: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+        }
+        [class*="col-"] {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .register-page {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
         }
 
         .register-card {
             width: 100% !important;
-            border: none !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            margin: 0 !important;
+            border: 1px solid var(--register-border) !important;
             border-radius: 0 !important;
             box-shadow: none !important;
             overflow: visible !important;
+            background: #ffffff !important;
         }
 
         .register-inner {
-            padding: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 4mm !important;
         }
 
-        /* -----------------------------------------
-           PRINT HEADER
-        ----------------------------------------- */
+        /* ---------- COLOR-EXACT ---------- */
+        .register-card,
+        .info-card,
+        .summary-bar,
+        .summary-badge,
+        .register-title,
+        .admission-number,
+        .gender-badge,
+        .guardian-gender,
+        .relationship-badge,
+        .signature-box,
+        .table-modern thead th,
+        .table-modern tbody tr:nth-child(even) {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
 
+        /* ---------- HEADER ---------- */
         .register-header {
-            grid-template-columns: 58px 1fr 58px;
-            gap: 4px;
-            padding-bottom: 4px;
-            margin-bottom: 5px;
+            grid-template-columns: 70px 1fr 70px;
+            gap: 8px;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            border-bottom-color: var(--register-border) !important;
         }
 
         .logo-box {
-            width: 50px;
-            height: 50px;
-            border: 1px solid #000 !important;
-            border-radius: 0;
+            width: 64px;
+            height: 64px;
+            border: 1px solid var(--register-border) !important;
+            border-radius: 6px;
             box-shadow: none !important;
+            background: #ffffff !important;
         }
 
-        .header-spacer {
-            width: 50px;
-            height: 50px;
-        }
+        .header-spacer { width: 64px; height: 64px; }
 
-        .title-box .eyebrow {
-            font-size: 6px;
-        }
-
-        .title-box .ministry {
-            font-size: 7px;
-        }
-
-        .title-box h1 {
-            font-size: 12px;
-            margin: 1px 0;
-        }
+        .title-box .eyebrow  { font-size: 9px !important; color: var(--register-muted) !important; }
+        .title-box .ministry { font-size: 10px !important; color: var(--register-muted) !important; }
+        .title-box h1        { font-size: 16px !important; margin: 3px 0; color: #000000 !important; }
+        .title-box .motto    { font-size: 9px !important; margin-top: 3px; color: var(--register-muted) !important; }
 
         .register-title {
-            margin-top: 1px;
-            padding: 2px 5px;
-            font-size: 6px;
+            margin-top: 3px;
+            padding: 3px 8px;
+            font-size: 9px !important;
             border-radius: 8px;
+            background: var(--register-title-bg) !important;
+            color: var(--register-success) !important;
         }
 
-        .title-box .motto {
-            margin-top: 1px;
-            font-size: 6px;
-        }
-
-        /* -----------------------------------------
-           PRINT INFORMATION
-        ----------------------------------------- */
-
+        /* ---------- INFORMATION ---------- */
         .info-grid {
             grid-template-columns: repeat(4, 1fr);
-            gap: 0;
-            margin-bottom: 4px;
+            gap: 6px;
+            margin-bottom: 8px;
+            width: 100% !important;
         }
 
         .info-card {
             min-height: 0;
-            padding: 3px 4px;
-            border: 1px solid #000 !important;
-            border-radius: 0;
-            background: #fff !important;
+            padding: 6px 8px;
+            border-radius: 4px;
+            background: var(--register-soft) !important;
+            border-color: var(--register-border) !important;
         }
 
         .info-label {
-            margin-bottom: 1px;
-            font-size: 5px;
+            margin-bottom: 2px;
+            font-size: 8px !important;
+            color: var(--register-muted) !important;
         }
-
         .info-value {
-            font-size: 6.5px;
+            font-size: 10px !important;
+            line-height: 1.3 !important;
+            color: #000000 !important;
         }
-
         .info-value .sub-value {
-            margin-top: 0;
-            font-size: 5.5px;
+            margin-top: 1px;
+            font-size: 9px !important;
+            color: var(--register-muted) !important;
         }
 
-        /* -----------------------------------------
-           PRINT SUMMARY
-        ----------------------------------------- */
-
+        /* ---------- SUMMARY ---------- */
         .summary-bar {
-            padding: 3px 4px;
-            margin-bottom: 4px;
-            border: 1px solid #000 !important;
-            border-radius: 0;
+            padding: 6px 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            width: 100% !important;
+            background: #ffffff !important;
+            border-color: var(--register-border) !important;
         }
 
         .summary-title {
-            font-size: 6.5px;
+            font-size: 11px !important;
+            color: #000000 !important;
         }
-
         .summary-badge {
-            padding: 1px 3px;
-            font-size: 5px;
+            padding: 2px 6px;
+            font-size: 9px !important;
+            background: var(--register-chip-bg) !important;
+            color: var(--register-chip-fg) !important;
+        }
+        .summary-badge.success {
+            background: var(--register-title-bg) !important;
+            color: var(--register-success) !important;
         }
 
-        /* -----------------------------------------
-           PRINT TABLE
-        ----------------------------------------- */
-
+        /* ---------- TABLE ---------- */
         .register-table-wrapper {
             overflow: visible !important;
-            border: none !important;
+            border: 1px solid var(--register-border) !important;
             border-radius: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
         }
 
         .table-modern {
             width: 100% !important;
+            max-width: 100% !important;
             min-width: 0 !important;
             table-layout: fixed !important;
             border-collapse: collapse !important;
+            color: #000000 !important;
         }
 
-        .table-modern thead {
-            display: table-header-group;
-        }
-
-        .table-modern tfoot {
-            display: table-footer-group;
-        }
+        .table-modern thead { display: table-header-group; }
+        .table-modern tfoot { display: table-footer-group; }
 
         .table-modern th,
         .table-modern td {
-            border: 1px solid #000 !important;
+            border: 1px solid var(--register-border) !important;
+            color: #000000 !important;
         }
 
         .table-modern thead th {
-            padding: 3px 2px;
-            background: #000 !important;
-            color: #fff !important;
-            font-size: 5.5px;
-            line-height: 1.1;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            padding: 6px 4px;
+            background: var(--register-head-bg) !important;
+            color: var(--register-head-fg) !important;
+            font-size: 9px !important;
+            line-height: 1.2 !important;
+            font-weight: 800 !important;
+            white-space: normal !important;
+            word-break: break-word !important;
         }
 
         .table-modern tbody td {
-            padding: 2.5px 2px;
-            font-size: 6px;
-            line-height: 1.15;
+            padding: 6px 4px;
+            font-size: 10px !important;
+            line-height: 1.3 !important;
+            vertical-align: top;
+            background: #ffffff !important;
         }
 
-        /* -----------------------------------------
-           PRINT COLUMN WIDTHS
-           TOTAL = 100%
-        ----------------------------------------- */
-
-        .col-no {
-            width: 3%;
+        .table-modern tbody tr:nth-child(even) td {
+            background: var(--register-row-alt) !important;
         }
 
-        .col-photo {
-            width: 6%;
-        }
-
-        .col-admission {
-            width: 8%;
-        }
-
-        /* Reduced student name column */
-        .col-student {
-            width: 11%;
-        }
-
-        .col-dob {
-            width: 7%;
-        }
-
-        .col-student-gender {
-            width: 5%;
-        }
-
-        .col-parent {
-            width: 18%;
-        }
-
-        .col-parent-gender {
-            width: 6%;
-        }
-
-        .col-relationship {
-            width: 8%;
-        }
-
-        .col-phone {
-            width: 10%;
-        }
-
-        .col-remarks {
-            width: 18%;
-        }
-
-        /* -----------------------------------------
-           PRINT STUDENT PHOTO
-        ----------------------------------------- */
-
+        /* ---------- PHOTO ---------- */
         .student-photo,
         .photo-placeholder {
-            width: 30px;
-            height: 30px;
-            border-radius: 2px;
-            border: 1px solid #000 !important;
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 4px;
+            border: 1px solid var(--register-border) !important;
+            background: #ffffff !important;
+            color: var(--register-muted) !important;
         }
 
-        .photo-placeholder {
-            font-size: 4px;
-        }
+        .photo-placeholder { font-size: 7px !important; }
 
-        /* -----------------------------------------
-           PRINT STUDENT NAME
-        ----------------------------------------- */
-
+        /* ---------- STUDENT NAME / BADGES ---------- */
         .student-name {
             max-width: none;
-            font-size: 6px;
-            line-height: 1.1;
+            font-size: 10px !important;
+            line-height: 1.25 !important;
+            color: #000000 !important;
         }
 
         .admission-number {
-            padding: 1px 2px;
-            font-size: 5.5px;
+            padding: 2px 4px;
+            font-size: 9px !important;
+            background: var(--register-chip-bg) !important;
+            color: var(--register-chip-fg) !important;
         }
 
         .gender-badge {
-            padding: 1px 2px;
-            font-size: 5px;
+            padding: 2px 5px;
+            font-size: 9px !important;
+            background: var(--register-chip-bg) !important;
+            color: var(--register-chip-fg) !important;
         }
 
-        /* -----------------------------------------
-           PRINT GUARDIANS
-        ----------------------------------------- */
-
-        .guardian-row {
-            line-height: 1.1;
-        }
+        /* ---------- GUARDIANS ---------- */
+        .guardian-row { line-height: 1.3 !important; }
 
         .guardian-row + .guardian-row {
-            margin-top: 1.5px;
-            padding-top: 1.5px;
-            border-top: 1px dashed #777 !important;
+            margin-top: 3px;
+            padding-top: 3px;
+            border-top: 1px dashed var(--register-border) !important;
         }
 
         .guardian-name {
-            font-size: 5.7px;
+            font-size: 10px !important;
+            color: #000000 !important;
         }
-
         .guardian-gender {
-            padding: 1px 2px;
-            font-size: 4.8px;
+            padding: 2px 4px;
+            font-size: 8.5px !important;
+            background: var(--register-chip-bg) !important;
+            color: var(--register-chip-fg) !important;
         }
-
         .relationship-badge {
-            padding: 1px 2px;
-            font-size: 4.8px;
+            padding: 2px 4px;
+            font-size: 8.5px !important;
+            background: var(--register-title-bg) !important;
+            color: var(--register-success) !important;
         }
-
         .guardian-phone {
-            font-size: 5.2px;
+            font-size: 9.5px !important;
+            color: #000000 !important;
         }
-
+        .guardian-phone-icon { color: var(--register-success) !important; }
         .guardian-empty {
-            font-size: 5px;
+            font-size: 9px !important;
+            color: var(--register-muted) !important;
         }
 
-        /* -----------------------------------------
-           PRINT SIGNATURES
-        ----------------------------------------- */
-
+        /* ---------- SIGNATURES ---------- */
         .signature-grid {
-            margin-top: 6px;
+            margin-top: 12px;
+            width: 100% !important;
         }
 
         .signature-box {
-            min-height: 50px;
-            padding: 4px;
-            border: 1px dashed #555 !important;
-            border-radius: 0;
-            background: #fff !important;
+            min-height: 70px;
+            padding: 8px;
+            border: 1px dashed var(--register-sig-bd) !important;
+            border-radius: 4px;
+            background: #ffffff !important;
         }
 
         .signature-title {
-            font-size: 5px;
+            font-size: 9px !important;
+            color: var(--register-muted) !important;
         }
-
         .signature-line {
-            margin-top: 1.3rem;
+            margin-top: 1.8rem;
+            border-top: 1px solid var(--register-sig-ln) !important;
         }
-
         .signature-caption {
-            margin-top: 1px;
-            font-size: 4.5px;
+            margin-top: 3px;
+            font-size: 8.5px !important;
+            color: var(--register-muted) !important;
         }
 
-        /* -----------------------------------------
-           PAGE BREAK CONTROL
-        ----------------------------------------- */
-
+        /* ---------- PAGE BREAK CONTROL ---------- */
         tr {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
 
-        thead {
-            display: table-header-group;
-        }
+        thead { display: table-header-group; }
 
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        p {
-            page-break-after: avoid;
-        }
+        h1, h2, h3, h4, h5, p { page-break-after: avoid; }
 
         .signature-grid {
             page-break-inside: avoid;
             break-inside: avoid;
         }
     }
+
+    /* =========================================================
+       LANDSCAPE PRINT
+       ========================================================= */
+    @media print and (orientation: landscape) {
+
+        .col-no             { width: 3%; }
+        .col-photo          { width: 6%; }
+        .col-admission      { width: 9%; }
+        .col-student        { width: 12%; }
+        .col-dob            { width: 8%; }
+        .col-student-gender { width: 6%; }
+        .col-parent         { width: 17%; }
+        .col-parent-gender  { width: 6%; }
+        .col-relationship   { width: 8%; }
+        .col-phone          { width: 10%; }
+        .col-remarks        { width: 15%; }
+    }
+
+    /* =========================================================
+       PORTRAIT PRINT
+       ========================================================= */
+    @media print and (orientation: portrait) {
+
+        .register-inner { padding: 4mm !important; }
+
+        .info-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 6px !important;
+        }
+
+        .table-modern thead th {
+            font-size: 8.5px !important;
+            padding: 5px 3px !important;
+        }
+
+        .table-modern tbody td {
+            font-size: 9px !important;
+            padding: 5px 3px !important;
+        }
+
+        .student-name   { font-size: 9.5px !important; }
+        .guardian-name  { font-size: 9.5px !important; }
+        .guardian-phone { font-size: 9px   !important; }
+        .guardian-empty { font-size: 8.5px !important; }
+
+        .admission-number   { font-size: 8.5px !important; }
+        .gender-badge       { font-size: 8.5px !important; }
+        .guardian-gender    { font-size: 8px   !important; }
+        .relationship-badge { font-size: 8px   !important; }
+
+        .title-box h1        { font-size: 14px !important; }
+        .title-box .eyebrow  { font-size: 8px  !important; }
+        .title-box .ministry { font-size: 9px  !important; }
+        .register-title      { font-size: 8px  !important; }
+
+        .info-label { font-size: 7.5px !important; }
+        .info-value { font-size: 9px   !important; }
+        .info-value .sub-value { font-size: 8.5px !important; }
+
+        .summary-title { font-size: 10px !important; }
+        .summary-badge { font-size: 8.5px !important; }
+
+        .col-no             { width: 4%    !important; }
+        .col-photo          { width: 7%    !important; }
+        .col-admission      { width: 9%    !important; }
+        .col-student        { width: 12%   !important; }
+        .col-dob            { width: 8%    !important; }
+        .col-student-gender { width: 6%    !important; }
+        .col-parent         { width: 16%   !important; }
+        .col-parent-gender  { width: 7%    !important; }
+        .col-relationship   { width: 8%    !important; }
+        .col-phone          { width: 10%   !important; }
+        .col-remarks        { width: 13%   !important; }
+
+        .student-photo,
+        .photo-placeholder {
+            width: 32px !important;
+            height: 32px !important;
+        }
+
+        .signature-grid { margin-top: 8px !important; }
+        .signature-box  { min-height: 60px !important; }
+    }
 </style>
 
 <div class="container register-page print-area">
 
-```
-<div class="register-card">
+    <div class="register-card">
 
-    <div class="register-inner">
+        <div class="register-inner">
 
-        <!-- =====================================================
-             HEADER
-        ====================================================== -->
+            <!-- TOOLBAR -->
+            <div class="register-toolbar no-print">
 
-        <header class="register-header">
+                <button type="button"
+                        class="btn-back"
+                        onclick="goBack()"
+                        title="Return to previous page">
+                    <i class="bi bi-arrow-left"></i>
+                    Back
+                </button>
 
-            <div class="logo-box">
-
-                {% if school.logo %}
-
-                    <img
-                        src="{{ school.logo.url }}"
-                        alt="{{ school.name }} logo"
-                    >
-
-                {% else %}
-
-                    <span class="logo-placeholder">
-                        SCHOOL LOGO
-                    </span>
-
-                {% endif %}
-
-            </div>
-
-
-            <div class="title-box">
-
-                <p class="eyebrow">
-                    Republic of Kenya
-                </p>
-
-                <p class="ministry">
-                    Ministry of Education
-                </p>
-
-                <h1>
-                    {{ school.name }}
-                </h1>
-
-                <div class="register-title">
-                    Official Class Register
+                <div class="orientation-selector">
+                    <label for="orientationSelect">Orientation:</label>
+                    <select id="orientationSelect" aria-label="Print orientation">
+                        <option value="portrait">Portrait</option>
+                        <option value="landscape" selected>Landscape</option>
+                    </select>
                 </div>
 
-                {% if school.motto %}
-
-                    <p class="motto">
-                        <em>“{{ school.motto }}”</em>
-                    </p>
-
-                {% endif %}
-
-            </div>
-
-
-            <div class="header-spacer"></div>
-
-        </header>
-
-
-        <!-- =====================================================
-             CLASS INFORMATION
-        ====================================================== -->
-
-        <section class="info-grid">
-
-            <div class="info-card">
-
-                <span class="info-label">
-                    School Code
-                </span>
-
-                <div class="info-value">
-                    {{ school.code|default:"—" }}
-                </div>
+                <button type="button"
+                        class="btn-print"
+                        onclick="printWithOrientation()"
+                        title="Print this register">
+                    🖨️ Print
+                </button>
 
             </div>
 
 
-            <div class="info-card">
+            <!-- HEADER -->
+            <header class="register-header">
 
-                <span class="info-label">
-                    Class / Stream
-                </span>
-
-                <div class="info-value">
-
-                    {{ class.name }}
-
-                    {% if class.section %}
-                        {{ class.section }}
-                    {% endif %}
-
-                    {% if class.stream %}
-                        {{ class.stream }}
-                    {% endif %}
-
-                </div>
-
-            </div>
-
-
-            <div class="info-card">
-
-                <span class="info-label">
-                    Class Teacher
-                </span>
-
-                <div class="info-value">
-
-                    {% if class.class_teacher %}
-
-                        {{ class.class_teacher.user.get_full_name }}
-
-                        {% if class.class_teacher.designation %}
-
-                            <span class="sub-value">
-                                {{ class.class_teacher.designation }}
-                            </span>
-
-                        {% endif %}
-
-                        {% if class.class_teacher.employee_id %}
-
-                            <span class="sub-value">
-                                Employee No:
-                                {{ class.class_teacher.employee_id }}
-                            </span>
-
-                        {% endif %}
-
-                        {% if class.class_teacher.phone %}
-
-                            <span class="sub-value">
-                                Tel:
-                                {{ class.class_teacher.phone }}
-                            </span>
-
-                        {% endif %}
-
+                <div class="logo-box">
+                    {% if school.logo %}
+                        <img src="{{ school.logo.url }}"
+                             alt="{{ school.name }} logo">
                     {% else %}
-
-                        <span class="teacher-warning">
-                            No Teacher Assigned
-                        </span>
-
+                        <span class="logo-placeholder">SCHOOL LOGO</span>
                     {% endif %}
+                </div>
 
+                <div class="title-box">
+                    <p class="eyebrow">Republic of Kenya</p>
+                    <p class="ministry">Ministry of Education</p>
+                    <h1>{{ school.name }}</h1>
+                    <div class="register-title">Official Class Register</div>
+                    {% if school.motto %}
+                        <p class="motto"><em>“{{ school.motto }}”</em></p>
+                    {% endif %}
+                </div>
+
+                <div class="header-spacer"></div>
+
+            </header>
+
+
+            <!-- CLASS INFORMATION -->
+            <section class="info-grid">
+
+                <div class="info-card">
+                    <span class="info-label">School Code</span>
+                    <div class="info-value">
+                        {{ school.code|default:"—" }}
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <span class="info-label">Class / Stream</span>
+                    <div class="info-value">
+                        {{ class.name }}
+                        {% if class.section %}{{ class.section }}{% endif %}
+                        {% if class.stream %}{{ class.stream }}{% endif %}
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <span class="info-label">Class Teacher</span>
+                    <div class="info-value">
+                        {% if class.class_teacher %}
+                            {{ class.class_teacher.user.get_full_name }}
+                            {% if class.class_teacher.designation %}
+                                <span class="sub-value">{{ class.class_teacher.designation }}</span>
+                            {% endif %}
+                            {% if class.class_teacher.employee_id %}
+                                <span class="sub-value">Employee No: {{ class.class_teacher.employee_id }}</span>
+                            {% endif %}
+                            {% if class.class_teacher.phone %}
+                                <span class="sub-value">Tel: {{ class.class_teacher.phone }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="teacher-warning">No Teacher Assigned</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <span class="info-label">School Contact</span>
+                    <div class="info-value">
+                        {{ school.phone|default:"—" }}
+                        <span class="sub-value">Printed: {% now "d M Y" %}</span>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- SUMMARY -->
+            <div class="summary-bar">
+
+                <div class="summary-title">Student Register</div>
+
+                <div class="summary-meta">
+                    <span class="summary-badge">{{ students|length }} Students</span>
+                    <span class="summary-badge">{{ boys }} Boys</span>
+                    <span class="summary-badge">{{ girls }} Girls</span>
+                    {% if school.phone %}
+                        <span class="summary-badge success">{{ school.phone }}</span>
+                    {% endif %}
                 </div>
 
             </div>
 
 
-            <div class="info-card">
+            <!-- REGISTER TABLE -->
+            <div class="register-table-wrapper">
 
-                <span class="info-label">
-                    School Contact
-                </span>
+                <table class="table-modern">
 
-                <div class="info-value">
+                    <colgroup>
+                        <col class="col-no">
+                        <col class="col-photo">
+                        <col class="col-admission">
+                        <col class="col-student">
+                        <col class="col-dob">
+                        <col class="col-student-gender">
+                        <col class="col-parent">
+                        <col class="col-parent-gender">
+                        <col class="col-relationship">
+                        <col class="col-phone">
+                        <col class="col-remarks">
+                    </colgroup>
 
-                    {{ school.phone|default:"—" }}
-
-                    <span class="sub-value">
-                        Printed:
-                        {% now "d M Y" %}
-                    </span>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================================================
-             SUMMARY
-        ====================================================== -->
-
-        <div class="summary-bar">
-
-            <div class="summary-title">
-                Student Register
-            </div>
-
-            <div class="summary-meta">
-
-                <span class="summary-badge">
-                    {{ students|length }} Students
-                </span>
-
-                <span class="summary-badge">
-                    {{ boys }} Boys
-                </span>
-
-                <span class="summary-badge">
-                    {{ girls }} Girls
-                </span>
-
-                {% if school.phone %}
-
-                    <span class="summary-badge success">
-                        {{ school.phone }}
-                    </span>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-
-        <!-- =====================================================
-             REGISTER TABLE
-        ====================================================== -->
-
-        <div class="register-table-wrapper">
-
-            <table class="table-modern">
-
-                <colgroup>
-
-                    <col class="col-no">
-                    <col class="col-photo">
-                    <col class="col-admission">
-                    <col class="col-student">
-                    <col class="col-dob">
-                    <col class="col-student-gender">
-                    <col class="col-parent">
-                    <col class="col-parent-gender">
-                    <col class="col-relationship">
-                    <col class="col-phone">
-                    <col class="col-remarks">
-
-                </colgroup>
-
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            #
-                        </th>
-
-                        <th>
-                            Photo
-                        </th>
-
-                        <th>
-                            Admission
-                        </th>
-
-                        <th>
-                            Student Name
-                        </th>
-
-                        <th>
-                            DOB
-                        </th>
-
-                        <th>
-                            Gender
-                        </th>
-
-                        <th>
-                            Parent / Guardian
-                        </th>
-
-                        <th>
-                            P/G Gender
-                        </th>
-
-                        <th>
-                            Relationship
-                        </th>
-
-                        <th>
-                            Phone Number
-                        </th>
-
-                        <th>
-                            Remarks
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                    {% for s in students %}
-
+                    <thead>
                         <tr>
+                            <th>#</th>
+                            <th>Photo</th>
+                            <th>Admission</th>
+                            <th>Student Name</th>
+                            <th>DOB</th>
+                            <th>Gender</th>
+                            <th>Parent / Guardian</th>
+                            <th>P/G Gender</th>
+                            <th>Relationship</th>
+                            <th>Phone Number</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
 
-                            <!-- Number -->
+                    <tbody>
 
-                            <td class="text-center">
-                                {{ forloop.counter }}
-                            </td>
+                        {% for s in students %}
 
+                            <tr>
 
-                            <!-- Photo -->
+                                <td class="text-center">{{ forloop.counter }}</td>
 
-                            <td class="text-center">
+                                <td class="text-center">
+                                    {% if s.photo %}
+                                        <img src="{{ s.photo.url }}"
+                                             class="student-photo"
+                                             alt="{{ s.user.get_full_name }}">
+                                    {% else %}
+                                        <div class="photo-placeholder">PHOTO</div>
+                                    {% endif %}
+                                </td>
 
-                                {% if s.photo %}
-
-                                    <img
-                                        src="{{ s.photo.url }}"
-                                        class="student-photo"
-                                        alt="{{ s.user.get_full_name }}"
-                                    >
-
-                                {% else %}
-
-                                    <div class="photo-placeholder">
-                                        PHOTO
-                                    </div>
-
-                                {% endif %}
-
-                            </td>
-
-
-                            <!-- Admission -->
-
-                            <td>
-
-                                <span class="admission-number">
-                                    {{ s.admission_number }}
-                                </span>
-
-                            </td>
-
-
-                            <!-- Student Name -->
-
-                            <td>
-
-                                <span class="student-name">
-                                    {{ s.user.last_name }},
-                                    {{ s.user.first_name }}
-                                </span>
-
-                            </td>
-
-
-                            <!-- DOB -->
-
-                            <td class="text-center">
-
-                                {{ s.date_of_birth|date:"d M Y"|default:"—" }}
-
-                            </td>
-
-
-                            <!-- Student Gender -->
-
-                            <td class="text-center">
-
-                                <span class="gender-badge">
-                                    {{ s.gender|title }}
-                                </span>
-
-                            </td>
-
-
-                            <!-- =================================================
-                                 PARENT / GUARDIAN NAME
-                            ================================================== -->
-
-                            <td class="guardian-cell">
-
-                                {% for parent in s.parents.all %}
-
-                                    <div class="guardian-row">
-
-                                        {% if parent.user %}
-
-                                            <span class="guardian-name">
-                                                {{ parent.user.get_full_name }}
-                                            </span>
-
-                                        {% else %}
-
-                                            <span class="guardian-empty">
-                                                Name not recorded
-                                            </span>
-
-                                        {% endif %}
-
-                                    </div>
-
-                                {% empty %}
-
-                                    <span class="guardian-empty">
-                                        No parent/guardian
+                                <td>
+                                    <span class="admission-number">
+                                        {{ s.admission_number }}
                                     </span>
+                                </td>
 
-                                {% endfor %}
-
-                            </td>
-
-
-                            <!-- =================================================
-                                 PARENT / GUARDIAN GENDER
-                            ================================================== -->
-
-                            <td class="text-center">
-
-                                {% for parent in s.parents.all %}
-
-                                    <div class="guardian-row">
-
-                                        {% if parent.gender %}
-
-                                            <span class="guardian-gender">
-                                                {{ parent.gender|title }}
-                                            </span>
-
-                                        {% else %}
-
-                                            <span class="guardian-empty">
-                                                —
-                                            </span>
-
-                                        {% endif %}
-
-                                    </div>
-
-                                {% empty %}
-
-                                    <span class="guardian-empty">
-                                        —
+                                <td>
+                                    <span class="student-name">
+                                        {{ s.user.last_name }}, {{ s.user.first_name }}
                                     </span>
+                                </td>
 
-                                {% endfor %}
+                                <td class="text-center">
+                                    {{ s.date_of_birth|date:"d M Y"|default:"—" }}
+                                </td>
 
-                            </td>
-
-
-                            <!-- =================================================
-                                 RELATIONSHIP
-                            ================================================== -->
-
-                            <td class="text-center">
-
-                                {% for parent in s.parents.all %}
-
-                                    <div class="guardian-row">
-
-                                        {% if parent.relationship %}
-
-                                            <span class="relationship-badge">
-                                                {{ parent.relationship|title }}
-                                            </span>
-
-                                        {% else %}
-
-                                            <span class="guardian-empty">
-                                                —
-                                            </span>
-
-                                        {% endif %}
-
-                                    </div>
-
-                                {% empty %}
-
-                                    <span class="guardian-empty">
-                                        —
+                                <td class="text-center">
+                                    <span class="gender-badge">
+                                        {{ s.gender|title }}
                                     </span>
+                                </td>
 
-                                {% endfor %}
+                                <td class="guardian-cell">
+                                    {% for parent in s.parents.all %}
+                                        <div class="guardian-row">
+                                            {% if parent.user %}
+                                                <span class="guardian-name">{{ parent.user.get_full_name }}</span>
+                                            {% else %}
+                                                <span class="guardian-empty">Name not recorded</span>
+                                            {% endif %}
+                                        </div>
+                                    {% empty %}
+                                        <span class="guardian-empty">No parent/guardian</span>
+                                    {% endfor %}
+                                </td>
 
-                            </td>
+                                <td class="text-center">
+                                    {% for parent in s.parents.all %}
+                                        <div class="guardian-row">
+                                            {% if parent.gender %}
+                                                <span class="guardian-gender">{{ parent.gender|title }}</span>
+                                            {% else %}
+                                                <span class="guardian-empty">—</span>
+                                            {% endif %}
+                                        </div>
+                                    {% empty %}
+                                        <span class="guardian-empty">—</span>
+                                    {% endfor %}
+                                </td>
 
+                                <td class="text-center">
+                                    {% for parent in s.parents.all %}
+                                        <div class="guardian-row">
+                                            {% if parent.relationship %}
+                                                <span class="relationship-badge">{{ parent.relationship|title }}</span>
+                                            {% else %}
+                                                <span class="guardian-empty">—</span>
+                                            {% endif %}
+                                        </div>
+                                    {% empty %}
+                                        <span class="guardian-empty">—</span>
+                                    {% endfor %}
+                                </td>
 
-                            <!-- =================================================
-                                 PHONE NUMBER
-                            ================================================== -->
-
-                            <td>
-
-                                {% for parent in s.parents.all %}
-
-                                    <div class="guardian-row">
-
-                                        {% if parent.phone %}
-
-                                            <span class="guardian-phone">
-
-                                                <span class="guardian-phone-icon">
-                                                    ☎
+                                <td>
+                                    {% for parent in s.parents.all %}
+                                        <div class="guardian-row">
+                                            {% if parent.phone %}
+                                                <span class="guardian-phone">
+                                                    <span class="guardian-phone-icon">☎</span>
+                                                    {{ parent.phone }}
                                                 </span>
+                                            {% else %}
+                                                <span class="guardian-empty">No phone</span>
+                                            {% endif %}
+                                        </div>
+                                    {% empty %}
+                                        <span class="guardian-empty">—</span>
+                                    {% endfor %}
+                                </td>
 
-                                                {{ parent.phone }}
+                                <td class="remarks-cell"></td>
 
-                                            </span>
+                            </tr>
 
-                                        {% else %}
+                        {% empty %}
 
-                                            <span class="guardian-empty">
-                                                No phone
-                                            </span>
+                            <tr>
+                                <td colspan="11" class="empty-state">
+                                    No students found in this class.
+                                </td>
+                            </tr>
 
-                                        {% endif %}
+                        {% endfor %}
 
-                                    </div>
+                    </tbody>
 
-                                {% empty %}
+                </table>
 
-                                    <span class="guardian-empty">
-                                        —
-                                    </span>
-
-                                {% endfor %}
-
-                            </td>
-
-
-                            <!-- Remarks -->
-
-                            <td class="remarks-cell">
-                            </td>
-
-                        </tr>
+            </div>
 
 
-                    {% empty %}
+            <!-- SIGNATURES -->
+            <div class="row signature-grid g-3">
 
-                        <tr>
-
-                            <td
-                                colspan="11"
-                                class="empty-state"
-                            >
-
-                                No students found in this class.
-
-                            </td>
-
-                        </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-
-        <!-- =====================================================
-             SIGNATURES
-        ====================================================== -->
-
-        <div class="row signature-grid g-3">
-
-            <div class="col-md-4">
-
-                <div class="signature-box">
-
-                    <div class="signature-title">
-                        Prepared By
+                <div class="col-md-4">
+                    <div class="signature-box">
+                        <div class="signature-title">Prepared By</div>
+                        <div class="signature-line"></div>
+                        <div class="signature-caption">Name / Signature / Date</div>
                     </div>
+                </div>
 
-                    <div class="signature-line"></div>
-
-                    <div class="signature-caption">
-                        Name / Signature / Date
+                <div class="col-md-4">
+                    <div class="signature-box">
+                        <div class="signature-title">Verified By</div>
+                        <div class="signature-line"></div>
+                        <div class="signature-caption">Name / Signature / Date</div>
                     </div>
+                </div>
 
+                <div class="col-md-4">
+                    <div class="signature-box">
+                        <div class="signature-title">Official Stamp</div>
+                        <div class="signature-line"></div>
+                        <div class="signature-caption">School Stamp / Date</div>
+                    </div>
                 </div>
 
             </div>
 
 
-            <div class="col-md-4">
+            <!-- ACTIONS -->
+            <div class="action-bar no-print">
 
-                <div class="signature-box">
+                <button type="button"
+                        class="btn btn-dark"
+                        onclick="printWithOrientation()">
+                    🖨️ Print Register
+                </button>
 
-                    <div class="signature-title">
-                        Verified By
-                    </div>
-
-                    <div class="signature-line"></div>
-
-                    <div class="signature-caption">
-                        Name / Signature / Date
-                    </div>
-
-                </div>
+                <a href="{% url 'students:class_download' class.id %}"
+                   class="btn btn-success">
+                    ⬇️ Download Register
+                </a>
 
             </div>
-
-
-            <div class="col-md-4">
-
-                <div class="signature-box">
-
-                    <div class="signature-title">
-                        Official Stamp
-                    </div>
-
-                    <div class="signature-line"></div>
-
-                    <div class="signature-caption">
-                        School Stamp / Date
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =====================================================
-             ACTIONS
-        ====================================================== -->
-
-        <div class="action-bar no-print">
-
-            <button
-                type="button"
-                class="btn btn-dark"
-                onclick="window.print()"
-            >
-                🖨️ Print Register
-            </button>
-
-
-            <a
-                href="{% url 'students:class_download' class.id %}"
-                class="btn btn-success"
-            >
-                ⬇️ Download Register
-            </a>
 
         </div>
 
     </div>
 
 </div>
-```
 
-</div>
+
+<script>
+    function goBack() {
+        if (window.history.length > 1 &&
+            document.referrer &&
+            document.referrer.indexOf(window.location.host) !== -1) {
+            window.history.back();
+            return;
+        }
+        window.location.href = "{{ dashboard_url|default:'/'|escapejs }}";
+    }
+
+    function printWithOrientation() {
+        const orientationEl = document.getElementById('orientationSelect');
+        const orientation = orientationEl ? orientationEl.value : 'landscape';
+
+        let styleEl = document.getElementById('print-orientation-style');
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'print-orientation-style';
+            document.head.appendChild(styleEl);
+        }
+
+        styleEl.textContent =
+            '@page { size: A4 ' + orientation + '; margin: 10mm; }';
+
+        void document.body.offsetHeight;
+        void document.documentElement.offsetHeight;
+
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                window.print();
+            }, 60);
+        });
+    }
+</script>
 
 {% endblock %}

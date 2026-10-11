@@ -5,8 +5,13 @@
 
 <style>
     /* ============================================================
-       EXAMS DASHBOARD — HARD-CODED LIGHT + DARK THEMES
-       Beat Bootstrap's data-bs-theme inheritance with explicit rules.
+       EXAMS DASHBOARD — theme is inherited from base.html
+       ------------------------------------------------------------
+       The theme source is whatever base.html sets on <html> or
+       <body> as data-theme="light" / data-theme="dark". We cover
+       both selectors, plus a neutral default when no attribute is
+       present (so the page still looks correct before base.html's
+       JS runs).
        ============================================================ */
 
     /* ---------- RESET / LAYOUT ---------- */
@@ -25,432 +30,12 @@
     }
 
     /* ============================================================
-       LIGHT THEME  (default — also forced with [data-theme="light"])
-       ============================================================ */
-    .exams-dashboard,
-    .exams-dashboard[data-theme="light"] {
-        color-scheme: light;
-        background: #f7f9fc !important;
-        color: #0b1e33 !important;
-    }
-
-    /* Header shell */
-    .exams-dashboard .dashboard-header,
-    .exams-dashboard[data-theme="light"] .dashboard-header {
-        background: #ffffff !important;
-        border: 1px solid rgba(0, 0, 0, 0.04) !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02) !important;
-    }
-
-    .exams-dashboard .dashboard-header h1,
-    .exams-dashboard[data-theme="light"] .dashboard-header h1 {
-        color: #0b1e33 !important;
-    }
-
-    /* Force ALL text-muted inside dashboard */
-    .exams-dashboard .text-muted,
-    .exams-dashboard[data-theme="light"] .text-muted {
-        color: #5e6f8d !important;
-    }
-
-    /* Cards */
-    .exams-dashboard .exam-card,
-    .exams-dashboard[data-theme="light"] .exam-card {
-        background: #ffffff !important;
-        border: 1px solid rgba(0, 0, 0, 0.04) !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02) !important;
-    }
-
-    .exams-dashboard .card-body,
-    .exams-dashboard[data-theme="light"] .card-body {
-        background: #ffffff !important;
-        color: #0b1e33 !important;
-    }
-
-    .exams-dashboard .card-body strong,
-    .exams-dashboard[data-theme="light"] .card-body strong {
-        color: #5e6f8d !important;
-    }
-
-    .exams-dashboard .card-footer,
-    .exams-dashboard[data-theme="light"] .card-footer {
-        background: #f8fafc !important;
-        border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
-        color: #6d7e9c !important;
-    }
-
-    .exams-dashboard .card-footer small,
-    .exams-dashboard[data-theme="light"] .card-footer small {
-        color: #6d7e9c !important;
-    }
-
-    /* Class item */
-    .exams-dashboard .class-item,
-    .exams-dashboard[data-theme="light"] .class-item {
-        background: #f9fbfe !important;
-        color: #0b1e33 !important;
-    }
-
-    .exams-dashboard .class-item:hover,
-    .exams-dashboard[data-theme="light"] .class-item:hover {
-        background: #eff4ff !important;
-        border-color: #d0e0ff !important;
-    }
-
-    .exams-dashboard .class-item > .d-flex > div:first-child,
-    .exams-dashboard[data-theme="light"] .class-item > .d-flex > div:first-child {
-        color: #0b1e33 !important;
-    }
-
-    /* Dropdown — CRITICAL: Bootstrap dark theme makes these dark */
-    .exams-dashboard .dropdown-menu,
-    .exams-dashboard[data-theme="light"] .dropdown-menu {
-        background: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12) !important;
-    }
-
-    .exams-dashboard .dropdown-item,
-    .exams-dashboard[data-theme="light"] .dropdown-item {
-        color: #0b1e33 !important;
-        background: transparent !important;
-    }
-
-    .exams-dashboard .dropdown-item:hover,
-    .exams-dashboard .dropdown-item:focus,
-    .exams-dashboard[data-theme="light"] .dropdown-item:hover,
-    .exams-dashboard[data-theme="light"] .dropdown-item:focus {
-        background: #f4f7fe !important;
-        color: #0b1e33 !important;
-    }
-
-    .exams-dashboard .dropdown-item.text-danger,
-    .exams-dashboard[data-theme="light"] .dropdown-item.text-danger {
-        color: #b91c1c !important;
-    }
-
-    .exams-dashboard .dropdown-item.text-danger:hover,
-    .exams-dashboard[data-theme="light"] .dropdown-item.text-danger:hover {
-        background: #fee9e9 !important;
-        color: #b91c1c !important;
-    }
-
-    .exams-dashboard .dropdown-divider,
-    .exams-dashboard[data-theme="light"] .dropdown-divider {
-        border-color: #eef2f6 !important;
-    }
-
-    /* Empty state */
-    .exams-dashboard .py-5 h3,
-    .exams-dashboard[data-theme="light"] .py-5 h3 {
-        color: #1a2639 !important;
-    }
-
-    .exams-dashboard .bi-journal-x.display-1,
-    .exams-dashboard .bi-folder-x.display-6,
-    .exams-dashboard[data-theme="light"] .bi-journal-x.display-1,
-    .exams-dashboard[data-theme="light"] .bi-folder-x.display-6 {
-        color: #b7c4d9 !important;
-    }
-
-    /* Buttons */
-    .exams-dashboard .btn-outline-secondary,
-    .exams-dashboard[data-theme="light"] .btn-outline-secondary {
-        background: #ffffff !important;
-        border: 1px solid #dde3ec !important;
-        color: #2f405c !important;
-    }
-    .exams-dashboard .btn-outline-secondary:hover,
-    .exams-dashboard[data-theme="light"] .btn-outline-secondary:hover {
-        background: #f2f5f9 !important;
-        border-color: #cbd5e1 !important;
-        color: #0b1e33 !important;
-    }
-
-    .exams-dashboard .btn-outline-primary,
-    .exams-dashboard[data-theme="light"] .btn-outline-primary {
-        background: #ffffff !important;
-        border: 1px solid #cbd9f0 !important;
-        color: #1e3a8a !important;
-    }
-    .exams-dashboard .btn-outline-primary:hover,
-    .exams-dashboard[data-theme="light"] .btn-outline-primary:hover {
-        background: #e8f0fe !important;
-        border-color: #2563eb !important;
-        color: #1e3a8a !important;
-    }
-
-    .exams-dashboard .btn-outline-danger,
-    .exams-dashboard[data-theme="light"] .btn-outline-danger {
-        background: #ffffff !important;
-        border: 1px solid #f1d7db !important;
-        color: #b91c1c !important;
-    }
-    .exams-dashboard .btn-outline-danger:hover,
-    .exams-dashboard[data-theme="light"] .btn-outline-danger:hover {
-        background: #fee9e9 !important;
-        border-color: #dc2626 !important;
-        color: #b91c1c !important;
-    }
-
-    .exams-dashboard .btn-light.border,
-    .exams-dashboard[data-theme="light"] .btn-light.border {
-        background: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-        color: #1e3a8a !important;
-    }
-    .exams-dashboard .btn-light.border:hover,
-    .exams-dashboard[data-theme="light"] .btn-light.border:hover {
-        background: #f2f6ff !important;
-        border-color: #b8c9e8 !important;
-        color: #1e3a8a !important;
-    }
-
-    .exams-dashboard .theme-toggle,
-    .exams-dashboard[data-theme="light"] .theme-toggle {
-        background: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-        color: #0b1e33 !important;
-    }
-    .exams-dashboard .theme-toggle:hover,
-    .exams-dashboard[data-theme="light"] .theme-toggle:hover {
-        background: #f2f5f9 !important;
-    }
-
-    /* ============================================================
-       DARK THEME  (auto via OS OR forced with [data-theme="dark"])
-       ============================================================ */
-
-    /* --- Auto dark (OS preference) — only when no manual light override --- */
-    @media (prefers-color-scheme: dark) {
-        .exams-dashboard:not([data-theme="light"]) {
-            color-scheme: dark;
-            background: #0b111e !important;
-            color: #eef2f8 !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .dashboard-header {
-            background: #141e30 !important;
-            border-color: rgba(255, 255, 255, 0.06) !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .dashboard-header h1 { color: #eef2f8 !important; }
-        .exams-dashboard:not([data-theme="light"]) .text-muted { color: #a0b4d0 !important; }
-        .exams-dashboard:not([data-theme="light"]) .exam-card {
-            background: #141e30 !important;
-            border-color: rgba(255, 255, 255, 0.06) !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .card-body {
-            background: #141e30 !important;
-            color: #eef2f8 !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .card-body strong { color: #a0b4d0 !important; }
-        .exams-dashboard:not([data-theme="light"]) .card-footer {
-            background: #0f1828 !important;
-            border-top-color: rgba(255, 255, 255, 0.06) !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .card-footer small { color: #8b9fc0 !important; }
-        .exams-dashboard:not([data-theme="light"]) .class-item {
-            background: #1c2a3f !important;
-            color: #eef2f8 !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .class-item:hover {
-            background: #253a55 !important;
-            border-color: #3a4d6e !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .class-item > .d-flex > div:first-child {
-            color: #eef2f8 !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .dropdown-menu {
-            background: #141e30 !important;
-            border-color: #2a3a55 !important;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6) !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .dropdown-item {
-            color: #eef2f8 !important;
-            background: transparent !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .dropdown-item:hover,
-        .exams-dashboard:not([data-theme="light"]) .dropdown-item:focus {
-            background: #1e2d48 !important;
-            color: #eef2f8 !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .dropdown-item.text-danger { color: #fca5a5 !important; }
-        .exams-dashboard:not([data-theme="light"]) .dropdown-item.text-danger:hover {
-            background: #3a1f26 !important;
-            color: #fca5a5 !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .dropdown-divider { border-color: #2a3a55 !important; }
-        .exams-dashboard:not([data-theme="light"]) .py-5 h3 { color: #eef2f8 !important; }
-        .exams-dashboard:not([data-theme="light"]) .bi-journal-x.display-1,
-        .exams-dashboard:not([data-theme="light"]) .bi-folder-x.display-6 { color: #4a5a75 !important; }
-        .exams-dashboard:not([data-theme="light"]) .btn-outline-secondary {
-            background: #141e30 !important;
-            border-color: #2a3a55 !important;
-            color: #c9d6ea !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .btn-outline-secondary:hover {
-            background: #1e2d48 !important;
-            border-color: #3a4d6e !important;
-            color: #eef2f8 !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .btn-outline-primary {
-            background: #141e30 !important;
-            border-color: #2e3f5a !important;
-            color: #b8d0ff !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .btn-outline-primary:hover {
-            background: #1e2d48 !important;
-            border-color: #3b82f6 !important;
-            color: #b8d0ff !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .btn-outline-danger {
-            background: #141e30 !important;
-            border-color: #4a2a32 !important;
-            color: #fca5a5 !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .btn-outline-danger:hover {
-            background: #3a1f26 !important;
-            border-color: #dc2626 !important;
-            color: #fca5a5 !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .btn-light.border {
-            background: #141e30 !important;
-            border-color: #2a3a55 !important;
-            color: #b8d0ff !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .btn-light.border:hover {
-            background: #1e2d48 !important;
-            border-color: #3b82f6 !important;
-            color: #b8d0ff !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .theme-toggle {
-            background: #141e30 !important;
-            border-color: #2a3a55 !important;
-            color: #eef2f8 !important;
-        }
-        .exams-dashboard:not([data-theme="light"]) .theme-toggle:hover {
-            background: #1e2d48 !important;
-        }
-    }
-
-    /* --- Forced dark (manual) --- */
-    .exams-dashboard[data-theme="dark"] {
-        color-scheme: dark;
-        background: #0b111e !important;
-        color: #eef2f8 !important;
-    }
-    .exams-dashboard[data-theme="dark"] .dashboard-header {
-        background: #141e30 !important;
-        border-color: rgba(255, 255, 255, 0.06) !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
-    }
-    .exams-dashboard[data-theme="dark"] .dashboard-header h1 { color: #eef2f8 !important; }
-    .exams-dashboard[data-theme="dark"] .text-muted { color: #a0b4d0 !important; }
-    .exams-dashboard[data-theme="dark"] .exam-card {
-        background: #141e30 !important;
-        border-color: rgba(255, 255, 255, 0.06) !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
-    }
-    .exams-dashboard[data-theme="dark"] .card-body {
-        background: #141e30 !important;
-        color: #eef2f8 !important;
-    }
-    .exams-dashboard[data-theme="dark"] .card-body strong { color: #a0b4d0 !important; }
-    .exams-dashboard[data-theme="dark"] .card-footer {
-        background: #0f1828 !important;
-        border-top-color: rgba(255, 255, 255, 0.06) !important;
-    }
-    .exams-dashboard[data-theme="dark"] .card-footer small { color: #8b9fc0 !important; }
-    .exams-dashboard[data-theme="dark"] .class-item {
-        background: #1c2a3f !important;
-        color: #eef2f8 !important;
-    }
-    .exams-dashboard[data-theme="dark"] .class-item:hover {
-        background: #253a55 !important;
-        border-color: #3a4d6e !important;
-    }
-    .exams-dashboard[data-theme="dark"] .class-item > .d-flex > div:first-child {
-        color: #eef2f8 !important;
-    }
-    .exams-dashboard[data-theme="dark"] .dropdown-menu {
-        background: #141e30 !important;
-        border-color: #2a3a55 !important;
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6) !important;
-    }
-    .exams-dashboard[data-theme="dark"] .dropdown-item {
-        color: #eef2f8 !important;
-        background: transparent !important;
-    }
-    .exams-dashboard[data-theme="dark"] .dropdown-item:hover,
-    .exams-dashboard[data-theme="dark"] .dropdown-item:focus {
-        background: #1e2d48 !important;
-        color: #eef2f8 !important;
-    }
-    .exams-dashboard[data-theme="dark"] .dropdown-item.text-danger { color: #fca5a5 !important; }
-    .exams-dashboard[data-theme="dark"] .dropdown-item.text-danger:hover {
-        background: #3a1f26 !important;
-        color: #fca5a5 !important;
-    }
-    .exams-dashboard[data-theme="dark"] .dropdown-divider { border-color: #2a3a55 !important; }
-    .exams-dashboard[data-theme="dark"] .py-5 h3 { color: #eef2f8 !important; }
-    .exams-dashboard[data-theme="dark"] .bi-journal-x.display-1,
-    .exams-dashboard[data-theme="dark"] .bi-folder-x.display-6 { color: #4a5a75 !important; }
-    .exams-dashboard[data-theme="dark"] .btn-outline-secondary {
-        background: #141e30 !important;
-        border-color: #2a3a55 !important;
-        color: #c9d6ea !important;
-    }
-    .exams-dashboard[data-theme="dark"] .btn-outline-secondary:hover {
-        background: #1e2d48 !important;
-        border-color: #3a4d6e !important;
-        color: #eef2f8 !important;
-    }
-    .exams-dashboard[data-theme="dark"] .btn-outline-primary {
-        background: #141e30 !important;
-        border-color: #2e3f5a !important;
-        color: #b8d0ff !important;
-    }
-    .exams-dashboard[data-theme="dark"] .btn-outline-primary:hover {
-        background: #1e2d48 !important;
-        border-color: #3b82f6 !important;
-        color: #b8d0ff !important;
-    }
-    .exams-dashboard[data-theme="dark"] .btn-outline-danger {
-        background: #141e30 !important;
-        border-color: #4a2a32 !important;
-        color: #fca5a5 !important;
-    }
-    .exams-dashboard[data-theme="dark"] .btn-outline-danger:hover {
-        background: #3a1f26 !important;
-        border-color: #dc2626 !important;
-        color: #fca5a5 !important;
-    }
-    .exams-dashboard[data-theme="dark"] .btn-light.border {
-        background: #141e30 !important;
-        border-color: #2a3a55 !important;
-        color: #b8d0ff !important;
-    }
-    .exams-dashboard[data-theme="dark"] .btn-light.border:hover {
-        background: #1e2d48 !important;
-        border-color: #3b82f6 !important;
-        color: #b8d0ff !important;
-    }
-    .exams-dashboard[data-theme="dark"] .theme-toggle {
-        background: #141e30 !important;
-        border-color: #2a3a55 !important;
-        color: #eef2f8 !important;
-    }
-    .exams-dashboard[data-theme="dark"] .theme-toggle:hover {
-        background: #1e2d48 !important;
-    }
-
-    /* ============================================================
-       THEME-INDEPENDENT STYLES (borders, radii, layout, animations)
+       THEME-INDEPENDENT STRUCTURE
        ============================================================ */
     .exams-dashboard .dashboard-header {
         padding: 1.5rem 2rem;
         border-radius: 24px;
+        transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     .exams-dashboard .dashboard-header h1 {
@@ -460,6 +45,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        margin: 0;
     }
 
     .exams-dashboard .dashboard-header h1 .bi-journal-text {
@@ -471,20 +57,6 @@
         font-size: 0.98rem;
     }
 
-    /* Theme toggle */
-    .exams-dashboard .theme-toggle {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        font-size: 1.1rem;
-    }
-
-    /* Buttons */
     .exams-dashboard .btn {
         border-radius: 12px;
         font-weight: 500;
@@ -512,10 +84,9 @@
         color: #ffffff !important;
     }
 
-    /* Exam card layout */
     .exams-dashboard .exam-card {
         border-radius: 20px;
-        transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
+        transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -668,6 +239,7 @@
     .exams-dashboard .card-footer {
         padding: 0.75rem 1.1rem;
         border-radius: 0 0 20px 20px;
+        transition: background 0.25s ease, border-color 0.25s ease;
     }
     .exams-dashboard .card-footer small {
         font-size: 0.75rem;
@@ -680,6 +252,333 @@
         font-size: 1.6rem;
     }
     .exams-dashboard .py-5 .text-muted { font-size: 1rem; }
+
+
+    /* ============================================================
+       NEUTRAL / DEFAULT (light look) — used when no data-theme attr
+       is present anywhere yet (before base.html's JS kicks in).
+       ============================================================ */
+    .exams-dashboard {
+        color-scheme: light;
+        background: #f7f9fc !important;
+        color: #0b1e33 !important;
+    }
+    .exams-dashboard .dashboard-header {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+    .exams-dashboard .dashboard-header h1 { color: #0b1e33; }
+    .exams-dashboard .text-muted { color: #5e6f8d !important; }
+    .exams-dashboard .exam-card {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+    .exams-dashboard .card-body { background: #ffffff; color: #0b1e33; }
+    .exams-dashboard .card-body strong { color: #5e6f8d; }
+    .exams-dashboard .card-footer {
+        background: #f8fafc;
+        border-top: 1px solid rgba(0, 0, 0, 0.04);
+        color: #6d7e9c;
+    }
+    .exams-dashboard .card-footer small { color: #6d7e9c; }
+    .exams-dashboard .class-item { background: #f9fbfe; color: #0b1e33; }
+    .exams-dashboard .class-item:hover { background: #eff4ff; border-color: #d0e0ff; }
+    .exams-dashboard .class-item > .d-flex > div:first-child { color: #0b1e33; }
+    .exams-dashboard .dropdown-menu {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    }
+    .exams-dashboard .dropdown-item { color: #0b1e33; background: transparent; }
+    .exams-dashboard .dropdown-item:hover,
+    .exams-dashboard .dropdown-item:focus { background: #f4f7fe; color: #0b1e33; }
+    .exams-dashboard .dropdown-item.text-danger { color: #b91c1c; }
+    .exams-dashboard .dropdown-item.text-danger:hover { background: #fee9e9; color: #b91c1c; }
+    .exams-dashboard .dropdown-divider { border-color: #eef2f6; }
+    .exams-dashboard .py-5 h3 { color: #1a2639; }
+    .exams-dashboard .bi-journal-x.display-1,
+    .exams-dashboard .bi-folder-x.display-6 { color: #b7c4d9; }
+    .exams-dashboard .btn-outline-secondary {
+        background: #ffffff;
+        border: 1px solid #dde3ec;
+        color: #2f405c;
+    }
+    .exams-dashboard .btn-outline-secondary:hover {
+        background: #f2f5f9;
+        border-color: #cbd5e1;
+        color: #0b1e33;
+    }
+    .exams-dashboard .btn-outline-primary {
+        background: #ffffff;
+        border: 1px solid #cbd9f0;
+        color: #1e3a8a;
+    }
+    .exams-dashboard .btn-outline-primary:hover {
+        background: #e8f0fe;
+        border-color: #2563eb;
+        color: #1e3a8a;
+    }
+    .exams-dashboard .btn-outline-danger {
+        background: #ffffff;
+        border: 1px solid #f1d7db;
+        color: #b91c1c;
+    }
+    .exams-dashboard .btn-outline-danger:hover {
+        background: #fee9e9;
+        border-color: #dc2626;
+        color: #b91c1c;
+    }
+    .exams-dashboard .btn-light.border {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        color: #1e3a8a;
+    }
+    .exams-dashboard .btn-light.border:hover {
+        background: #f2f6ff;
+        border-color: #b8c9e8;
+        color: #1e3a8a;
+    }
+
+
+    /* ============================================================
+       LIGHT THEME — forced by base.html
+       (data-theme="light" on <html> OR <body>)
+       ============================================================ */
+    html[data-theme="light"] .exams-dashboard,
+    body[data-theme="light"] .exams-dashboard {
+        color-scheme: light;
+        background: #f7f9fc !important;
+        color: #0b1e33 !important;
+    }
+    html[data-theme="light"] .exams-dashboard .dashboard-header,
+    body[data-theme="light"] .exams-dashboard .dashboard-header {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.04) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02) !important;
+    }
+    html[data-theme="light"] .exams-dashboard .dashboard-header h1,
+    body[data-theme="light"] .exams-dashboard .dashboard-header h1 { color: #0b1e33 !important; }
+    html[data-theme="light"] .exams-dashboard .text-muted,
+    body[data-theme="light"] .exams-dashboard .text-muted { color: #5e6f8d !important; }
+    html[data-theme="light"] .exams-dashboard .exam-card,
+    body[data-theme="light"] .exams-dashboard .exam-card {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.04) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02) !important;
+    }
+    html[data-theme="light"] .exams-dashboard .card-body,
+    body[data-theme="light"] .exams-dashboard .card-body {
+        background: #ffffff !important;
+        color: #0b1e33 !important;
+    }
+    html[data-theme="light"] .exams-dashboard .card-body strong,
+    body[data-theme="light"] .exams-dashboard .card-body strong { color: #5e6f8d !important; }
+    html[data-theme="light"] .exams-dashboard .card-footer,
+    body[data-theme="light"] .exams-dashboard .card-footer {
+        background: #f8fafc !important;
+        border-top-color: rgba(0, 0, 0, 0.04) !important;
+    }
+    html[data-theme="light"] .exams-dashboard .card-footer small,
+    body[data-theme="light"] .exams-dashboard .card-footer small { color: #6d7e9c !important; }
+    html[data-theme="light"] .exams-dashboard .class-item,
+    body[data-theme="light"] .exams-dashboard .class-item {
+        background: #f9fbfe !important;
+        color: #0b1e33 !important;
+    }
+    html[data-theme="light"] .exams-dashboard .class-item:hover,
+    body[data-theme="light"] .exams-dashboard .class-item:hover {
+        background: #eff4ff !important;
+        border-color: #d0e0ff !important;
+    }
+    html[data-theme="light"] .exams-dashboard .class-item > .d-flex > div:first-child,
+    body[data-theme="light"] .exams-dashboard .class-item > .d-flex > div:first-child { color: #0b1e33 !important; }
+    html[data-theme="light"] .exams-dashboard .dropdown-menu,
+    body[data-theme="light"] .exams-dashboard .dropdown-menu {
+        background: #ffffff !important;
+        border-color: #e2e8f0 !important;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12) !important;
+    }
+    html[data-theme="light"] .exams-dashboard .dropdown-item,
+    body[data-theme="light"] .exams-dashboard .dropdown-item {
+        color: #0b1e33 !important;
+        background: transparent !important;
+    }
+    html[data-theme="light"] .exams-dashboard .dropdown-item:hover,
+    html[data-theme="light"] .exams-dashboard .dropdown-item:focus,
+    body[data-theme="light"] .exams-dashboard .dropdown-item:hover,
+    body[data-theme="light"] .exams-dashboard .dropdown-item:focus {
+        background: #f4f7fe !important;
+        color: #0b1e33 !important;
+    }
+    html[data-theme="light"] .exams-dashboard .dropdown-item.text-danger,
+    body[data-theme="light"] .exams-dashboard .dropdown-item.text-danger { color: #b91c1c !important; }
+    html[data-theme="light"] .exams-dashboard .dropdown-item.text-danger:hover,
+    body[data-theme="light"] .exams-dashboard .dropdown-item.text-danger:hover {
+        background: #fee9e9 !important;
+        color: #b91c1c !important;
+    }
+    html[data-theme="light"] .exams-dashboard .dropdown-divider,
+    body[data-theme="light"] .exams-dashboard .dropdown-divider { border-color: #eef2f6 !important; }
+    html[data-theme="light"] .exams-dashboard .py-5 h3,
+    body[data-theme="light"] .exams-dashboard .py-5 h3 { color: #1a2639 !important; }
+    html[data-theme="light"] .exams-dashboard .bi-journal-x.display-1,
+    html[data-theme="light"] .exams-dashboard .bi-folder-x.display-6,
+    body[data-theme="light"] .exams-dashboard .bi-journal-x.display-1,
+    body[data-theme="light"] .exams-dashboard .bi-folder-x.display-6 { color: #b7c4d9 !important; }
+    html[data-theme="light"] .exams-dashboard .btn-outline-secondary,
+    body[data-theme="light"] .exams-dashboard .btn-outline-secondary {
+        background: #ffffff !important; border-color: #dde3ec !important; color: #2f405c !important;
+    }
+    html[data-theme="light"] .exams-dashboard .btn-outline-secondary:hover,
+    body[data-theme="light"] .exams-dashboard .btn-outline-secondary:hover {
+        background: #f2f5f9 !important; border-color: #cbd5e1 !important; color: #0b1e33 !important;
+    }
+    html[data-theme="light"] .exams-dashboard .btn-outline-primary,
+    body[data-theme="light"] .exams-dashboard .btn-outline-primary {
+        background: #ffffff !important; border-color: #cbd9f0 !important; color: #1e3a8a !important;
+    }
+    html[data-theme="light"] .exams-dashboard .btn-outline-primary:hover,
+    body[data-theme="light"] .exams-dashboard .btn-outline-primary:hover {
+        background: #e8f0fe !important; border-color: #2563eb !important; color: #1e3a8a !important;
+    }
+    html[data-theme="light"] .exams-dashboard .btn-outline-danger,
+    body[data-theme="light"] .exams-dashboard .btn-outline-danger {
+        background: #ffffff !important; border-color: #f1d7db !important; color: #b91c1c !important;
+    }
+    html[data-theme="light"] .exams-dashboard .btn-outline-danger:hover,
+    body[data-theme="light"] .exams-dashboard .btn-outline-danger:hover {
+        background: #fee9e9 !important; border-color: #dc2626 !important; color: #b91c1c !important;
+    }
+    html[data-theme="light"] .exams-dashboard .btn-light.border,
+    body[data-theme="light"] .exams-dashboard .btn-light.border {
+        background: #ffffff !important; border-color: #e2e8f0 !important; color: #1e3a8a !important;
+    }
+    html[data-theme="light"] .exams-dashboard .btn-light.border:hover,
+    body[data-theme="light"] .exams-dashboard .btn-light.border:hover {
+        background: #f2f6ff !important; border-color: #b8c9e8 !important; color: #1e3a8a !important;
+    }
+
+
+    /* ============================================================
+       DARK THEME — forced by base.html
+       (data-theme="dark" on <html> OR <body>)
+       ============================================================ */
+    html[data-theme="dark"] .exams-dashboard,
+    body[data-theme="dark"] .exams-dashboard {
+        color-scheme: dark;
+        background: #0b111e !important;
+        color: #eef2f8 !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .dashboard-header,
+    body[data-theme="dark"] .exams-dashboard .dashboard-header {
+        background: #141e30 !important;
+        border-color: rgba(255, 255, 255, 0.06) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .dashboard-header h1,
+    body[data-theme="dark"] .exams-dashboard .dashboard-header h1 { color: #eef2f8 !important; }
+    html[data-theme="dark"] .exams-dashboard .text-muted,
+    body[data-theme="dark"] .exams-dashboard .text-muted { color: #a0b4d0 !important; }
+    html[data-theme="dark"] .exams-dashboard .exam-card,
+    body[data-theme="dark"] .exams-dashboard .exam-card {
+        background: #141e30 !important;
+        border-color: rgba(255, 255, 255, 0.06) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .card-body,
+    body[data-theme="dark"] .exams-dashboard .card-body {
+        background: #141e30 !important;
+        color: #eef2f8 !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .card-body strong,
+    body[data-theme="dark"] .exams-dashboard .card-body strong { color: #a0b4d0 !important; }
+    html[data-theme="dark"] .exams-dashboard .card-footer,
+    body[data-theme="dark"] .exams-dashboard .card-footer {
+        background: #0f1828 !important;
+        border-top-color: rgba(255, 255, 255, 0.06) !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .card-footer small,
+    body[data-theme="dark"] .exams-dashboard .card-footer small { color: #8b9fc0 !important; }
+    html[data-theme="dark"] .exams-dashboard .class-item,
+    body[data-theme="dark"] .exams-dashboard .class-item {
+        background: #1c2a3f !important;
+        color: #eef2f8 !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .class-item:hover,
+    body[data-theme="dark"] .exams-dashboard .class-item:hover {
+        background: #253a55 !important;
+        border-color: #3a4d6e !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .class-item > .d-flex > div:first-child,
+    body[data-theme="dark"] .exams-dashboard .class-item > .d-flex > div:first-child { color: #eef2f8 !important; }
+    html[data-theme="dark"] .exams-dashboard .dropdown-menu,
+    body[data-theme="dark"] .exams-dashboard .dropdown-menu {
+        background: #141e30 !important;
+        border-color: #2a3a55 !important;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6) !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .dropdown-item,
+    body[data-theme="dark"] .exams-dashboard .dropdown-item {
+        color: #eef2f8 !important;
+        background: transparent !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .dropdown-item:hover,
+    html[data-theme="dark"] .exams-dashboard .dropdown-item:focus,
+    body[data-theme="dark"] .exams-dashboard .dropdown-item:hover,
+    body[data-theme="dark"] .exams-dashboard .dropdown-item:focus {
+        background: #1e2d48 !important;
+        color: #eef2f8 !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .dropdown-item.text-danger,
+    body[data-theme="dark"] .exams-dashboard .dropdown-item.text-danger { color: #fca5a5 !important; }
+    html[data-theme="dark"] .exams-dashboard .dropdown-item.text-danger:hover,
+    body[data-theme="dark"] .exams-dashboard .dropdown-item.text-danger:hover {
+        background: #3a1f26 !important;
+        color: #fca5a5 !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .dropdown-divider,
+    body[data-theme="dark"] .exams-dashboard .dropdown-divider { border-color: #2a3a55 !important; }
+    html[data-theme="dark"] .exams-dashboard .py-5 h3,
+    body[data-theme="dark"] .exams-dashboard .py-5 h3 { color: #eef2f8 !important; }
+    html[data-theme="dark"] .exams-dashboard .bi-journal-x.display-1,
+    html[data-theme="dark"] .exams-dashboard .bi-folder-x.display-6,
+    body[data-theme="dark"] .exams-dashboard .bi-journal-x.display-1,
+    body[data-theme="dark"] .exams-dashboard .bi-folder-x.display-6 { color: #4a5a75 !important; }
+    html[data-theme="dark"] .exams-dashboard .btn-outline-secondary,
+    body[data-theme="dark"] .exams-dashboard .btn-outline-secondary {
+        background: #141e30 !important; border-color: #2a3a55 !important; color: #c9d6ea !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .btn-outline-secondary:hover,
+    body[data-theme="dark"] .exams-dashboard .btn-outline-secondary:hover {
+        background: #1e2d48 !important; border-color: #3a4d6e !important; color: #eef2f8 !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .btn-outline-primary,
+    body[data-theme="dark"] .exams-dashboard .btn-outline-primary {
+        background: #141e30 !important; border-color: #2e3f5a !important; color: #b8d0ff !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .btn-outline-primary:hover,
+    body[data-theme="dark"] .exams-dashboard .btn-outline-primary:hover {
+        background: #1e2d48 !important; border-color: #3b82f6 !important; color: #b8d0ff !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .btn-outline-danger,
+    body[data-theme="dark"] .exams-dashboard .btn-outline-danger {
+        background: #141e30 !important; border-color: #4a2a32 !important; color: #fca5a5 !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .btn-outline-danger:hover,
+    body[data-theme="dark"] .exams-dashboard .btn-outline-danger:hover {
+        background: #3a1f26 !important; border-color: #dc2626 !important; color: #fca5a5 !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .btn-light.border,
+    body[data-theme="dark"] .exams-dashboard .btn-light.border {
+        background: #141e30 !important; border-color: #2a3a55 !important; color: #b8d0ff !important;
+    }
+    html[data-theme="dark"] .exams-dashboard .btn-light.border:hover,
+    body[data-theme="dark"] .exams-dashboard .btn-light.border:hover {
+        background: #1e2d48 !important; border-color: #3b82f6 !important; color: #b8d0ff !important;
+    }
+
 
     /* ============================================================
        RESPONSIVE
@@ -732,10 +631,16 @@
                     </p>
                 </div>
                 <div class="d-flex gap-2 flex-wrap align-items-center">
-                    <button type="button" class="theme-toggle" id="themeToggle"
-                            aria-label="Toggle theme" title="Toggle light/dark mode">
-                        <i class="bi bi-moon-stars" id="themeIcon"></i>
+
+                    <!-- BACK BUTTON -->
+                    <button type="button"
+                            onclick="goBack()"
+                            class="btn btn-outline-secondary"
+                            title="Return to previous page">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Back
                     </button>
+
                     <a href="{% url 'academics:exam_add' %}" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-2"></i>
                         Add Exam
@@ -896,59 +801,24 @@
 </div>
 
 <script>
-    (function () {
-        const dashboard = document.getElementById('examsDashboard');
-        const toggle    = document.getElementById('themeToggle');
-        const icon      = document.getElementById('themeIcon');
-        if (!dashboard || !toggle) return;
-
-        const STORAGE_KEY = 'exams-dashboard-theme';
-
-        function applyTheme(theme) {
-            if (theme === 'light' || theme === 'dark') {
-                dashboard.setAttribute('data-theme', theme);
-            } else {
-                dashboard.removeAttribute('data-theme');
-            }
-            updateIcon(theme);
+    // ============================================================
+    // BACK BUTTON — routes to the logged-in user's role dashboard
+    // ------------------------------------------------------------
+    // dashboard_url is supplied by the view via:
+    //     ctx['dashboard_url'] = get_user_dashboard_url(request.user)
+    //
+    // The |escapejs filter makes the resolved URL safe to embed
+    // inside a JS string literal.
+    // ============================================================
+    function goBack() {
+        if (window.history.length > 1 &&
+            document.referrer &&
+            document.referrer.indexOf(window.location.host) !== -1) {
+            window.history.back();
+            return;
         }
-
-        function currentEffectiveTheme() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored === 'light' || stored === 'dark') return stored;
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
-        function updateIcon(theme) {
-            const effective = theme || currentEffectiveTheme();
-            if (icon) {
-                icon.className = effective === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-            }
-            if (toggle) {
-                toggle.title = effective === 'dark'
-                    ? 'Switch to light mode'
-                    : 'Switch to dark mode';
-            }
-        }
-
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored === 'light' || stored === 'dark') {
-            applyTheme(stored);
-        } else {
-            updateIcon(null);
-        }
-
-        toggle.addEventListener('click', function () {
-            const effective = currentEffectiveTheme();
-            const next = effective === 'dark' ? 'light' : 'dark';
-            localStorage.setItem(STORAGE_KEY, next);
-            applyTheme(next);
-        });
-
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
-            if (!localStorage.getItem(STORAGE_KEY)) updateIcon(null);
-        });
-    })();
+        window.location.href = "{{ dashboard_url|default:'/'|escapejs }}";
+    }
 </script>
 
 {% endblock %}

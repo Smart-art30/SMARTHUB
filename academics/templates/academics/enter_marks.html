@@ -43,6 +43,14 @@
 
         <div class="ms-auto no-print d-flex align-items-center gap-2 flex-wrap">
 
+            <!-- BACK BUTTON -->
+            <button type="button"
+                    onclick="goBack()"
+                    class="btn btn-sm btn-outline-secondary me-1"
+                    title="Return to previous page">
+                ← Back
+            </button>
+
             <!-- ORIENTATION SELECTOR -->
             <div class="orientation-selector">
                 <label for="orientationSelect">Orientation:</label>
@@ -94,7 +102,9 @@
 
                     {% for subject in subjects %}
 
-                        <th style="width:{{ subject_col_width }}%">
+                        <th style="width:{{ subject_col_width }}%"
+                            class="subject-head"
+                            title="{{ subject.short_name|default:subject.name }}">
                             {{ subject.short_name|default:subject.name|slice:":3" }}
                         </th>
 
@@ -545,7 +555,6 @@ body {
     height: 30px;
     background: var(--surface);
     color: var(--text-primary);
-    overflow: hidden;
 }
 
 .marks-table thead tr {
@@ -564,6 +573,16 @@ body {
     color: var(--table-head-fg) !important;
     background: var(--table-head-bg) !important;
     text-align: center;
+}
+
+.marks-table thead tr th.subject-head {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.1;
+    padding: 2px 1px !important;
+    font-size: 9px;
+    hyphens: auto;
 }
 
 .marks-table tfoot tr {
@@ -598,8 +617,6 @@ body {
     color: var(--brand-steel);
     transition: color 0.15s ease;
 }
-
-/* ===== COMPACT TOTAL PTS COLUMN ===== */
 
 .total-pts-head,
 .total-points-cell {
@@ -968,6 +985,14 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
     background: var(--brand-steel);
     color: var(--surface);
 }
+.btn-outline-secondary {
+    color: var(--text-secondary);
+    border-color: var(--border);
+}
+.btn-outline-secondary:hover {
+    background: var(--text-secondary);
+    color: var(--surface);
+}
 
 /* ============================================================
    FORCE BOLD NUMBERS EVERYWHERE
@@ -1005,39 +1030,124 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
 }
 
 /* ============================================================
-   PRINT — A4 LANDSCAPE, SAME VISUAL DENSITY AS SCREEN
+   PRINT — ORIENTATION IS INJECTED DYNAMICALLY BY JS
    ============================================================ */
 
 @media print {
 
+    /* -----------------------------------------------------------
+       Reset ALL theme variants — must match the specificity of the
+       theme selectors above. This is the critical fix for dark mode
+       printing. Without matching specificity, dark variables leak
+       through and print as dark backgrounds.
+       ----------------------------------------------------------- */
     :root,
     html,
     body,
     html[data-theme="dark"],
-    body[data-theme="dark"] {
-        --page-bg: #ffffff;
-        --surface: #ffffff;
-        --surface-alt: #f8f9fa;
-        --text-primary: #000000;
-        --text-secondary: #333333;
-        --border: #666666;
-        --table-head-bg: #1B2A4A;
-        --table-head-fg: #ffffff;
-        --table-foot-bg: #EEF1F6;
-        --wm-opacity: 0.04;
-        --wm-filter: none;
+    body[data-theme="dark"],
+    html[data-theme="dark"] body,
+    html[data-theme="light"],
+    body[data-theme="light"],
+    html[data-theme="light"] body {
+        --brand-navy:    #1B2A4A !important;
+        --brand-steel:   #2E4A7D !important;
+        --brand-gold:    #B8860B !important;
+        --brand-ruby:    #8B1E3F !important;
+
+        --page-bg:       #ffffff !important;
+        --surface:       #ffffff !important;
+        --surface-alt:   #f8f9fa !important;
+        --table-head-bg: #1B2A4A !important;
+        --table-head-fg: #ffffff !important;
+        --table-foot-bg: #EEF1F6 !important;
+
+        --text-primary:  #000000 !important;
+        --text-secondary:#333333 !important;
+        --text-muted:    #555555 !important;
+
+        --border:        #666666 !important;
+        --border-soft:   #CCCCCC !important;
+        --shadow-sm:     none !important;
+        --shadow-md:     none !important;
+
+        --row-hover:     transparent !important;
+        --row-active:    #FFF6D6 !important;
+        --input-focus:   #FFF8DC !important;
+        --input-invalid: #F8D7DA !important;
+
+        --wm-opacity:    0.04 !important;
+        --wm-filter:     none !important;
+
+        color-scheme: light !important;
     }
 
-    @page {
-        size: A4 landscape;
-        margin: 8mm;
-    }
-
-    body {
+    /* Hard white background on every container that could carry
+       a dark surface — belt and braces against specificity wars. */
+    html,
+    body,
+    .watermark-container,
+    .container-fluid,
+    .table-responsive,
+    .chart-wrapper,
+    .rubric-legend {
         background: #ffffff !important;
         color: #000000 !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+    }
+
+    /* Table surfaces forced white in print */
+    .marks-table,
+    .marks-table th,
+    .marks-table td,
+    .marks-table tbody tr,
+    .marks-table tbody td {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    /* Keep the intended colored headers/footers */
+    .marks-table thead tr,
+    .marks-table thead tr th {
+        background: var(--table-head-bg) !important;
+        color: var(--table-head-fg) !important;
+    }
+    .marks-table tfoot tr,
+    .marks-table tfoot tr th {
+        background: var(--table-foot-bg) !important;
+        color: var(--brand-navy) !important;
+    }
+
+    /* Inputs must never print with a dark background */
+    .mark-input,
+    .mark-input:focus,
+    .mark-input.invalid,
+    .student-row:hover .mark-input,
+    .student-row:hover .mark-input:not(:focus) {
+        background: transparent !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    .student-row,
+    .student-row td,
+    .student-row:hover,
+    .student-row:hover td,
+    .student-row.active-row td {
+        background: #ffffff !important;
+        box-shadow: none !important;
+    }
+    .student-row.active-row td::after { display: none !important; }
+
+    /* Watermarks — subtle on paper */
+    .watermark {
+        opacity: 0.04 !important;
+        filter: none !important;
+    }
+
+    /* Fallback margin only — do NOT set size here */
+    @page {
+        margin: 8mm;
     }
 
     .no-print,
@@ -1072,30 +1182,12 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
     .marks-table {
         width: 100% !important;
         max-width: 100% !important;
-        table-layout: fixed !important;
     }
 
     .marks-table thead { display: table-header-group; }
     .marks-table tfoot { display: table-footer-group; }
     .marks-table tr    { page-break-inside: avoid; }
 
-    .student-row:hover,
-    .student-row:hover td,
-    .student-row.active-row td {
-        background: transparent !important;
-        box-shadow: none !important;
-    }
-    .student-row:hover .mark-input,
-    .student-row:hover .mark-input:not(:focus) {
-        background: transparent !important;
-        box-shadow: none !important;
-        color: var(--text-primary) !important;
-    }
-    .student-row:hover .student-name,
-    .student-row:hover .enlarged-rank {
-        color: #000000 !important;
-    }
-    .student-row.active-row td::after { display: none !important; }
     .mark-input:focus {
         background: transparent !important;
         outline: none !important;
@@ -1124,7 +1216,7 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
 
     .chart-container {
         position: relative !important;
-        min-width: 0 !important;       /* removes 900px that breaks layout */
+        min-width: 0 !important;
         width: 100% !important;
         height: 220px !important;
     }
@@ -1149,6 +1241,208 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
     }
 }
 
+/* ============================================================
+   PORTRAIT PRINT — TIGHTEN HEADERS SO NOTHING IS CLIPPED
+   ============================================================ */
+@media print and (orientation: portrait) {
+
+    .marks-table {
+        font-size: 8px !important;
+        table-layout: fixed !important;
+    }
+
+    .marks-table thead tr th {
+        font-size: 7.5px !important;
+        padding: 1px 1px !important;
+        line-height: 1.05 !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+        letter-spacing: 0 !important;
+        height: auto !important;
+        min-height: 24px !important;
+        vertical-align: middle !important;
+    }
+
+    .marks-table thead tr th.subject-head {
+        font-size: 7px !important;
+        padding: 1px 0 !important;
+        hyphens: auto !important;
+    }
+
+    .marks-table thead tr th.total-pts-head {
+        font-size: 7px !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+    }
+
+    .marks-table th,
+    .marks-table td {
+        padding: 1px 2px !important;
+        height: auto !important;
+        font-size: 9px !important;
+    }
+
+    .mark-input {
+        height: 20px !important;
+        font-size: 11px !important;
+    }
+
+    .rubric-cell {
+        font-size: 8px !important;
+        padding: 1px !important;
+    }
+
+    .points-cell {
+        font-size: 9px !important;
+    }
+
+    .student-name {
+        font-size: 9px !important;
+    }
+
+    .enlarged-rank {
+        font-size: 9px !important;
+    }
+
+    .total-cell,
+    .avg-cell,
+    .total-points-cell,
+    .subject-total,
+    .subject-mean,
+    .subject-points-total,
+    .subject-points-mean,
+    .class-total,
+    .class-avg,
+    .class-total-mean,
+    .class-avg-mean,
+    .class-total-points,
+    .class-points-mean {
+        font-size: 9px !important;
+    }
+
+    .marks-table tfoot tr th {
+        font-size: 8px !important;
+        padding: 1px 2px !important;
+    }
+}
+
+/* ============================================================
+   LANDSCAPE PRINT — FULL, READABLE, BOLD
+   ============================================================ */
+@media print and (orientation: landscape) {
+
+    .marks-table {
+        table-layout: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 11px !important;
+    }
+
+    .marks-table th,
+    .marks-table td {
+        padding: 4px 6px !important;
+        height: auto !important;
+        font-size: 11px !important;
+        line-height: 1.25 !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+    }
+
+    .marks-table thead tr th {
+        font-size: 11px !important;
+        font-weight: 900 !important;
+        padding: 6px 4px !important;
+        line-height: 1.2 !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+        letter-spacing: 0.2px !important;
+        vertical-align: middle !important;
+        height: auto !important;
+    }
+
+    .marks-table thead tr th.subject-head {
+        font-size: 11px !important;
+        font-weight: 900 !important;
+        padding: 6px 3px !important;
+        line-height: 1.15 !important;
+    }
+
+    .marks-table thead tr th.total-pts-head {
+        font-size: 11px !important;
+        font-weight: 900 !important;
+        white-space: normal !important;
+    }
+
+    .student-name {
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        word-break: break-word !important;
+        padding: 4px 6px !important;
+    }
+
+    .enlarged-rank {
+        font-size: 12px !important;
+        font-weight: 900 !important;
+    }
+
+    .mark-input {
+        height: 24px !important;
+        font-size: 14px !important;
+        font-weight: 900 !important;
+        color: #000000 !important;
+    }
+
+    .rubric-cell {
+        font-size: 11px !important;
+        font-weight: 900 !important;
+        padding: 4px 4px !important;
+        white-space: nowrap !important;
+    }
+
+    .points-cell {
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        padding: 4px 4px !important;
+    }
+
+    .total-cell,
+    .avg-cell,
+    .total-points-cell,
+    .subject-total,
+    .subject-mean,
+    .subject-points-total,
+    .subject-points-mean,
+    .class-total,
+    .class-avg,
+    .class-total-mean,
+    .class-avg-mean,
+    .class-total-points,
+    .class-points-mean {
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+    }
+
+    .marks-table tfoot tr th {
+        font-size: 11px !important;
+        font-weight: 900 !important;
+        padding: 5px 6px !important;
+        white-space: nowrap !important;
+    }
+
+    .watermark {
+        opacity: 0.04 !important;
+    }
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1158,33 +1452,92 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
 
 Chart.register(ChartDataLabels);
 
-// ===== PRINT WITH ORIENTATION =====
+// ============================================================
+// BACK BUTTON
+// ============================================================
+function goBack() {
+    if (window.history.length > 1 &&
+        document.referrer &&
+        document.referrer.indexOf(window.location.host) !== -1) {
+        window.history.back();
+    } else {
+        window.location.href = "{% url 'academics:exam_list' %}";
+    }
+}
+
+// ============================================================
+// PRINT WITH ORIENTATION
+// ------------------------------------------------------------
+// Injects a top-level @page size rule and — critically — drops
+// the active theme to "light" for the duration of the print
+// dialog, then restores it afterwards. This guarantees the print
+// engine never sees dark variables, so no dark blocks print.
+// ============================================================
 function printWithOrientation() {
     const orientation = document.getElementById('orientationSelect').value;
 
-    const prev = document.getElementById('print-orientation-style');
-    if (prev) prev.remove();
+    // Reuse a single style element (never append duplicates)
+    let styleEl = document.getElementById('print-orientation-style');
+    if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = 'print-orientation-style';
+        document.head.appendChild(styleEl);
+    }
 
-    const style = document.createElement('style');
-    style.id = 'print-orientation-style';
-    style.innerHTML = `
-        @media print {
-            @page { size: A4 ${orientation}; margin: 8mm; }
-            .chart-container { min-width: 0 !important; width: 100% !important; height: 220px !important; }
+    styleEl.textContent =
+        '@page { size: A4 ' + orientation + '; margin: 8mm; }';
+
+    // --- Temporarily force light theme during print ---
+    const htmlThemeBefore = document.documentElement.getAttribute('data-theme');
+    const bodyThemeBefore = document.body.getAttribute('data-theme');
+
+    const wasDark =
+        htmlThemeBefore === 'dark' ||
+        bodyThemeBefore === 'dark' ||
+        (!htmlThemeBefore && !bodyThemeBefore &&
+         window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    if (wasDark) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.body.setAttribute('data-theme', 'light');
+        // Redraw chart with light colors so the printed chart matches
+        if (typeof drawChart === 'function') {
+            try { drawChart(); } catch (e) {}
         }
-    `;
-    document.head.appendChild(style);
+    }
 
-    // Force chart redraw at print dimensions BEFORE the browser captures it
-    redrawForPrint();
+    // Force reflow so the browser commits the @page size + theme
+    void document.body.offsetHeight;
+    void document.documentElement.offsetHeight;
 
-    setTimeout(() => {
-        window.print();
-    }, 150);
-}
+    requestAnimationFrame(() => {
+        redrawForPrint();
 
-function downloadPDF() {
-    printWithOrientation();
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                window.print();
+
+                // Restore theme after the print dialog closes
+                setTimeout(() => {
+                    if (wasDark) {
+                        if (htmlThemeBefore) {
+                            document.documentElement.setAttribute('data-theme', htmlThemeBefore);
+                        } else {
+                            document.documentElement.removeAttribute('data-theme');
+                        }
+                        if (bodyThemeBefore) {
+                            document.body.setAttribute('data-theme', bodyThemeBefore);
+                        } else {
+                            document.body.removeAttribute('data-theme');
+                        }
+                        if (typeof drawChart === 'function') {
+                            try { drawChart(); } catch (e) {}
+                        }
+                    }
+                }, 500);
+            }, 80);
+        });
+    });
 }
 
 // ===== THEME HELPERS =====
@@ -1207,9 +1560,6 @@ function isDarkMode() {
 }
 
 // ===== FORCE CHART REDRAW FOR PRINT =====
-// Chart.js canvases can print blank because the browser re-lays-out
-// the page and the canvas bitmap becomes stale. This resizes and
-// repaints the chart right before the print dialog captures it.
 
 function redrawForPrint() {
     const canvas = document.getElementById('summaryChart');
@@ -1226,7 +1576,7 @@ function redrawForPrint() {
         window.summaryChartObj.resize();
         window.summaryChartObj.update('none');
     } catch (e) {
-        // ignore — will render at whatever size is current
+        // ignore
     }
 }
 
@@ -1605,6 +1955,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             );
     }
+
+    // Expose drawChart so printWithOrientation can call it
+    window.drawChart = drawChart;
 
     // ===== INPUT EVENTS =====
 

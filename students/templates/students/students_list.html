@@ -4,13 +4,18 @@
 {% block extra_css %}
 <style>
 /* ============================================================
-   MODERN STUDENT LIST – FULLY RESPONSIVE LIGHT / DARK
+   MODERN STUDENT LIST — REFACTORED
+   Search filters CLASSES · single column · sortable · CSP-friendly
    ============================================================ */
 
 /* ---------- LIGHT THEME (default) ---------- */
 :root,
 [data-bs-theme="light"] {
+    color-scheme: light;
     --bg-body: #f8fafc;
+    --bg-gradient: radial-gradient(1200px 600px at 10% -10%, #e0ecff 0%, transparent 60%),
+                   radial-gradient(900px 500px at 110% 10%, #eef2ff 0%, transparent 55%),
+                   #f8fafc;
     --surface: #ffffff;
     --surface-alt: #f9fafb;
     --surface-border: #e9edf4;
@@ -19,12 +24,13 @@
     --text-muted: #6b7a90;
     --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.03);
     --card-shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
-    --header-bg: #1e293b;
+    --header-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     --header-text: #ffffff;
-    --table-hover: rgba(59, 130, 246, 0.04);
+    --table-hover: rgba(59, 130, 246, 0.05);
     --accent: #3b82f6;
     --accent-hover: #2563eb;
     --accent-soft: #dbeafe;
+    --accent-ring: rgba(59, 130, 246, 0.18);
     --border-light: #eef2f6;
     --badge-info-bg: #dbeafe;
     --badge-info-text: #1e4d8c;
@@ -33,14 +39,18 @@
     --input-bg: #ffffff;
     --input-border: #e2e8f0;
     --input-placeholder: #94a3b8;
-    --table-head-bg: rgba(0, 0, 0, 0.02);
+    --table-head-bg: #f4f6fa;
     --scrollbar-thumb: #cbd5e1;
     --scrollbar-track: #f1f5f9;
 }
 
 /* ---------- DARK THEME ---------- */
 [data-bs-theme="dark"] {
+    color-scheme: dark;
     --bg-body: #0b111e;
+    --bg-gradient: radial-gradient(1200px 600px at 10% -10%, #16233f 0%, transparent 60%),
+                   radial-gradient(900px 500px at 110% 10%, #1a2340 0%, transparent 55%),
+                   #0b111e;
     --surface: #141b2b;
     --surface-alt: #1a2335;
     --surface-border: #283044;
@@ -49,12 +59,13 @@
     --text-muted: #7c8ba1;
     --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
     --card-shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.7), 0 4px 12px rgba(0, 0, 0, 0.4);
-    --header-bg: #1e2a3a;
+    --header-bg: linear-gradient(135deg, #1e2a3a 0%, #2a3a54 100%);
     --header-text: #f1f5f9;
-    --table-hover: rgba(255, 255, 255, 0.03);
+    --table-hover: rgba(91, 142, 247, 0.08);
     --accent: #5b8ef7;
     --accent-hover: #4a7df0;
     --accent-soft: #1e2f4a;
+    --accent-ring: rgba(91, 142, 247, 0.28);
     --border-light: #232d40;
     --badge-info-bg: #1a3555;
     --badge-info-text: #a8cbff;
@@ -63,43 +74,55 @@
     --input-bg: #1a2335;
     --input-border: #2a3a54;
     --input-placeholder: #64748b;
-    --table-head-bg: rgba(255, 255, 255, 0.02);
+    --table-head-bg: #1a2335;
     --scrollbar-thumb: #2a3a54;
     --scrollbar-track: #0b111e;
 }
 
 /* ---------- BASE ---------- */
-* {
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
-    background-color: var(--bg-body) !important;
+    background: var(--bg-gradient) !important;
+    background-attachment: fixed !important;
     font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     color: var(--text-primary) !important;
     padding-bottom: 2rem;
     min-height: 100vh;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background 0.3s ease, color 0.25s ease;
 }
 
-/* ---------- SCROLLBAR ---------- */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+img { max-width: 100%; height: auto; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ============================================================
+   CLASSES GRID
+   ============================================================ */
+.classes-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
 }
 
-::-webkit-scrollbar-track {
-    background: var(--scrollbar-track);
+@media (min-width: 1700px) {
+    .classes-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb);
-    border-radius: 10px;
+.classes-grid > .class-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0 !important;
 }
+
+/* Hide a whole class card when it doesn't match the class-name filter */
+.class-card[hidden] { display: none !important; }
 
 /* ---------- CARD ---------- */
 .class-card {
@@ -108,46 +131,77 @@ body {
     border-radius: 1.25rem;
     box-shadow: var(--card-shadow);
     overflow: hidden;
-    transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease,
+                background-color 0.25s ease;
 }
 
-.class-card:hover {
-    box-shadow: var(--card-shadow-hover);
-    transform: translateY(-2px);
-}
+.class-card:hover { box-shadow: var(--card-shadow-hover); }
 
 /* ---------- CARD HEADER ---------- */
 .card-header {
-    background-color: var(--header-bg) !important;
+    background: var(--header-bg) !important;
     color: var(--header-text) !important;
     border-bottom: 1px solid var(--surface-border) !important;
-    padding: 1rem 1.5rem;
+    padding: 0.9rem 1.15rem;
     font-weight: 600;
     letter-spacing: -0.01em;
+    cursor: pointer;
+    user-select: none;
+    transition: filter 0.2s ease;
+    flex-shrink: 0;
 }
+
+.card-header:hover { filter: brightness(1.06); }
 
 .card-header .badge {
-    background-color: rgba(255, 255, 255, 0.2) !important;
+    background-color: rgba(255, 255, 255, 0.22) !important;
     color: var(--header-text) !important;
     font-weight: 500;
-    padding: 0.35rem 0.9rem;
+    padding: 0.3rem 0.75rem;
     border-radius: 30px;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
+    backdrop-filter: blur(4px);
 }
 
+.collapse-chevron {
+    transition: transform 0.28s ease;
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.class-card.is-collapsed .collapse-chevron { transform: rotate(-90deg); }
+
+/* ---------- COLLAPSIBLE BODY ---------- */
+.class-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.class-card.is-collapsed .class-body { display: none; }
+
 /* ---------- TABLE ---------- */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
 .table {
     --bs-table-bg: transparent !important;
     --bs-table-color: var(--text-primary) !important;
     --bs-table-border-color: var(--border-light) !important;
     margin-bottom: 0;
     color: var(--text-primary) !important;
+    width: 100%;
+    table-layout: auto;
 }
 
 .table > :not(caption) > * > * {
     background-color: transparent !important;
     border-bottom-color: var(--border-light) !important;
-    padding: 0.9rem 0.75rem;
+    padding: 0.7rem 0.75rem;
     vertical-align: middle;
     color: var(--text-primary) !important;
 }
@@ -156,66 +210,102 @@ body {
     background-color: var(--table-head-bg) !important;
     color: var(--text-secondary) !important;
     font-weight: 600;
-    font-size: 0.78rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     border-bottom: 1px solid var(--surface-border) !important;
     white-space: nowrap;
+    user-select: none;
 }
 
-.table-hover tbody tr:hover {
-    background-color: var(--table-hover) !important;
+/* Sortable headers */
+.table thead th.sortable {
+    cursor: pointer;
+    position: relative;
+    padding-right: 1.5rem;
 }
 
-.table-hover tbody tr:hover > * {
-    background-color: var(--table-hover) !important;
+.table thead th.sortable::after {
+    content: '\F282';
+    font-family: 'bootstrap-icons';
+    position: absolute;
+    right: 0.5rem;
+    opacity: 0.35;
+    font-size: 0.7rem;
+    transition: opacity 0.15s;
 }
+
+.table thead th.sortable:hover::after { opacity: 0.7; }
+
+.table thead th.sortable[data-sort-dir="asc"]::after {
+    content: '\F235';
+    opacity: 1;
+    color: var(--accent);
+}
+.table thead th.sortable[data-sort-dir="desc"]::after {
+    content: '\F229';
+    opacity: 1;
+    color: var(--accent);
+}
+
+.table-hover tbody tr:hover { background-color: var(--table-hover) !important; }
+.table-hover tbody tr:hover > * { background-color: var(--table-hover) !important; }
+
+.student-row[hidden],
+.empty-row[hidden],
+.show-more-row[hidden] { display: none !important; }
 
 /* ---------- BADGES ---------- */
 .badge-gender {
     background-color: var(--badge-info-bg) !important;
     color: var(--badge-info-text) !important;
     font-weight: 500;
-    padding: 0.35rem 0.85rem;
+    padding: 0.28rem 0.65rem;
     border-radius: 30px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     display: inline-block;
-    letter-spacing: 0.01em;
 }
 
 .badge-na {
     background-color: var(--badge-secondary-bg) !important;
     color: var(--badge-secondary-text) !important;
-    padding: 0.35rem 0.85rem;
+    padding: 0.28rem 0.65rem;
     border-radius: 30px;
     font-weight: 500;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     display: inline-block;
 }
 
 /* ---------- AVATARS ---------- */
 .avatar {
-    width: 42px;
-    height: 42px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     object-fit: cover;
+    object-position: center;
+    display: block;
+    margin: 0 auto;
     border: 2px solid var(--surface-border);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    background-color: var(--surface-alt);
+    flex-shrink: 0;
 }
 
 .avatar-fallback {
-    width: 42px;
-    height: 42px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: linear-gradient(145deg, var(--accent-soft), var(--surface-border)) !important;
+    background: linear-gradient(145deg, var(--accent-soft), var(--surface-border));
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--accent) !important;
+    font-size: 0.85rem;
+    color: var(--accent);
     border: 2px solid var(--surface-border);
     text-transform: uppercase;
+    margin: 0 auto;
+    flex-shrink: 0;
 }
 
 /* ---------- FORM CONTROLS ---------- */
@@ -233,21 +323,14 @@ body {
 .form-control:focus,
 .form-select:focus {
     border-color: var(--accent) !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    box-shadow: 0 0 0 3px var(--accent-ring) !important;
     background-color: var(--input-bg) !important;
     color: var(--text-primary) !important;
     outline: none;
 }
 
-.form-control::placeholder {
-    color: var(--input-placeholder) !important;
-    opacity: 1;
-}
-
-.form-select option {
-    background-color: var(--input-bg);
-    color: var(--text-primary);
-}
+.form-control::placeholder { color: var(--input-placeholder) !important; opacity: 1; }
+.form-select option { background-color: var(--input-bg); color: var(--text-primary); }
 
 /* ---------- BUTTONS ---------- */
 .btn {
@@ -262,43 +345,29 @@ body {
     white-space: nowrap;
 }
 
-.btn:active {
-    transform: scale(0.97);
-}
+.btn:active { transform: scale(0.97); }
 
-.btn-primary {
-    background-color: var(--accent) !important;
-    border: none !important;
-    color: #ffffff !important;
-}
-
+.btn-primary { background-color: var(--accent) !important; border: none !important; color: #ffffff !important; }
 .btn-primary:hover {
     background-color: var(--accent-hover) !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 6px 16px var(--accent-ring);
 }
 
 .btn-secondary {
-    background-color: var(--surface-border) !important;
-    border: none !important;
+    background-color: var(--surface-alt) !important;
+    border: 1px solid var(--surface-border) !important;
     color: var(--text-primary) !important;
 }
 
 .btn-secondary:hover {
     background-color: var(--accent-soft) !important;
+    border-color: var(--accent) !important;
     color: var(--accent) !important;
 }
 
-.btn-success {
-    background-color: #10b981 !important;
-    border: none !important;
-    color: #ffffff !important;
-}
-
-.btn-success:hover {
-    background-color: #059669 !important;
-    transform: translateY(-1px);
-}
+.btn-success { background-color: #10b981 !important; border: none !important; color: #ffffff !important; }
+.btn-success:hover { background-color: #059669 !important; transform: translateY(-1px); }
 
 .btn-outline-primary {
     border: 1px solid var(--surface-border) !important;
@@ -312,9 +381,18 @@ body {
     color: #ffffff !important;
 }
 
-.btn-sm {
-    padding: 0.35rem 0.85rem;
-    font-size: 0.78rem;
+.btn-sm { padding: 0.3rem 0.7rem; font-size: 0.75rem; }
+
+.btn-toggle-all {
+    background: var(--surface) !important;
+    border: 1px solid var(--surface-border) !important;
+    color: var(--text-secondary) !important;
+}
+
+.btn-toggle-all:hover {
+    background: var(--accent-soft) !important;
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
 }
 
 /* ---------- THEME TOGGLE ---------- */
@@ -343,19 +421,27 @@ body {
 }
 
 /* ---------- TEXT UTILITIES ---------- */
-.text-secondary {
+.text-secondary { color: var(--text-secondary) !important; }
+.text-muted { color: var(--text-muted) !important; }
+
+/* ---------- EMPTY STATES ---------- */
+.empty-icon { color: var(--text-muted) !important; opacity: 0.5; font-size: 2.5rem; }
+
+.empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--text-secondary);
+    background: var(--surface);
+    border: 1px dashed var(--surface-border);
+    border-radius: 1.25rem;
+}
+
+.no-results-row td,
+.empty-row td {
+    text-align: center;
+    padding: 1.5rem 1rem !important;
     color: var(--text-secondary) !important;
-}
-
-.text-muted {
-    color: var(--text-muted) !important;
-}
-
-/* ---------- EMPTY STATE ---------- */
-.empty-icon {
-    color: var(--text-muted) !important;
-    opacity: 0.5;
-    font-size: 2.8rem;
+    background: var(--surface-alt) !important;
 }
 
 /* ---------- STAT PILLS ---------- */
@@ -370,184 +456,131 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
+    transition: all 0.2s ease;
 }
 
-/* ---------- RESPONSIVE ---------- */
+.stat-pill:hover { border-color: var(--accent) !important; color: var(--accent) !important; }
+
+/* ---------- SHOW MORE ---------- */
+.show-more-row td {
+    text-align: center;
+    padding: 0.6rem !important;
+    background: var(--surface-alt) !important;
+}
+
+.btn-show-more {
+    background: transparent !important;
+    border: 1px dashed var(--surface-border) !important;
+    color: var(--text-secondary) !important;
+    border-radius: 2rem;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-show-more:hover {
+    border-color: var(--accent) !important;
+    border-style: solid !important;
+    color: var(--accent) !important;
+    background: var(--accent-soft) !important;
+}
+
+/* ---------- TOOLBAR ---------- */
+.toolbar-wrap {
+    background: var(--surface) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-radius: 1.25rem;
+    padding: 1rem 1.25rem;
+    box-shadow: var(--card-shadow);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 992px) {
-    .card-header {
-        padding: 0.9rem 1.1rem;
-    }
+    .card-header { padding: 0.85rem 1rem; }
 }
 
 @media (max-width: 768px) {
-    body {
-        padding-bottom: 1rem;
-    }
+    body { padding-bottom: 1rem; }
 
-    .table-responsive {
-        border-radius: 0.75rem;
-    }
+    .table > :not(caption) > * > * { padding: 0.55rem 0.45rem; font-size: 0.78rem; }
+    .table thead th { font-size: 0.65rem; padding: 0.45rem 0.35rem; }
 
-    .table > :not(caption) > * > * {
-        padding: 0.65rem 0.5rem;
-        font-size: 0.82rem;
-    }
+    .avatar, .avatar-fallback { width: 30px; height: 30px; font-size: 0.7rem; }
 
-    .table thead th {
-        font-size: 0.7rem;
-        padding: 0.5rem 0.4rem;
-    }
+    .badge-gender, .badge-na { padding: 0.2rem 0.5rem; font-size: 0.65rem; }
 
-    .avatar,
-    .avatar-fallback {
-        width: 34px;
-        height: 34px;
-        font-size: 0.75rem;
-    }
+    .btn { padding: 0.4rem 0.85rem; font-size: 0.78rem; }
+    .btn-sm { padding: 0.28rem 0.6rem; font-size: 0.7rem; }
 
-    .badge-gender,
-    .badge-na {
-        padding: 0.2rem 0.55rem;
-        font-size: 0.68rem;
-    }
+    .card-header { padding: 0.75rem 0.85rem; font-size: 0.86rem; }
+    .card-header .badge { font-size: 0.66rem; padding: 0.22rem 0.6rem; }
 
-    .btn {
-        padding: 0.4rem 0.85rem;
-        font-size: 0.78rem;
-    }
-
-    .btn-sm {
-        padding: 0.3rem 0.65rem;
-        font-size: 0.72rem;
-    }
-
-    .card-header {
-        padding: 0.8rem 0.9rem;
-        font-size: 0.9rem;
-    }
-
-    .card-header .badge {
-        font-size: 0.7rem;
-        padding: 0.25rem 0.65rem;
-    }
-
-    .theme-toggle-btn {
-        width: 38px;
-        height: 38px;
-    }
-
-    .class-card {
-        border-radius: 1rem;
-    }
+    .theme-toggle-btn { width: 38px; height: 38px; }
+    .class-card { border-radius: 1rem; }
+    .toolbar-wrap { padding: 0.85rem 1rem; border-radius: 1rem; }
 }
 
 @media (max-width: 576px) {
-    .table > :not(caption) > * > * {
-        padding: 0.5rem 0.35rem;
-        font-size: 0.76rem;
-    }
+    .table > :not(caption) > * > * { padding: 0.45rem 0.3rem; font-size: 0.72rem; }
+    .table thead th { font-size: 0.6rem; padding: 0.35rem 0.25rem; }
 
-    .table thead th {
-        font-size: 0.65rem;
-        padding: 0.4rem 0.3rem;
-    }
+    .avatar, .avatar-fallback { width: 26px; height: 26px; font-size: 0.65rem; }
 
-    .avatar,
-    .avatar-fallback {
-        width: 30px;
-        height: 30px;
-        font-size: 0.68rem;
-    }
-
-    .stat-pill {
-        font-size: 0.7rem;
-        padding: 0.3rem 0.75rem;
-    }
+    .stat-pill { font-size: 0.7rem; padding: 0.3rem 0.75rem; }
 }
 
 /* ============================================================
    PRINT STYLES
    ============================================================ */
 @media print {
-    .no-print,
-    nav,
-    footer,
-    #studentSearch,
-    #classJump,
-    .btn,
-    button,
-    input,
-    select,
-    .theme-toggle-btn,
-    .stat-pill {
+    .no-print, nav, footer,
+    #studentSearch, #classJump,
+    .btn, button, input, select,
+    .theme-toggle-btn, .stat-pill,
+    .collapse-chevron, .btn-show-more, .show-more-row {
         display: none !important;
     }
 
-    @page {
-        margin: 12mm 10mm;
-        size: A4 portrait;
-    }
+    @page { margin: 12mm 10mm; size: A4 portrait; }
 
-    html,
-    body {
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #ffffff !important;
-        color: #000000 !important;
-        font-size: 11pt;
-        line-height: 1.4;
+    html, body {
+        margin: 0 !important; padding: 0 !important;
+        background: #ffffff !important; color: #000000 !important;
+        font-size: 11pt; line-height: 1.4;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
 
-    html,
-    body,
-    .container,
-    .container-fluid,
-    .container-xl,
-    .print-area {
-        width: 100% !important;
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
+    html, body, .container, .container-fluid, .container-xl, .print-area {
+        width: 100% !important; max-width: none !important;
+        margin: 0 !important; padding: 0 !important;
     }
 
+    .classes-grid { display: block !important; }
+
+    /* Even if a class was hidden by the search filter, print it */
+    .class-card[hidden] { display: block !important; }
+
     .class-card {
-        page-break-before: always;
-        break-before: page;
-        page-break-inside: avoid;
-        break-inside: avoid;
-        margin: 0 !important;
-        margin-bottom: 10mm !important;
+        break-inside: auto;
+        margin: 0 0 10mm 0 !important;
         box-shadow: none !important;
         border: 1.5px solid #000000 !important;
         border-radius: 0 !important;
         background: #ffffff !important;
-        transform: none !important;
+        height: auto !important;
     }
 
-    .class-card:first-child {
-        page-break-before: auto;
-        break-before: auto;
+    .class-card + .class-card {
+        break-before: page;
+        page-break-before: always;
     }
 
-    .card-header {
-        background: #343a40 !important;
-        color: #ffffff !important;
-        border-bottom: 1.5px solid #000000 !important;
-        padding: 6px 10px !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        border-radius: 0 !important;
-    }
-
-    .card-header .badge {
-        background: rgba(255, 255, 255, 0.3) !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(255, 255, 255, 0.5) !important;
-        padding: 2px 8px !important;
-        font-size: 9pt !important;
-    }
+    .class-card.is-collapsed .class-body { display: block !important; }
 
     .table-responsive {
         overflow: visible !important;
@@ -555,76 +588,68 @@ body {
         border: none !important;
     }
 
-    table {
-        width: 100% !important;
-        table-layout: fixed;
-        border-collapse: collapse !important;
-        font-size: 10pt;
+    .card-header {
+        background: #343a40 !important; color: #ffffff !important;
+        border-bottom: 1.5px solid #000000 !important;
+        padding: 6px 10px !important;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+        border-radius: 0 !important;
+        break-after: avoid;
     }
 
-    th,
-    td {
+    .card-header .badge {
+        background: rgba(255, 255, 255, 0.3) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        padding: 2px 8px !important; font-size: 9pt !important;
+    }
+
+    table { width: 100% !important; border-collapse: collapse !important; font-size: 10pt; }
+
+    thead { display: table-header-group; }
+
+    th, td {
         border: 1px solid #000000 !important;
         padding: 4px 6px !important;
         color: #000000 !important;
         background: #ffffff !important;
-        font-size: 9.5pt;
-        word-wrap: break-word;
+        font-size: 9.5pt; word-wrap: break-word;
     }
 
     th {
-        background: #e9ecef !important;
-        font-weight: 700;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        text-transform: uppercase;
-        font-size: 8.5pt !important;
+        background: #e9ecef !important; font-weight: 700;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+        text-transform: uppercase; font-size: 8.5pt !important;
+        position: static !important;
     }
 
-    th:last-child,
-    td:last-child {
-        display: none !important;
-    }
+    th:last-child, td:last-child { display: none !important; }
 
-    img,
-    .avatar,
-    .avatar-fallback {
-        width: 28px !important;
-        height: 28px !important;
+    /* Force all paginated rows visible on print */
+    .student-row[hidden] { display: table-row !important; }
+
+    img.avatar, .avatar, .avatar-fallback {
+        width: 28px !important; height: 28px !important;
         border-radius: 50% !important;
         border: 1px solid #000000 !important;
-        box-shadow: none !important;
-        font-size: 8pt !important;
+        box-shadow: none !important; font-size: 8pt !important;
+        object-fit: cover !important; display: block !important;
+        margin: 0 auto;
     }
 
-    .badge-gender,
-    .badge-na {
-        background: #e9ecef !important;
-        color: #000000 !important;
+    .badge-gender, .badge-na {
+        background: #e9ecef !important; color: #000000 !important;
         border: 1px solid #999999 !important;
-        padding: 1px 6px !important;
-        font-size: 8pt !important;
+        padding: 1px 6px !important; font-size: 8pt !important;
         border-radius: 20px !important;
     }
 
-    .class-card:hover {
-        transform: none !important;
-        box-shadow: none !important;
-    }
-
-    ::-webkit-scrollbar {
-        display: none;
-    }
+    ::-webkit-scrollbar { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    * {
-        transition: none !important;
-        animation: none !important;
-    }
-    html {
-        scroll-behavior: auto;
-    }
+    * { transition: none !important; animation: none !important; }
+    html { scroll-behavior: auto; }
 }
 </style>
 {% endblock %}
@@ -632,53 +657,62 @@ body {
 {% block content %}
 <div class="container-xl px-3 px-md-4 mt-4 print-area">
 
-    <!-- ========== TOP BAR ========== -->
-    <div class="row g-3 align-items-center mb-4 no-print">
+    <!-- ========== TOP TOOLBAR ========== -->
+    <div class="toolbar-wrap mb-4 no-print">
+        <div class="row g-3 align-items-center">
 
-        <div class="col-12 col-lg-4">
-            <h4 class="mb-0 fw-semibold d-flex align-items-center gap-2" style="color: var(--text-primary);">
-                <i class="bi bi-people-fill" style="color: var(--accent); font-size: 1.3rem;"></i>
-                <span>Students · {{ request.user.school.name|default:"School" }}</span>
-            </h4>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-3">
-            <div class="position-relative">
-                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3"
-                   style="color: var(--text-secondary); font-size: 0.85rem; pointer-events: none;"></i>
-                <input type="text" id="studentSearch" class="form-control ps-5"
-                       placeholder="Search name or admission..." autocomplete="off">
+            <div class="col-12 col-lg-4">
+                <h4 class="mb-0 fw-semibold d-flex align-items-center gap-2" style="color: var(--text-primary);">
+                    <i class="bi bi-people-fill" style="color: var(--accent); font-size: 1.3rem;"></i>
+                    <span>Students · {{ request.user.school.name|default:"School" }}</span>
+                </h4>
             </div>
-        </div>
 
-        <div class="col-12 col-sm-6 col-lg-2">
-            <select class="form-select" onchange="jumpToClass(this.value)" id="classJump">
-                <option value="">📍 Jump to class</option>
-                {% for class in classes %}
-                    <option value="class-{{ class.id }}">{{ class.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3"
+                       style="color: var(--text-secondary); font-size: 0.85rem; pointer-events: none;"></i>
+                    <input type="text" id="classSearch" class="form-control ps-5"
+                           placeholder="Search class name..." autocomplete="off"
+                           aria-label="Search classes">
+                </div>
+            </div>
 
-        <div class="col-12 col-lg-3 d-flex flex-wrap justify-content-lg-end align-items-center gap-2">
-            <a href="{% url 'students:student_add' %}" class="btn btn-primary btn-sm">
-                <i class="bi bi-plus-circle"></i> Add Learner
-            </a>
-            <button class="btn btn-secondary btn-sm" type="button" onclick="printAllClasses()">
-                <i class="bi bi-printer"></i> Print
-            </button>
-            <button class="theme-toggle-btn" id="themeToggle" type="button"
-                    title="Toggle light/dark mode" aria-label="Toggle theme">
-                <i class="bi bi-moon-stars"></i>
-            </button>
+            <div class="col-12 col-sm-6 col-lg-2">
+                <select class="form-select" id="classJump" aria-label="Jump to class">
+                    <option value="">📍 Jump to class</option>
+                    {% for class in classes %}
+                        <option value="{{ class.id }}">{{ class.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 col-lg-3 d-flex flex-wrap justify-content-lg-end align-items-center gap-2">
+                <a href="{% url 'students:student_add' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-circle"></i> Add Learner
+                </a>
+                <button class="btn btn-secondary btn-sm" type="button" id="printBtn">
+                    <i class="bi bi-printer"></i> Print
+                </button>
+                <button class="btn btn-secondary btn-sm btn-toggle-all" type="button" id="toggleAllBtn"
+                        title="Collapse / Expand all classes">
+                    <i class="bi bi-arrows-collapse"></i>
+                </button>
+                <button class="theme-toggle-btn" id="themeToggle" type="button"
+                        title="Toggle light/dark mode" aria-label="Toggle theme">
+                    <i class="bi bi-moon-stars"></i>
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- ========== STATS BAR ========== -->
     {% if classes %}
     <div class="d-flex flex-wrap align-items-center gap-3 mb-4 no-print">
-        <span class="stat-pill">
-            <i class="bi bi-building"></i> {{ classes|length }} Class{{ classes|length|pluralize:"es" }}
+        <span class="stat-pill" id="classCountPill">
+            <i class="bi bi-building"></i>
+            <span id="visibleClassCount">{{ classes|length }}</span>
+            <span id="classCountLabel">Class{{ classes|length|pluralize:"es" }}</span>
         </span>
         <span class="stat-pill">
             <i class="bi bi-person-badge"></i> {{ total_students|default:"All" }} Learners
@@ -686,206 +720,424 @@ body {
     </div>
     {% endif %}
 
-    <!-- ========== CLASS CARDS ========== -->
-    {% for class in classes %}
-    <div class="class-card mb-4" id="class-{{ class.id }}">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <i class="bi bi-mortarboard-fill fs-5"></i>
-                <span class="fw-semibold">{{ class.name }}</span>
-                <span class="badge rounded-pill">{{ class.student_set.count }} learners</span>
+    <!-- ========== CLASSES GRID ========== -->
+    <div class="classes-grid" id="classesGrid">
+        {% for class in classes %}
+        <div class="class-card"
+             id="class-{{ class.id }}"
+             data-class-id="{{ class.id }}"
+             data-class-name="{{ class.name|lower }}"
+             data-class-name-normalized="{{ class.name|lower|cut:' ' }}">
+            <div class="card-header d-flex justify-content-between align-items-center"
+                 data-toggle-class="{{ class.id }}"
+                 role="button" tabindex="0"
+                 aria-expanded="true" aria-controls="class-body-{{ class.id }}">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-chevron-down collapse-chevron" aria-hidden="true"></i>
+                    <i class="bi bi-mortarboard-fill" aria-hidden="true"></i>
+                    <span class="fw-semibold">{{ class.name }}</span>
+                    <span class="badge rounded-pill">{{ class.student_set.count }} learners</span>
+                </div>
+                <div class="no-print d-flex align-items-center gap-2" data-stop-propagation>
+                    <a href="{% url 'students:class_download' class.id %}" class="btn btn-success btn-sm"
+                       title="Download class list" aria-label="Download {{ class.name }}">
+                        <i class="bi bi-download"></i>
+                    </a>
+                </div>
             </div>
-            <div class="no-print">
-                <a href="{% url 'students:class_download' class.id %}" class="btn btn-success btn-sm"
-                   title="Download class list">
-                    <i class="bi bi-download"></i>
-                </a>
-            </div>
-        </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th style="width: 5%;">#</th>
-                        <th style="width: 10%;">Photo</th>
-                        <th style="width: 18%;">First Name</th>
-                        <th style="width: 18%;">Last Name</th>
-                        <th style="width: 15%;">Admission</th>
-                        <th style="width: 10%;">Gender</th>
-                        <th style="width: 12%;">DOB</th>
-                        <th class="no-print" style="width: 12%;">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for s in class.student_set.all %}
-                    <tr class="student-row"
-                        data-name="{{ s.user.first_name|lower }} {{ s.user.last_name|lower }}"
-                        data-admission="{{ s.admission_number|lower }}">
-                        <td class="fw-medium">{{ forloop.counter }}</td>
-                        <td class="text-center">
-                            {% if s.photo %}
-                                <img src="{{ s.photo.url }}" class="avatar"
-                                     alt="{{ s.user.first_name }} photo">
-                            {% else %}
-                                <div class="avatar-fallback">
-                                    {{ s.user.first_name|first|upper|default:"?" }}
-                                </div>
+            <div class="class-body" id="class-body-{{ class.id }}">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" data-class-table>
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;">#</th>
+                                <th style="width: 10%;" class="text-center">Photo</th>
+                                <th class="sortable" data-sort-key="first" data-sort-type="text">First Name</th>
+                                <th class="sortable" data-sort-key="last" data-sort-type="text">Last Name</th>
+                                <th class="sortable" data-sort-key="admission" data-sort-type="text">Admission</th>
+                                <th class="sortable" data-sort-key="gender" data-sort-type="text">Gender</th>
+                                <th class="sortable" data-sort-key="dob" data-sort-type="date">DOB</th>
+                                <th class="no-print text-center" style="width: 8%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="student-tbody">
+                            {% for s in class.student_set.all %}
+                            <tr class="student-row"
+                                data-index="{{ forloop.counter0 }}"
+                                data-first="{{ s.user.first_name|default:'' }}"
+                                data-last="{{ s.user.last_name|default:'' }}"
+                                data-admission="{{ s.admission_number|default:'' }}"
+                                data-gender="{{ s.gender|default:'' }}"
+                                data-dob="{{ s.date_of_birth|date:'Y-m-d'|default:'' }}">
+                                <td class="fw-medium row-number">{{ forloop.counter }}</td>
+                                <td class="text-center">
+                                    {% if s.photo %}
+                                        <img src="{{ s.photo.url }}"
+                                             class="avatar"
+                                             alt="{{ s.user.first_name }} photo"
+                                             loading="lazy" width="36" height="36">
+                                    {% else %}
+                                        <div class="avatar-fallback" aria-hidden="true">
+                                            {{ s.user.first_name|first|upper|default:"?" }}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-medium">{{ s.user.first_name|default:"N/A" }}</td>
+                                <td>{{ s.user.last_name|default:"N/A" }}</td>
+                                <td><span class="fw-semibold">{{ s.admission_number|default:"N/A" }}</span></td>
+                                <td class="text-center">
+                                    {% if s.gender %}
+                                        <span class="badge-gender">{{ s.gender|title }}</span>
+                                    {% else %}
+                                        <span class="badge-na">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-nowrap">{{ s.date_of_birth|date:"d M Y"|default:"N/A" }}</td>
+                                <td class="text-center no-print">
+                                    <a href="{% url 'students:student_detail' s.id %}"
+                                       class="btn btn-sm btn-outline-primary" title="View details"
+                                       aria-label="View {{ s.user.first_name }} {{ s.user.last_name }}">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr class="empty-row">
+                                <td colspan="8">
+                                    <i class="bi bi-person-x empty-icon d-block mb-2"></i>
+                                    <span>No students in this class yet</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                            {% if class.student_set.count > 10 %}
+                            <tr class="show-more-row no-print">
+                                <td colspan="8">
+                                    <button class="btn-show-more" type="button" data-show-more>
+                                        <i class="bi bi-chevron-double-down me-1"></i>
+                                        Show more (<span class="remaining-count">0</span> remaining)
+                                    </button>
+                                </td>
+                            </tr>
                             {% endif %}
-                        </td>
-                        <td class="fw-medium">{{ s.user.first_name|default:"N/A" }}</td>
-                        <td>{{ s.user.last_name|default:"N/A" }}</td>
-                        <td><span class="fw-semibold">{{ s.admission_number|default:"N/A" }}</span></td>
-                        <td class="text-center">
-                            {% if s.gender %}
-                                <span class="badge-gender">{{ s.gender|title }}</span>
-                            {% else %}
-                                <span class="badge-na">N/A</span>
-                            {% endif %}
-                        </td>
-                        <td class="text-nowrap">{{ s.date_of_birth|date:"d M Y"|default:"N/A" }}</td>
-                        <td class="text-center no-print">
-                            <a href="{% url 'students:student_detail' s.id %}"
-                               class="btn btn-sm btn-outline-primary" title="View details">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="8" class="text-center py-5">
-                            <i class="bi bi-person-x empty-icon d-block mb-2"></i>
-                            <span class="text-secondary">No students in this class</span>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+        {% endfor %}
     </div>
-    {% empty %}
-    <div class="text-center py-5 no-print">
+
+    <!-- Grid-level empty state (only shown when search yields 0 classes) -->
+    <div class="empty-state no-print" id="noClassMatch" hidden>
+        <i class="bi bi-search empty-icon d-block mb-3"></i>
+        <h5 class="fw-semibold">No classes match your search</h5>
+        <p class="text-secondary mb-3">Try a different class name.</p>
+        <button class="btn btn-secondary btn-sm" type="button" id="clearSearchBtn">
+            <i class="bi bi-x-circle"></i> Clear search
+        </button>
+    </div>
+
+    <!-- Global empty state (no classes at all) -->
+    {% if not classes %}
+    <div class="empty-state no-print">
         <i class="bi bi-building-school empty-icon d-block mb-3"></i>
         <h5 class="fw-semibold">No classes found</h5>
         <p class="text-secondary mb-0">Add your first class to get started</p>
     </div>
-    {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 /* ============================================================
-   STUDENT LIST – INTERACTIONS
+   STUDENT LIST — class-name search · per-class pagination & sort
    ============================================================ */
 
 (function () {
     'use strict';
 
-    /* ---------- THEME INIT (run immediately, before paint) ---------- */
+    const PAGE_SIZE = 10;
     const THEME_KEY = 'studentListTheme';
     const htmlElement = document.documentElement;
 
+    /* ---------- THEME ---------- */
     function applyTheme(theme) {
         htmlElement.setAttribute('data-bs-theme', theme);
-        // Also toggle Bootstrap's `.dark` class if base template uses it
-        if (theme === 'dark') {
-            document.body?.classList.add('dark');
-        } else {
-            document.body?.classList.remove('dark');
-        }
-        // Update toggle icon
         const icon = document.querySelector('#themeToggle i');
         if (icon) {
-            icon.classList.remove('bi-moon-stars', 'bi-sun');
-            icon.classList.add(theme === 'dark' ? 'bi-sun' : 'bi-moon-stars');
+            icon.classList.toggle('bi-moon-stars', theme !== 'dark');
+            icon.classList.toggle('bi-sun', theme === 'dark');
         }
     }
 
-    // Determine initial theme: saved preference → OS preference → light
     function getInitialTheme() {
         const saved = localStorage.getItem(THEME_KEY);
         if (saved === 'light' || saved === 'dark') return saved;
-        // Check OS preference
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return 'dark';
-        }
-        return 'light';
+        return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
 
-    // Apply immediately to avoid flash
     applyTheme(getInitialTheme());
 
-    /* ---------- DOM READY ---------- */
-    document.addEventListener('DOMContentLoaded', function () {
+    /* ---------- HELPERS ---------- */
+    function normalize(str) {
+        return (str || '')
+            .toString()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
 
-        /* ---------- THEME TOGGLE BUTTON ---------- */
-        const themeToggle = document.getElementById('themeToggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', function () {
-                const current = htmlElement.getAttribute('data-bs-theme') || 'light';
-                const next = current === 'dark' ? 'light' : 'dark';
-                localStorage.setItem(THEME_KEY, next);
-                applyTheme(next);
-            });
+    function getDataRows(card) {
+        return Array.from(card.querySelectorAll('.student-row'));
+    }
+
+    /* ============================================================
+       PAGINATION (per class)
+       ============================================================ */
+    function initPagination(card) {
+        const rows = getDataRows(card);
+        const showMoreRow = card.querySelector('.show-more-row');
+        const remainingSpan = showMoreRow?.querySelector('.remaining-count');
+
+        if (!showMoreRow || rows.length <= PAGE_SIZE) {
+            card._pagination = { rows, shown: rows.length, pageSize: PAGE_SIZE };
+            return;
         }
 
-        /* ---------- SEARCH ---------- */
-        const searchInput = document.getElementById('studentSearch');
-        if (searchInput) {
-            searchInput.addEventListener('input', function () {
-                const value = this.value.toLowerCase().trim();
-                const rows = document.querySelectorAll('.student-row');
-                const classCards = document.querySelectorAll('.class-card');
+        rows.forEach((row, i) => { if (i >= PAGE_SIZE) row.hidden = true; });
+        if (remainingSpan) remainingSpan.textContent = rows.length - PAGE_SIZE;
+        card._pagination = { rows, shown: PAGE_SIZE, pageSize: PAGE_SIZE };
+    }
 
-                // Filter rows
-                rows.forEach(function (row) {
-                    const name = row.dataset.name || '';
-                    const admission = row.dataset.admission || '';
-                    const matches = !value || name.includes(value) || admission.includes(value);
-                    row.style.display = matches ? '' : 'none';
-                });
+    function applyPagination(card) {
+        const pag = card._pagination;
+        if (!pag) return;
+        pag.rows.forEach((row, i) => { row.hidden = i >= pag.shown; });
 
-                // Handle empty-state per class
-                classCards.forEach(function (card) {
-                    const cardRows = card.querySelectorAll('.student-row');
-                    const hasRows = cardRows.length > 0;
-                    const visibleRows = Array.from(cardRows).some(function (row) {
-                        return row.style.display !== 'none';
-                    });
+        const showMoreRow = card.querySelector('.show-more-row');
+        const remainingSpan = showMoreRow?.querySelector('.remaining-count');
+        const remaining = pag.rows.length - pag.shown;
+        if (remainingSpan) remainingSpan.textContent = remaining;
+        if (showMoreRow) showMoreRow.hidden = remaining <= 0;
+    }
 
-                    const emptyRow = card.querySelector('tbody tr td[colspan="8"]');
-                    const emptyTr = emptyRow ? emptyRow.closest('tr') : null;
+    function handleShowMore(card) {
+        const pag = card._pagination;
+        if (!pag) return;
+        pag.shown = Math.min(pag.shown + pag.pageSize, pag.rows.length);
+        applyPagination(card);
+    }
 
-                    if (!emptyTr) return;
+    /* ============================================================
+       SORTING (per table)
+       ============================================================ */
+    function initSorting(card) {
+        const table = card.querySelector('[data-class-table]');
+        if (!table) return;
+        const tbody = table.querySelector('tbody');
+        const headers = table.querySelectorAll('th.sortable');
 
-                    if (!hasRows) {
-                        emptyTr.style.display = '';
-                    } else if (value === '') {
-                        emptyTr.style.display = 'none';
-                    } else {
-                        emptyTr.style.display = visibleRows ? 'none' : '';
+        headers.forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.sortKey;
+                const type = th.dataset.sortType || 'text';
+                const currentDir = th.dataset.sortDir === 'asc' ? 'desc' : 'asc';
+
+                headers.forEach(h => delete h.dataset.sortDir);
+                th.dataset.sortDir = currentDir;
+
+                const rows = Array.from(tbody.querySelectorAll('.student-row'));
+                rows.sort((a, b) => {
+                    let va = a.dataset[key] || '';
+                    let vb = b.dataset[key] || '';
+                    if (type === 'date') {
+                        va = va || '9999-12-31';
+                        vb = vb || '9999-12-31';
                     }
+                    const cmp = va.localeCompare(vb, undefined, { numeric: true, sensitivity: 'base' });
+                    return currentDir === 'asc' ? cmp : -cmp;
                 });
+
+                rows.forEach(r => tbody.appendChild(r));
+
+                const showMoreRow = tbody.querySelector('.show-more-row');
+                const noResultsRow = tbody.querySelector('.no-results-row');
+                if (showMoreRow) tbody.appendChild(showMoreRow);
+                if (noResultsRow) tbody.appendChild(noResultsRow);
+
+                renumberRows(card);
+
+                // Respect current pagination after reorder
+                applyPagination(card);
             });
-        }
+
+            th.setAttribute('tabindex', '0');
+            th.setAttribute('role', 'button');
+            th.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); th.click(); }
+            });
+        });
+    }
+
+    function renumberRows(card) {
+        const rows = card.querySelectorAll('.student-row');
+        rows.forEach((row, i) => {
+            const cell = row.querySelector('.row-number');
+            if (cell) cell.textContent = i + 1;
+        });
+    }
+
+    /* ============================================================
+       COLLAPSE / EXPAND
+       ============================================================ */
+    function toggleClass(classId) {
+        const card = document.getElementById('class-' + classId);
+        if (!card) return;
+        const collapsed = card.classList.toggle('is-collapsed');
+        const header = card.querySelector('.card-header');
+        if (header) header.setAttribute('aria-expanded', String(!collapsed));
+    }
+
+    /* ============================================================
+       CLASS-NAME SEARCH  (filters cards, not students)
+       ============================================================ */
+    let searchTerm = '';
+
+    function applyClassSearch() {
+        const cards = document.querySelectorAll('.class-card');
+        let visible = 0;
+
+        cards.forEach(card => {
+            const haystack = normalize(card.dataset.className);
+            const hit = !searchTerm || haystack.includes(searchTerm);
+            card.hidden = !hit;
+            if (hit) visible++;
+        });
+
+        // Toggle grid-level empty state
+        const noMatchEl = document.getElementById('noClassMatch');
+        if (noMatchEl) noMatchEl.hidden = visible > 0 || !searchTerm;
+
+        // Update stats pill count
+        const countEl = document.getElementById('visibleClassCount');
+        const labelEl = document.getElementById('classCountLabel');
+        if (countEl) countEl.textContent = visible;
+        if (labelEl) labelEl.textContent = 'Class' + (visible === 1 ? '' : 'es');
+    }
+
+    /* ============================================================
+       WIRE-UP
+       ============================================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Pagination + sorting per card
+        document.querySelectorAll('.class-card').forEach(card => {
+            initPagination(card);
+            initSorting(card);
+        });
+
+        // Theme toggle
+        document.getElementById('themeToggle')?.addEventListener('click', () => {
+            const current = htmlElement.getAttribute('data-bs-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem(THEME_KEY, next);
+            applyTheme(next);
+        });
+
+        // Class-name search
+        const searchInput = document.getElementById('classSearch');
+        searchInput?.addEventListener('input', (e) => {
+            searchTerm = normalize(e.target.value);
+            applyClassSearch();
+        });
+
+        // Clear search button (in empty state)
+        document.getElementById('clearSearchBtn')?.addEventListener('click', () => {
+            if (searchInput) searchInput.value = '';
+            searchTerm = '';
+            applyClassSearch();
+            searchInput?.focus();
+        });
+
+        // Toggle all
+        document.getElementById('toggleAllBtn')?.addEventListener('click', function () {
+            const cards = Array.from(document.querySelectorAll('.class-card:not([hidden])'));
+            const anyExpanded = cards.some(c => !c.classList.contains('is-collapsed'));
+            cards.forEach(c => {
+                c.classList.toggle('is-collapsed', anyExpanded);
+                const header = c.querySelector('.card-header');
+                if (header) header.setAttribute('aria-expanded', String(anyExpanded ? 'false' : 'true'));
+            });
+            const icon = this.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('bi-arrows-collapse', anyExpanded);
+                icon.classList.toggle('bi-arrows-expand', !anyExpanded);
+            }
+        });
+
+        // Print — temporarily unhide everything so print shows all classes
+        document.getElementById('printBtn')?.addEventListener('click', () => {
+            const wasHidden = [];
+            document.querySelectorAll('.class-card[hidden]').forEach(c => {
+                wasHidden.push(c);
+                c.hidden = false;
+            });
+            const collapsed = [];
+            document.querySelectorAll('.class-card.is-collapsed').forEach(c => {
+                collapsed.push(c);
+                c.classList.remove('is-collapsed');
+            });
+
+            window.print();
+
+            setTimeout(() => {
+                wasHidden.forEach(c => { c.hidden = true; });
+                collapsed.forEach(c => { c.classList.add('is-collapsed'); });
+            }, 500);
+        });
+
+        // Card header toggles
+        document.querySelectorAll('[data-toggle-class]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                if (e.target.closest('[data-stop-propagation]')) return;
+                toggleClass(el.dataset.toggleClass);
+            });
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleClass(el.dataset.toggleClass);
+                }
+            });
+        });
+
+        // Show more buttons
+        document.querySelectorAll('[data-show-more]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const card = btn.closest('.class-card');
+                if (card) handleShowMore(card);
+            });
+        });
+
+        // Jump to class
+        document.getElementById('classJump')?.addEventListener('change', function () {
+            const id = this.value;
+            if (!id) return;
+            const target = document.getElementById('class-' + id);
+            if (target) {
+                target.hidden = false;                 // in case a search hid it
+                target.classList.remove('is-collapsed');
+                const header = target.querySelector('.card-header');
+                if (header) header.setAttribute('aria-expanded', 'true');
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                this.value = '';
+            }
+        });
     });
-
-    /* ---------- JUMP TO CLASS ---------- */
-    window.jumpToClass = function (id) {
-        if (!id) return;
-        const target = document.getElementById(id);
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            const jump = document.getElementById('classJump');
-            if (jump) jump.value = '';
-        }
-    };
-
-    /* ---------- PRINT ALL ---------- */
-    window.printAllClasses = function () {
-        window.print();
-    };
 
 })();
 </script>

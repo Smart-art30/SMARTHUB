@@ -104,6 +104,33 @@
     font-size: 0.8rem;
     color: var(--cls-text-main);
 }
+
+/* Back button — theme-aware, same sizing as the Add Learner button */
+.btn-back-cls {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 8px;
+    border: 1px solid var(--cls-border);
+    background-color: var(--cls-surface);
+    color: var(--cls-text-main);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-back-cls:hover {
+    background-color: var(--cls-surface-subtle);
+    border-color: var(--cls-text-muted);
+    color: var(--cls-text-main);
+}
+
+.btn-back-cls i {
+    font-size: 0.9rem;
+}
 </style>
 
 <div class="container-fluid py-4">
@@ -120,10 +147,20 @@
             <p class="text-muted-custom small mb-0">Quick directory of active class cohorts and rosters.</p>
         </div>
 
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <!-- BACK BUTTON -->
+            <button type="button"
+                    class="btn-back-cls"
+                    onclick="goBack()"
+                    title="Return to previous page">
+                <i class="bi bi-arrow-left"></i>
+                Back
+            </button>
+
             <span class="badge bg-surface-subtle text-muted-custom border border-subtle px-2 py-1 small">
                 {{ classes|length }} Class{{ classes|length|pluralize:"es" }}
             </span>
+
             <a href="{% url 'students:student_add' %}" class="btn btn-primary btn-sm px-3 shadow-sm">
                 <i class="bi bi-person-plus-fill me-1"></i>Add Learner
             </a>
@@ -145,7 +182,7 @@
         {% for class in classes %}
         <div class="col class-card-item" data-name="{{ class.name|lower }}">
             <div class="class-compact-card h-100 p-2 text-center d-flex flex-column justify-content-between">
-                
+
                 <!-- Class Header & Micro Icon -->
                 <div class="mb-2">
                     <div class="class-micro-icon bg-primary-subtle text-primary mb-2">
@@ -163,13 +200,13 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex flex-column gap-1 mt-auto">
-                    <a href="{% url 'students:class_detail' class.id %}" 
+                    <a href="{% url 'students:class_detail' class.id %}"
                        class="btn btn-primary btn-sm py-1 d-flex align-items-center justify-content-center"
                        style="font-size: 0.725rem;">
                         <i class="bi bi-people me-1"></i>View
                     </a>
 
-                    <a href="{% url 'students:class_download' class.id %}" 
+                    <a href="{% url 'students:class_download' class.id %}"
                        class="btn btn-outline-success btn-sm py-1 d-flex align-items-center justify-content-center"
                        style="font-size: 0.725rem;"
                        title="Download CSV">
@@ -203,29 +240,47 @@
 
 <!-- Real-time Filter JS -->
 <script>
-function filterClasses() {
-    const input = document.getElementById('classSearchInput').value.toLowerCase().trim();
-    const items = document.querySelectorAll('.class-card-item');
-    let visibleCount = 0;
-
-    items.forEach(item => {
-        const name = item.getAttribute('data-name');
-        if (name && name.includes(input)) {
-            item.classList.remove('d-none');
-            visibleCount++;
-        } else {
-            item.classList.add('d-none');
+    // ============================================================
+    // BACK BUTTON — routes to the logged-in user's role dashboard
+    // ------------------------------------------------------------
+    // dashboard_url is supplied by the view via:
+    //     ctx['dashboard_url'] = get_user_dashboard_url(request.user)
+    // The |escapejs filter makes the resolved URL safe to embed
+    // inside a JS string literal.
+    // ============================================================
+    function goBack() {
+        if (window.history.length > 1 &&
+            document.referrer &&
+            document.referrer.indexOf(window.location.host) !== -1) {
+            window.history.back();
+            return;
         }
-    });
+        window.location.href = "{{ dashboard_url|default:'/'|escapejs }}";
+    }
 
-    const noResults = document.getElementById('noSearchResults');
-    if (noResults) {
-        if (visibleCount === 0 && items.length > 0) {
-            noResults.classList.remove('d-none');
-        } else {
-            noResults.classList.add('d-none');
+    function filterClasses() {
+        const input = document.getElementById('classSearchInput').value.toLowerCase().trim();
+        const items = document.querySelectorAll('.class-card-item');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const name = item.getAttribute('data-name');
+            if (name && name.includes(input)) {
+                item.classList.remove('d-none');
+                visibleCount++;
+            } else {
+                item.classList.add('d-none');
+            }
+        });
+
+        const noResults = document.getElementById('noSearchResults');
+        if (noResults) {
+            if (visibleCount === 0 && items.length > 0) {
+                noResults.classList.remove('d-none');
+            } else {
+                noResults.classList.add('d-none');
+            }
         }
     }
-}
 </script>
 {% endblock %}
