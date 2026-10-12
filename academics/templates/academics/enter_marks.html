@@ -8,15 +8,15 @@
     <!-- HEADER -->
     <div class="print-header">
 
-        <!-- School Logo at the very top, centered -->
-        <div class="text-center mb-2">
+        <!-- School Logo at the very top, centered and well spread -->
+        <div class="logo-wrapper">
             <img src="{% if school_logo_url %}{{ school_logo_url }}{% else %}{% static 'images/school_logo.png' %}{% endif %}"
-                 style="height:70px;"
+                 class="school-logo"
                  alt="School Logo">
         </div>
 
         <!-- Header details row -->
-        <div class="d-flex align-items-start flex-wrap">
+        <div class="d-flex align-items-start flex-wrap header-details">
 
             <div class="flex-grow-1">
 
@@ -454,6 +454,26 @@ body {
     min-height: 100vh;
     font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     color: var(--text-primary);
+}
+
+/* ===== SCHOOL LOGO (WELL SPREAD) ===== */
+
+.logo-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 0;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.school-logo {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+    max-height: 110px;
+    object-fit: contain;
 }
 
 /* ===== WATERMARK ===== */
@@ -1034,11 +1054,28 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
     font-weight: 900 !important;
 }
 
-/* ===== MOBILE ===== */
+/* ===== RESPONSIVE LOGO (SCREEN) ===== */
+
+@media (max-width: 992px) {
+    .school-logo {
+        max-width: 600px;
+        max-height: 95px;
+    }
+}
 
 @media (max-width: 768px) {
+    .school-logo {
+        max-width: 100%;
+        max-height: 80px;
+    }
     .legend-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .school-logo {
+        max-height: 60px;
     }
 }
 
@@ -1259,6 +1296,18 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
    ============================================================ */
 @media print and (orientation: portrait) {
 
+    .logo-wrapper {
+        margin-bottom: 6px !important;
+    }
+
+    .school-logo {
+        width: 100% !important;
+        max-width: 70% !important;
+        height: auto !important;
+        max-height: 70px !important;
+        object-fit: contain !important;
+    }
+
     .marks-table {
         font-size: 8px !important;
         table-layout: fixed !important;
@@ -1341,9 +1390,21 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
 }
 
 /* ============================================================
-   LANDSCAPE PRINT — FULL, READABLE, BOLD
+   LANDSCAPE PRINT — FULL, READABLE, BOLD, WELL-SPREAD LOGO
    ============================================================ */
 @media print and (orientation: landscape) {
+
+    .logo-wrapper {
+        margin-bottom: 8px !important;
+    }
+
+    .school-logo {
+        width: 100% !important;
+        max-width: 85% !important;
+        height: auto !important;
+        max-height: 95px !important;
+        object-fit: contain !important;
+    }
 
     .marks-table {
         table-layout: auto !important;
