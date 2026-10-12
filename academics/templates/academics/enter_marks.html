@@ -6,69 +6,82 @@
 <div class="container-fluid mt-3 watermark-container">
 
     <!-- HEADER -->
-    <div class="d-flex align-items-center mb-2 print-header flex-wrap">
+    <div class="print-header">
 
-        <img src="{% if school_logo_url %}{{ school_logo_url }}{% else %}{% static 'images/school_logo.png' %}{% endif %}"
-             style="height:45px; margin-right:10px; flex-shrink:0;">
-
-        <div class="flex-grow-1">
-
-            <h5 class="mb-0 exam-title">
-                Marks Entry – {{ exam.name }}
-            </h5>
-
-            <div class="exam-info">
-                <strong>{{ school_class }}</strong> <br>
-                Term: <strong>{{ exam.term|default:"—" }}</strong> <br>
-                Year: <strong>{{ exam.year|default:"—" }}</strong> <br>
-                Max: <strong>{{ exam.max_mark }}</strong>
-            </div>
-
-            <div class="exam-info">
-                Facilitator:
-                <strong>
-                    {% if facilitator_name %}
-                        {{ facilitator_name }}
-                    {% elif class_teacher %}
-                        {{ class_teacher.get_full_name|default:class_teacher.username }}
-                    {% elif request.user.get_full_name %}
-                        {{ request.user.get_full_name }}
-                    {% else %}
-                        {{ request.user.username }}
-                    {% endif %}
-                </strong>
-            </div>
-
+        <!-- School Logo at the very top, centered -->
+        <div class="text-center mb-2">
+            <img src="{% if school_logo_url %}{{ school_logo_url }}{% else %}{% static 'images/school_logo.png' %}{% endif %}"
+                 style="height:70px;"
+                 alt="School Logo">
         </div>
 
-        <div class="ms-auto no-print d-flex align-items-center gap-2 flex-wrap">
+        <!-- Header details row -->
+        <div class="d-flex align-items-start flex-wrap">
 
-            <!-- BACK BUTTON -->
-            <button type="button"
-                    onclick="goBack()"
-                    class="btn btn-sm btn-outline-secondary me-1"
-                    title="Return to previous page">
-                ← Back
-            </button>
+            <div class="flex-grow-1">
 
-            <!-- ORIENTATION SELECTOR -->
-            <div class="orientation-selector">
-                <label for="orientationSelect">Orientation:</label>
-                <select id="orientationSelect" aria-label="Print orientation">
-                    <option value="portrait">Portrait</option>
-                    <option value="landscape" selected>Landscape</option>
-                </select>
+                <h5 class="mb-1 exam-title">
+                    Marks Entry – {{ exam.name }}
+                </h5>
+
+                <div class="exam-info">
+                    <strong>{{ school_class }}</strong>
+                </div>
+
+                <!-- Term and Year side by side -->
+                <div class="exam-info d-flex gap-3">
+                    <span>Term: <strong>{{ exam.term|default:"—" }}</strong></span>
+                    <span>Year: <strong>{{ exam.year|default:"—" }}</strong></span>
+                    <span>Max: <strong>{{ exam.max_mark }}</strong></span>
+                </div>
+
+                <div class="exam-info">
+                    Facilitator:
+                    <strong>
+                        {% if facilitator_name %}
+                            {{ facilitator_name }}
+                        {% elif class_teacher %}
+                            {{ class_teacher.get_full_name|default:class_teacher.username }}
+                        {% elif request.user.get_full_name %}
+                            {{ request.user.get_full_name }}
+                        {% else %}
+                            {{ request.user.username }}
+                        {% endif %}
+                    </strong>
+                </div>
+
             </div>
 
-            <button onclick="printWithOrientation()"
-                    class="btn btn-sm btn-outline-dark me-1">
-                🖨 Print
-            </button>
+            <div class="ms-auto no-print d-flex align-items-center gap-2 flex-wrap">
 
-            <button onclick="printWithOrientation()"
-                    class="btn btn-sm btn-outline-primary">
-                ⬇ PDF
-            </button>
+                <!-- BACK BUTTON -->
+                <button type="button"
+                        onclick="goBack()"
+                        class="btn btn-sm btn-outline-secondary me-1"
+                        title="Return to previous page">
+                    ← Back
+                </button>
+
+                <!-- ORIENTATION SELECTOR -->
+                <div class="orientation-selector">
+                    <label for="orientationSelect">Orientation:</label>
+                    <select id="orientationSelect" aria-label="Print orientation">
+                        <option value="portrait">Portrait</option>
+                        <option value="landscape" selected>Landscape</option>
+                    </select>
+                </div>
+
+                <button onclick="printWithOrientation()"
+                        class="btn btn-sm btn-outline-dark me-1">
+                    🖨 Print
+                </button>
+
+                <button onclick="printWithOrientation()"
+                        class="btn btn-sm btn-outline-primary">
+                    ⬇ PDF
+                </button>
+
+            </div>
 
         </div>
 
