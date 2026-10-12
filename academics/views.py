@@ -641,7 +641,6 @@ def select_classes(request):
 
     return render(request, "academics/select_classes.html", {"classes": classes})
 
-
 # =============================================================================
 # MARKS ENTRY
 # =============================================================================
@@ -745,7 +744,16 @@ def enter_marks(request, class_id, exam_id):
         messages.success(request, "Marks saved successfully.")
         return redirect("academics:class_overview", class_id=class_id)
 
-    school_logo_url = school.logo.url if school.logo else None
+    # ---- Context: school branding ----
+    school_logo_url = None
+    if getattr(school, "logo", None):
+        try:
+            school_logo_url = school.logo.url
+        except (ValueError, AttributeError):
+            school_logo_url = None
+
+    # Pull the motto from the school instance
+    school_motto = getattr(school, "motto", "") or ""
 
     return render(
         request,
@@ -756,9 +764,14 @@ def enter_marks(request, class_id, exam_id):
             "students": students,
             "subjects": subjects,
             "school_logo_url": school_logo_url,
+            "school_motto": school_motto,
+            "subject_col_width": 4,
+            "facilitator_name": (
+                user.get_full_name() or user.username
+            ),
+            "class_teacher": getattr(school_class, "class_teacher", None),
         },
     )
-
 
 @login_required
 @role_required("teacher", "schooladmin")

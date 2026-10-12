@@ -8,7 +8,7 @@
     <!-- HEADER -->
     <div class="print-header">
 
-        <!-- School Logo at the very top, centered and well spread -->
+        <!-- School Logo at the very top, fully centralized -->
         <div class="logo-wrapper">
             <img src="{% if school_logo_url %}{{ school_logo_url }}{% else %}{% static 'images/school_logo.png' %}{% endif %}"
                  class="school-logo"
@@ -282,7 +282,7 @@
 
         <p>
             <strong>School Motto:</strong>
-            Beyond limits for Success
+            <strong class="school-motto">{{ school_motto|default:"—" }}</strong>
         </p>
 
         <p>
@@ -456,19 +456,22 @@ body {
     color: var(--text-primary);
 }
 
-/* ===== SCHOOL LOGO (WELL SPREAD) ===== */
+/* ===== SCHOOL LOGO (CENTRALIZED, TOP OF PAGE) ===== */
 
 .logo-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     line-height: 0;
-    margin-bottom: 10px;
+    margin: 0 auto 12px auto;
+    padding-top: 4px;
     width: 100%;
+    text-align: center;
 }
 
 .school-logo {
     display: block;
+    margin: 0 auto;
     width: 100%;
     max-width: 720px;
     height: auto;
@@ -1000,6 +1003,14 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
     font-size: 12px;
 }
 
+/* ===== SCHOOL MOTTO (BOLD) ===== */
+
+.school-motto {
+    font-weight: 900 !important;
+    color: var(--brand-navy);
+    letter-spacing: 0.3px;
+}
+
 /* ===== BOOTSTRAP BUTTON OVERRIDES ===== */
 
 .btn-outline-dark {
@@ -1085,12 +1096,6 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
 
 @media print {
 
-    /* -----------------------------------------------------------
-       Reset ALL theme variants — must match the specificity of the
-       theme selectors above. This is the critical fix for dark mode
-       printing. Without matching specificity, dark variables leak
-       through and print as dark backgrounds.
-       ----------------------------------------------------------- */
     :root,
     html,
     body,
@@ -1132,8 +1137,6 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
         color-scheme: light !important;
     }
 
-    /* Hard white background on every container that could carry
-       a dark surface — belt and braces against specificity wars. */
     html,
     body,
     .watermark-container,
@@ -1145,7 +1148,6 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
         color: #000000 !important;
     }
 
-    /* Table surfaces forced white in print */
     .marks-table,
     .marks-table th,
     .marks-table td,
@@ -1155,7 +1157,6 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
         color: #000000 !important;
     }
 
-    /* Keep the intended colored headers/footers */
     .marks-table thead tr,
     .marks-table thead tr th {
         background: var(--table-head-bg) !important;
@@ -1167,7 +1168,6 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
         color: var(--brand-navy) !important;
     }
 
-    /* Inputs must never print with a dark background */
     .mark-input,
     .mark-input:focus,
     .mark-input.invalid,
@@ -1189,13 +1189,11 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
     }
     .student-row.active-row td::after { display: none !important; }
 
-    /* Watermarks — subtle on paper */
     .watermark {
         opacity: 0.04 !important;
         filter: none !important;
     }
 
-    /* Fallback margin only — do NOT set size here */
     @page {
         margin: 8mm;
     }
@@ -1250,8 +1248,6 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
         z-index: 1;
     }
 
-    /* ===== CHART PRINT FIX ===== */
-
     .chart-wrapper {
         page-break-inside: avoid !important;
         break-inside: avoid !important;
@@ -1289,11 +1285,27 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
+
+    .school-motto {
+        font-weight: 900 !important;
+        color: #000000 !important;
+    }
+
+    .logo-wrapper {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin: 0 auto 10px auto !important;
+        text-align: center !important;
+    }
+
+    .school-logo {
+        margin: 0 auto !important;
+        display: block !important;
+    }
 }
 
-/* ============================================================
-   PORTRAIT PRINT — TIGHTEN HEADERS SO NOTHING IS CLIPPED
-   ============================================================ */
 @media print and (orientation: portrait) {
 
     .logo-wrapper {
@@ -1389,9 +1401,6 @@ body[data-theme="dark"] .total-points-cell.tp-low      { background-color: #A62E
     }
 }
 
-/* ============================================================
-   LANDSCAPE PRINT — FULL, READABLE, BOLD, WELL-SPREAD LOGO
-   ============================================================ */
 @media print and (orientation: landscape) {
 
     .logo-wrapper {
@@ -1541,16 +1550,10 @@ function goBack() {
 
 // ============================================================
 // PRINT WITH ORIENTATION
-// ------------------------------------------------------------
-// Injects a top-level @page size rule and — critically — drops
-// the active theme to "light" for the duration of the print
-// dialog, then restores it afterwards. This guarantees the print
-// engine never sees dark variables, so no dark blocks print.
 // ============================================================
 function printWithOrientation() {
     const orientation = document.getElementById('orientationSelect').value;
 
-    // Reuse a single style element (never append duplicates)
     let styleEl = document.getElementById('print-orientation-style');
     if (!styleEl) {
         styleEl = document.createElement('style');
@@ -1561,7 +1564,6 @@ function printWithOrientation() {
     styleEl.textContent =
         '@page { size: A4 ' + orientation + '; margin: 8mm; }';
 
-    // --- Temporarily force light theme during print ---
     const htmlThemeBefore = document.documentElement.getAttribute('data-theme');
     const bodyThemeBefore = document.body.getAttribute('data-theme');
 
@@ -1574,13 +1576,11 @@ function printWithOrientation() {
     if (wasDark) {
         document.documentElement.setAttribute('data-theme', 'light');
         document.body.setAttribute('data-theme', 'light');
-        // Redraw chart with light colors so the printed chart matches
         if (typeof drawChart === 'function') {
             try { drawChart(); } catch (e) {}
         }
     }
 
-    // Force reflow so the browser commits the @page size + theme
     void document.body.offsetHeight;
     void document.documentElement.offsetHeight;
 
@@ -1591,7 +1591,6 @@ function printWithOrientation() {
             setTimeout(() => {
                 window.print();
 
-                // Restore theme after the print dialog closes
                 setTimeout(() => {
                     if (wasDark) {
                         if (htmlThemeBefore) {
@@ -1633,8 +1632,6 @@ function isDarkMode() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
-// ===== FORCE CHART REDRAW FOR PRINT =====
-
 function redrawForPrint() {
     const canvas = document.getElementById('summaryChart');
     if (!canvas || !window.summaryChartObj) return;
@@ -1649,9 +1646,7 @@ function redrawForPrint() {
     try {
         window.summaryChartObj.resize();
         window.summaryChartObj.update('none');
-    } catch (e) {
-        // ignore
-    }
+    } catch (e) {}
 }
 
 window.addEventListener('beforeprint', redrawForPrint);
@@ -1659,10 +1654,9 @@ window.addEventListener('beforeprint', redrawForPrint);
 document.addEventListener('DOMContentLoaded', () => {
 
     const table = document.getElementById('marks-table');
+    if (!table) return;
 
-    const inputs = [
-        ...document.querySelectorAll('.mark-input')
-    ];
+    const inputs = [...document.querySelectorAll('.mark-input')];
 
     function highlightRow(input) {
         document
@@ -1670,21 +1664,18 @@ document.addEventListener('DOMContentLoaded', () => {
             .forEach(row => row.classList.remove('active-row'));
 
         const row = input.closest('.student-row');
-
         if (row) {
             row.classList.add('active-row');
         }
     }
 
-    const maxMark = {{ exam.max_mark }};
+    const maxMark = {{ exam.max_mark|default:100 }};
 
     const subjectTotals = {};
 
     {% for subject in subjects %}
     subjectTotals['{{ subject.id }}'] = 0;
     {% endfor %}
-
-    // ===== RUBRIC =====
 
     function rubric(mark) {
         if (mark >= 90) return 'EE1';
@@ -1710,8 +1701,6 @@ document.addEventListener('DOMContentLoaded', () => {
             default:    return 0;
         }
     }
-
-    // ===== CALCULATE =====
 
     function calculate() {
 
@@ -1875,6 +1864,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalFilled = [...table.tBodies[0].rows]
             .reduce((s, r) => s + (parseInt(r.dataset.filled) || 0), 0);
 
+        const rowCount = table.tBodies[0].rows.length;
+
         table.querySelector('.class-total')
             .textContent = classTotal;
 
@@ -1887,22 +1878,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 : '';
 
         table.querySelector('.class-total-mean')
-            .textContent = table.tBodies[0].rows.length
-                ? (classTotal / table.tBodies[0].rows.length).toFixed(2)
+            .textContent = rowCount
+                ? (classTotal / rowCount).toFixed(2)
                 : '';
 
         table.querySelector('.class-avg-mean')
-            .textContent = table.tBodies[0].rows.length
-                ? (classTotal / table.tBodies[0].rows.length).toFixed(2)
+            .textContent = rowCount
+                ? (classTotal / rowCount).toFixed(2)
                 : '';
 
         table.querySelector('.class-points-mean')
-            .textContent = table.tBodies[0].rows.length
-                ? (classTotalPoints / table.tBodies[0].rows.length).toFixed(2)
+            .textContent = rowCount
+                ? (classTotalPoints / rowCount).toFixed(2)
                 : '';
     }
-
-    // ===== RANK =====
 
     function rankStudents() {
 
@@ -1919,8 +1908,6 @@ document.addEventListener('DOMContentLoaded', () => {
             table.tBodies[0].appendChild(row);
         });
     }
-
-    // ===== CHART =====
 
     function drawChart() {
 
@@ -1964,76 +1951,73 @@ document.addEventListener('DOMContentLoaded', () => {
             window.summaryChartObj.destroy();
         }
 
+        const canvas = document.getElementById('summaryChart');
+        if (!canvas) return;
+
         window.summaryChartObj =
-            new Chart(
-                document.getElementById('summaryChart'),
-                {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [{
-                            data,
-                            backgroundColor: barColor,
-                            borderColor: barBorder,
-                            borderWidth: 1,
-                            borderRadius: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: false,
-                        devicePixelRatio: 2,
-                        layout: {
-                            padding: {
-                                top: 20,
-                                bottom: 10,
-                                left: 10,
-                                right: 10
-                            }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            datalabels: {
-                                anchor: 'end',
-                                align: 'top',
-                                color: labelColor,
-                                font: {
-                                    weight: '900',
-                                    size: 11,
-                                    family: '"Segoe UI", "Helvetica Neue", Arial, sans-serif'
-                                },
-                                formatter: value => value || ''
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: {{ exam.max_mark }},
-                                grid: { color: gridColor },
-                                ticks: {
-                                    color: tickColor,
-                                    font: { weight: '900' }
-                                }
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: {
-                                    color: tickColor,
-                                    font: { weight: '900' }
-                                }
-                            }
+            new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        backgroundColor: barColor,
+                        borderColor: barBorder,
+                        borderWidth: 1,
+                        borderRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    devicePixelRatio: 2,
+                    layout: {
+                        padding: {
+                            top: 20,
+                            bottom: 10,
+                            left: 10,
+                            right: 10
                         }
                     },
-                    plugins: [ChartDataLabels]
-                }
-            );
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: labelColor,
+                            font: {
+                                weight: '900',
+                                size: 11,
+                                family: '"Segoe UI", "Helvetica Neue", Arial, sans-serif'
+                            },
+                            formatter: value => value || ''
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: maxMark,
+                            grid: { color: gridColor },
+                            ticks: {
+                                color: tickColor,
+                                font: { weight: '900' }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                color: tickColor,
+                                font: { weight: '900' }
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
     }
 
-    // Expose drawChart so printWithOrientation can call it
     window.drawChart = drawChart;
-
-    // ===== INPUT EVENTS =====
 
     inputs.forEach((input) => {
 
@@ -2123,8 +2107,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ===== THEME CHANGE REACTIONS =====
-
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
 
     function handleThemeChange() {
@@ -2148,7 +2130,6 @@ document.addEventListener('DOMContentLoaded', () => {
         attributeFilter: ['data-theme']
     });
 
-    // INITIAL LOAD
     calculate();
     rankStudents();
     drawChart();
