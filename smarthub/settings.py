@@ -71,16 +71,16 @@ if config("RENDER", default=False, cast=bool):
 # =========================================================
 # APPLICATIONS
 # =========================================================
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage', 
     'django.contrib.staticfiles',
-    'cloudinary', 
+
+    'storages',
+
     'accounts',
     'dashboard',
     'schools',
@@ -229,19 +229,19 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # =========================================================
 
 
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": config("CLOUDINARY_API_KEY"),
-    "API_SECRET": config("CLOUDINARY_API_SECRET"),
-}
-
 STORAGES = {
     "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        "BACKEND": "storages.backends.cloudinary.CloudinaryStorage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
+}
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME", default=""),
+    "API_KEY": config("CLOUDINARY_API_KEY", default=""),
+    "API_SECRET": config("CLOUDINARY_API_SECRET", default=""),
 }
 
 MEDIA_URL = "/media/"  
