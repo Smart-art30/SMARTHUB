@@ -27,6 +27,7 @@
     --radius-xl: 24px;
     --radius-lg: 16px;
     --radius-md: 12px;
+    --table-radius: 14px;
     --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
@@ -165,11 +166,38 @@ body {
     overflow: hidden;
     transition: transform 0.2s ease;
     page-break-after: always;
+    isolation: isolate;
 }
 
 .a4-report:hover {
     transform: translateY(-2px);
     box-shadow: 0 24px 48px -12px rgba(0, 20, 50, 0.18);
+}
+
+/* ============================================================
+   WATERMARK — pseudo-element so it sits ABOVE white table
+   backgrounds but BELOW content.
+   ============================================================ */
+
+.a4-report::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='360' viewBox='0 0 520 360'><g transform='rotate(-28 260 180)' opacity='0.09'><text x='260' y='150' text-anchor='middle' font-family='Inter,Segoe UI,sans-serif' font-size='72' font-weight='900' fill='%230b1b33' letter-spacing='12'>{{ school.name|default:"SCHOOL"|upper }}</text><text x='260' y='210' text-anchor='middle' font-family='Inter,Segoe UI,sans-serif' font-size='22' font-weight='700' fill='%230b1b33' letter-spacing='8'>{{ school.motto|default:""|upper }}</text></g></svg>");
+    background-repeat: repeat;
+    background-position: center center;
+    background-size: 520px 360px;
+    opacity: 0.75;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* Content sits above the watermark */
+.a4-report > * {
+    position: relative;
+    z-index: 1;
 }
 
 /* ============================================================
@@ -342,7 +370,11 @@ body {
 }
 
 /* ============================================================
-   MARKS TABLE
+   MARKS TABLE — ROUNDED EDGES + full grid lines on print
+   ------------------------------------------------------------
+   IMPORTANT: border-collapse must be `separate` with
+   border-spacing: 0 for border-radius to actually render on
+   a table. We then round the outer corner cells manually.
    ============================================================ */
 
 .marks-table {
@@ -351,10 +383,12 @@ body {
     border-spacing: 0;
     margin-top: 10px;
     font-size: 10pt;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    border: 1.5px solid var(--border-light);
     table-layout: fixed;
+    border-radius: var(--table-radius);
+    overflow: hidden;              /* clips inner cells to the rounded frame */
+    background: transparent;
+    /* Outer frame */
+    border: 1.5px solid var(--border-light);
 }
 
 .marks-table th {
@@ -366,8 +400,8 @@ body {
     letter-spacing: 0.3px;
     text-transform: uppercase;
     text-align: center;
-    border: none;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.18);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
     white-space: nowrap;
 }
 
@@ -379,10 +413,10 @@ body {
     padding: 8px 6px;
     text-align: center;
     vertical-align: middle;
-    border-bottom: 1px solid var(--border-light);
     border-right: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
     font-size: 10.5px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.72);
     transition: background 0.1s ease;
     word-break: break-word;
 }
@@ -396,7 +430,21 @@ body {
 }
 
 .marks-table tbody tr:hover td {
-    background: #fafcff;
+    background: rgba(250, 252, 255, 0.95);
+}
+
+/* --- Rounded outer corners --- */
+.marks-table thead tr:first-child th:first-child {
+    border-top-left-radius: var(--table-radius);
+}
+.marks-table thead tr:first-child th:last-child {
+    border-top-right-radius: var(--table-radius);
+}
+.marks-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: var(--table-radius);
+}
+.marks-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: var(--table-radius);
 }
 
 /* column widths */
@@ -414,6 +462,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    background: rgba(255, 255, 255, 0.72);
 }
 
 /* MARK CELL: score, rubric, trend side by side */
@@ -465,14 +514,14 @@ body {
 .trend-down { color: #c53030; }
 .trend-stable { color: #b45309; }
 
-/* row highlight (trend colours) */
-.mark-up { background: #ecfdf5 !important; }
-.mark-down { background: #fef2f2 !important; }
-.mark-same { background: #fffbeb !important; }
+/* row highlight (trend colours) — semi-transparent so watermark peeks through */
+.mark-up   { background: rgba(236, 253, 245, 0.82) !important; }
+.mark-down { background: rgba(254, 242, 242, 0.82) !important; }
+.mark-same { background: rgba(255, 251, 235, 0.82) !important; }
 
-.mark-up:hover { background: #d1fae5 !important; }
-.mark-down:hover { background: #fee2e2 !important; }
-.mark-same:hover { background: #fef3c7 !important; }
+.mark-up:hover   { background: rgba(209, 250, 229, 0.92) !important; }
+.mark-down:hover { background: rgba(254, 226, 226, 0.92) !important; }
+.mark-same:hover { background: rgba(254, 243, 199, 0.92) !important; }
 
 /* ============================================================
    REMARKS CELL
@@ -487,6 +536,7 @@ body {
     color: #000000 !important;
     font-weight: 600 !important;
     line-height: 1.35;
+    background: rgba(255, 255, 255, 0.72);
 }
 
 .remark-cell strong,
@@ -545,7 +595,7 @@ body {
 
 .feedback-box {
     border: 1.5px dashed #cbd5e1;
-    background: #fafcff;
+    background: rgba(250, 252, 255, 0.72);
     min-height: 56px;
     border-radius: var(--radius-md);
     padding: 9px 11px;
@@ -559,7 +609,7 @@ body {
 
 .feedback-box:hover {
     border-color: #94a3b8;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.9);
 }
 
 /* ============================================================
@@ -598,7 +648,7 @@ body {
 }
 
 /* ============================================================
-   FOOTER — on screen flows after signatures
+   FOOTER
    ============================================================ */
 
 .footer {
@@ -642,11 +692,9 @@ body {
 }
 
 /* ============================================================
-   PRINT STYLES
-   — Mirrors the screen exactly.
-   — Uses the same .a4-report flex column, same gaps, same
-     font sizes, same footer position, same score spacing.
-   — Only difference: page size and colour adjustment.
+   PRINT STYLES — mirrors the screen exactly, keeps rounded
+   corners (with a subtle clipping so the table stays rectangular
+   on paper for readability)
    ============================================================ */
 
 @media print {
@@ -674,7 +722,6 @@ body {
     }
 
     .a4-report {
-        /* Keep the same flex column layout as on screen */
         width: 210mm !important;
         height: 297mm !important;
         max-height: 297mm !important;
@@ -688,6 +735,25 @@ body {
         overflow: hidden !important;
         display: flex !important;
         flex-direction: column !important;
+        background: #fff !important;
+        position: relative;
+        isolation: isolate;
+    }
+
+    /* Watermark on print */
+    .a4-report::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='360' viewBox='0 0 520 360'><g transform='rotate(-28 260 180)' opacity='0.09'><text x='260' y='150' text-anchor='middle' font-family='Inter,Segoe UI,sans-serif' font-size='72' font-weight='900' fill='%230b1b33' letter-spacing='12'>{{ school.name|default:"SCHOOL"|upper }}</text><text x='260' y='210' text-anchor='middle' font-family='Inter,Segoe UI,sans-serif' font-size='22' font-weight='700' fill='%230b1b33' letter-spacing='8'>{{ school.motto|default:""|upper }}</text></g></svg>");
+        background-repeat: repeat;
+        background-position: center center;
+        background-size: 520px 360px;
+        opacity: 0.85 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
     .no-print {
@@ -706,7 +772,22 @@ body {
         print-color-adjust: exact !important;
     }
 
-    /* Footer stays at bottom (same as screen) */
+    /* Semi-transparent cell backgrounds so watermark peeks through */
+    .marks-table td,
+    .subject-cell,
+    .remark-cell,
+    .feedback-box {
+        background: rgba(255, 255, 255, 0.72) !important;
+    }
+
+    .total-row   { background: rgba(243, 244, 246, 0.85) !important; }
+    .average-row { background: rgba(229, 231, 235, 0.85) !important; }
+
+    .mark-up   { background: rgba(236, 253, 245, 0.82) !important; }
+    .mark-down { background: rgba(254, 242, 242, 0.82) !important; }
+    .mark-same { background: rgba(255, 251, 235, 0.82) !important; }
+
+    /* Footer stays at bottom */
     .footer {
         margin-top: auto !important;
     }
@@ -727,6 +808,90 @@ body {
     .mark-score  { min-width: 24px !important; }
     .mark-rubric { min-width: 26px !important; }
     .mark-trend  { min-width: 16px !important; }
+
+    /* ---- FORCE FULL TABLE GRID LINES ON PRINT, KEEP ROUNDED FRAME ---- */
+    .marks-table {
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        border: 1px solid #94a3b8 !important;
+        table-layout: fixed !important;
+        width: 100% !important;
+        visibility: visible !important;
+        border-radius: var(--table-radius) !important;
+        overflow: hidden !important;
+    }
+
+    .marks-table thead,
+    .marks-table tbody,
+    .marks-table tr,
+    .marks-table th,
+    .marks-table td {
+        visibility: visible !important;
+    }
+
+    .marks-table th {
+        border-right: 1px solid #94a3b8 !important;
+        border-bottom: 1px solid #94a3b8 !important;
+        background: #0b1b33 !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .marks-table td {
+        border-right: 1px solid #94a3b8 !important;
+        border-bottom: 1px solid #94a3b8 !important;
+        color: #000000 !important;
+    }
+
+    .marks-table td:last-child,
+    .marks-table th:last-child {
+        border-right: none !important;
+    }
+
+    .marks-table tbody tr:last-child td {
+        border-bottom: none !important;
+    }
+
+    /* Empty cells (e.g. teacher sign) still get a visible border */
+    .marks-table td:empty,
+    .marks-table td:blank {
+        border-right: 1px solid #94a3b8 !important;
+        border-bottom: 1px solid #94a3b8 !important;
+    }
+
+    /* Rounded corners on print as well */
+    .marks-table thead tr:first-child th:first-child {
+        border-top-left-radius: var(--table-radius) !important;
+    }
+    .marks-table thead tr:first-child th:last-child {
+        border-top-right-radius: var(--table-radius) !important;
+    }
+    .marks-table tbody tr:last-child td:first-child {
+        border-bottom-left-radius: var(--table-radius) !important;
+    }
+    .marks-table tbody tr:last-child td:last-child {
+        border-bottom-right-radius: var(--table-radius) !important;
+    }
+
+    .subject-col,
+    .subject-cell {
+        display: table-cell !important;
+        visibility: visible !important;
+        white-space: nowrap !important;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE (screen only)
+   ============================================================ */
+
+@media (max-width: 900px) {
+    .a4-report {
+        width: 100%;
+        min-height: auto;
+        padding: 16px;
+    }
 }
 </style>
 
@@ -904,7 +1069,7 @@ body {
             {% endfor %}
 
             <!-- ================= TOTALS ================= -->
-            <tr class="total-row" style="background:#f3f4f6;">
+            <tr class="total-row" style="background:rgba(243,244,246,0.85);">
                 <td>Totals</td>
                 {% for total in report.exam_totals %}
                     <td><strong>{{ total }}</strong></td>
@@ -914,7 +1079,7 @@ body {
             </tr>
 
             <!-- ================= AVERAGES ================= -->
-            <tr class="average-row" style="background:#e5e7eb;">
+            <tr class="average-row" style="background:rgba(229,231,235,0.85);">
                 <td>Averages</td>
                 {% for avg in report.exam_averages %}
                     <td><strong>{{ avg|floatformat:1 }}</strong></td>
