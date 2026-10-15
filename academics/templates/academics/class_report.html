@@ -175,8 +175,7 @@ body {
 }
 
 /* ============================================================
-   WATERMARK — pseudo-element so it sits ABOVE white table
-   backgrounds but BELOW content.
+   WATERMARK
    ============================================================ */
 
 .a4-report::before {
@@ -194,7 +193,6 @@ body {
     print-color-adjust: exact;
 }
 
-/* Content sits above the watermark */
 .a4-report > * {
     position: relative;
     z-index: 1;
@@ -270,6 +268,7 @@ body {
     padding: 5px 16px;
     display: inline-block;
     backdrop-filter: blur(2px);
+    line-height: 1.4;
 }
 
 /* ============================================================
@@ -370,11 +369,7 @@ body {
 }
 
 /* ============================================================
-   MARKS TABLE — ROUNDED EDGES + full grid lines on print
-   ------------------------------------------------------------
-   IMPORTANT: border-collapse must be `separate` with
-   border-spacing: 0 for border-radius to actually render on
-   a table. We then round the outer corner cells manually.
+   MARKS TABLE
    ============================================================ */
 
 .marks-table {
@@ -385,9 +380,8 @@ body {
     font-size: 10pt;
     table-layout: fixed;
     border-radius: var(--table-radius);
-    overflow: hidden;              /* clips inner cells to the rounded frame */
+    overflow: hidden;
     background: transparent;
-    /* Outer frame */
     border: 1.5px solid var(--border-light);
 }
 
@@ -433,7 +427,6 @@ body {
     background: rgba(250, 252, 255, 0.95);
 }
 
-/* --- Rounded outer corners --- */
 .marks-table thead tr:first-child th:first-child {
     border-top-left-radius: var(--table-radius);
 }
@@ -447,7 +440,6 @@ body {
     border-bottom-right-radius: var(--table-radius);
 }
 
-/* column widths */
 .subject-col { width: 20%; }
 .exam-col    { width: 11%; }
 .remark-col  { width: 22%; }
@@ -465,7 +457,6 @@ body {
     background: rgba(255, 255, 255, 0.72);
 }
 
-/* MARK CELL: score, rubric, trend side by side */
 .mark-display {
     display: flex;
     align-items: center;
@@ -503,18 +494,15 @@ body {
     text-align: left;
 }
 
-/* rubric colours */
 .rb-ee { color: #0b8a5c; }
 .rb-me { color: #2563eb; }
 .rb-ae { color: #b45309; }
 .rb-be { color: #b91c1c; }
 
-/* trend colours */
 .trend-up { color: #0b8a5c; }
 .trend-down { color: #c53030; }
 .trend-stable { color: #b45309; }
 
-/* row highlight (trend colours) — semi-transparent so watermark peeks through */
 .mark-up   { background: rgba(236, 253, 245, 0.82) !important; }
 .mark-down { background: rgba(254, 242, 242, 0.82) !important; }
 .mark-same { background: rgba(255, 251, 235, 0.82) !important; }
@@ -546,7 +534,7 @@ body {
 }
 
 /* ============================================================
-   TOTALS & AVERAGES ROWS
+   TOTALS & AVERAGES
    ============================================================ */
 
 .marks-table tbody tr.total-row td,
@@ -656,6 +644,7 @@ body {
     text-align: center;
     border-top: 1.5px solid var(--border-light);
     padding-top: 8px;
+    padding-bottom: 4px;
     font-size: 8.5px;
     line-height: 1.45;
     color: var(--text-secondary);
@@ -671,6 +660,15 @@ body {
 
 .footer div {
     margin-bottom: 1px;
+}
+
+.footer .property-notice {
+    margin-top: 4px !important;
+    padding-bottom: 4px !important;
+    font-size: 9px;
+    color: #374151;
+    font-style: italic;
+    line-height: 1.4;
 }
 
 /* ============================================================
@@ -692,9 +690,15 @@ body {
 }
 
 /* ============================================================
-   PRINT STYLES — mirrors the screen exactly, keeps rounded
-   corners (with a subtle clipping so the table stays rectangular
-   on paper for readability)
+   PRINT STYLES
+   ------------------------------------------------------------
+   KEY STRATEGY FOR THIS VERSION:
+   - The footer is taken OUT of the flex flow on print and
+     positioned absolutely at the bottom of .a4-report.
+   - .a4-report reserves bottom padding (28mm) so the absolutely
+     positioned footer sits inside the visible area, never clipped.
+   - Main content (header → signatures) sits above the footer's
+     reserved zone.
    ============================================================ */
 
 @media print {
@@ -708,36 +712,43 @@ body {
         background: #fff !important;
         margin: 0 !important;
         padding: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        overflow: visible !important;
     }
 
-    body * {
-        visibility: hidden;
+    /* Hide dashboard chrome */
+    .filter-panel,
+    .no-print,
+    .empty-state,
+    nav,
+    .navbar {
+        display: none !important;
     }
 
-    .a4-report,
-    .a4-report * {
-        visibility: visible;
-    }
-
+    /* Each report occupies exactly one A4 page.
+       Bottom padding (30mm) reserves a fixed slot for the footer. */
     .a4-report {
         width: 210mm !important;
         height: 297mm !important;
+        min-height: 297mm !important;
         max-height: 297mm !important;
         margin: 0 !important;
-        padding: 7mm 7mm 7mm 7mm !important;
+        padding: 6mm 7mm 30mm 7mm !important;   /* big bottom padding */
         border-radius: 0 !important;
         box-shadow: none !important;
         border: none !important;
         page-break-after: always;
         page-break-inside: avoid;
+        break-inside: avoid;
         overflow: hidden !important;
-        display: flex !important;
-        flex-direction: column !important;
+        display: block !important;               /* stop using flex on print */
         background: #fff !important;
         position: relative;
         isolation: isolate;
+        box-sizing: border-box !important;
     }
 
     /* Watermark on print */
@@ -756,11 +767,131 @@ body {
         print-color-adjust: exact !important;
     }
 
-    .no-print {
+    /* ---- FOOTER — absolutely positioned at bottom of page ---- */
+    .footer {
+        position: absolute !important;
+        left: 7mm !important;
+        right: 7mm !important;
+        bottom: 6mm !important;
+        margin: 0 !important;
+        padding-top: 5px !important;
+        padding-bottom: 0 !important;
+        width: auto !important;
+        text-align: center !important;
+        font-size: 8px !important;
+        line-height: 1.35 !important;
+        border-top: 1.5px solid var(--border-light) !important;
+        background: transparent !important;
+        z-index: 2 !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* Property notice — always display on print */
+    .footer .property-notice {
+        display: block !important;
+        visibility: visible !important;
+        margin-top: 5px !important;
+        padding-top: 3px !important;
+        padding-bottom: 2px !important;
+        font-size: 8px !important;
+        line-height: 1.35 !important;
+        color: #374151 !important;
+        font-style: italic !important;
+        overflow: visible !important;
+        position: static !important;
+    }
+
+    /* ---- HEADER ---- */
+    .report-header {
+        padding: 14px 14px 16px 14px !important;
+        margin-bottom: 8px !important;
+        overflow: visible !important;
+    }
+
+    .report-header::after {
         display: none !important;
     }
 
-    /* Keep colours on paper */
+    /* Larger school logo on print */
+    .school-logo {
+        height: 70px !important;
+        width: auto !important;
+        max-height: 70px !important;
+        margin-bottom: 8px !important;
+        padding: 6px 16px !important;
+        border-radius: 8px !important;
+        display: block !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .report-header h4 {
+        font-size: 20px !important;
+        line-height: 1.2 !important;
+    }
+
+    .report-header p {
+        line-height: 1.3 !important;
+    }
+
+    .generated-info {
+        margin-top: 6px !important;
+        padding: 4px 14px !important;
+        line-height: 1.45 !important;
+        display: inline-block !important;
+        overflow: visible !important;
+        white-space: normal !important;
+        max-width: 100% !important;
+    }
+
+    .generated-info strong {
+        font-size: 9.5px !important;
+    }
+
+    /* ---- STUDENT ---- */
+    .student-header {
+        padding: 10px 0 8px 0 !important;
+    }
+
+    /* ---- STATS ---- */
+    .stats-row {
+        margin: 12px 0 6px 0 !important;
+    }
+
+    /* ---- FEEDBACK ---- */
+    .feedback-section {
+        margin-top: 12px !important;
+    }
+
+    .feedback-section > div {
+        margin-bottom: 8px !important;
+    }
+
+    .feedback-box {
+        min-height: 48px !important;
+    }
+
+    /* ---- SIGNATURES: compressed ---- */
+    .signature-row {
+        margin-top: 8px !important;
+        margin-bottom: 4px !important;
+        padding-top: 4px !important;
+        gap: 12px !important;
+    }
+
+    .signature-title {
+        font-size: 9px !important;
+        margin-bottom: 8px !important;
+        line-height: 1.15 !important;
+    }
+
+    .signature-line {
+        height: 10px !important;
+        border-bottom-width: 1.5px !important;
+    }
+
+    /* Preserve all screen colors */
     .report-header,
     .marks-table th,
     .stat-card,
@@ -772,7 +903,6 @@ body {
         print-color-adjust: exact !important;
     }
 
-    /* Semi-transparent cell backgrounds so watermark peeks through */
     .marks-table td,
     .subject-cell,
     .remark-cell,
@@ -787,12 +917,7 @@ body {
     .mark-down { background: rgba(254, 242, 242, 0.82) !important; }
     .mark-same { background: rgba(255, 251, 235, 0.82) !important; }
 
-    /* Footer stays at bottom */
-    .footer {
-        margin-top: auto !important;
-    }
-
-    /* Ensure marks and remarks stay bold & black on paper */
+    /* Keep marks and remarks bold & black */
     .mark-score,
     .remark-cell,
     .total-row td,
@@ -803,64 +928,17 @@ body {
         font-weight: 800 !important;
     }
 
-    /* Keep the score/rubric/trend spacing identical to screen */
-    .mark-display { gap: 8px !important; }
-    .mark-score  { min-width: 24px !important; }
-    .mark-rubric { min-width: 26px !important; }
-    .mark-trend  { min-width: 16px !important; }
-
-    /* ---- FORCE FULL TABLE GRID LINES ON PRINT, KEEP ROUNDED FRAME ---- */
-    .marks-table {
-        border-collapse: separate !important;
-        border-spacing: 0 !important;
-        border: 1px solid #94a3b8 !important;
-        table-layout: fixed !important;
-        width: 100% !important;
-        visibility: visible !important;
-        border-radius: var(--table-radius) !important;
-        overflow: hidden !important;
-    }
-
-    .marks-table thead,
-    .marks-table tbody,
-    .marks-table tr,
+    /* Preserve table borders & rounded corners */
     .marks-table th,
     .marks-table td {
-        visibility: visible !important;
+        border-color: var(--border-light) !important;
     }
 
     .marks-table th {
-        border-right: 1px solid #94a3b8 !important;
-        border-bottom: 1px solid #94a3b8 !important;
-        background: #0b1b33 !important;
-        color: #ffffff !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+        border-right-color: rgba(255, 255, 255, 0.18) !important;
+        border-bottom-color: rgba(255, 255, 255, 0.18) !important;
     }
 
-    .marks-table td {
-        border-right: 1px solid #94a3b8 !important;
-        border-bottom: 1px solid #94a3b8 !important;
-        color: #000000 !important;
-    }
-
-    .marks-table td:last-child,
-    .marks-table th:last-child {
-        border-right: none !important;
-    }
-
-    .marks-table tbody tr:last-child td {
-        border-bottom: none !important;
-    }
-
-    /* Empty cells (e.g. teacher sign) still get a visible border */
-    .marks-table td:empty,
-    .marks-table td:blank {
-        border-right: 1px solid #94a3b8 !important;
-        border-bottom: 1px solid #94a3b8 !important;
-    }
-
-    /* Rounded corners on print as well */
     .marks-table thead tr:first-child th:first-child {
         border-top-left-radius: var(--table-radius) !important;
     }
@@ -872,13 +950,6 @@ body {
     }
     .marks-table tbody tr:last-child td:last-child {
         border-bottom-right-radius: var(--table-radius) !important;
-    }
-
-    .subject-col,
-    .subject-cell {
-        display: table-cell !important;
-        visibility: visible !important;
-        white-space: nowrap !important;
     }
 }
 
@@ -1138,7 +1209,7 @@ body {
         <div><strong>{{ school.motto }}</strong></div>
         <div>{{ school.name }} • {{ report.exam_year }}</div>
         <div>Powered by SmartHub School Management System</div>
-        <div class="mt-2" style="font-size:9px; color:#374151; font-style:italic;">
+        <div class="property-notice">
             This document is the property of {{ school.name }}. If found, please return it to the school administration office or the class teacher.
         </div>
 
