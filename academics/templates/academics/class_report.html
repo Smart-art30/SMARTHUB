@@ -636,39 +636,66 @@ body {
 }
 
 /* ============================================================
-   FOOTER
+   BOTTOM BLOCK — motto + footer stacked, no overlap
    ============================================================ */
 
-.footer {
+.bottom-block {
     margin-top: auto;
+    display: block;
+    width: 100%;
+}
+
+/* Motto strip — own row, above footer */
+.motto-strip {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 4px 0 0 0;
+    padding: 4px 0 4px 0;
+    border-top: 1px solid var(--border-light);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    font-style: italic;
+    line-height: 1.3;
+    background: transparent;
+}
+
+/* Footer — own rows, below motto strip */
+.footer {
+    display: block;
+    width: 100%;
     text-align: center;
     border-top: 1.5px solid var(--border-light);
-    padding-top: 8px;
-    padding-bottom: 4px;
-    font-size: 8.5px;
-    line-height: 1.45;
+    padding: 5px 0 2px 0;
+    margin: 0;
+    font-size: 8px;
+    line-height: 1.4;
     color: var(--text-secondary);
     background: transparent;
 }
 
-.footer div:first-child {
-    font-weight: 700;
-    color: var(--text-primary);
-    font-size: 9px;
-    letter-spacing: 0.3px;
-}
-
-.footer div {
-    margin-bottom: 1px;
+.footer > div {
+    display: block;
+    width: 100%;
+    margin: 0 0 2px 0;
+    padding: 0;
+    line-height: 1.4;
+    font-size: 8px;
 }
 
 .footer .property-notice {
-    margin-top: 4px !important;
-    padding-bottom: 4px !important;
-    font-size: 9px;
+    display: block !important;
+    width: 100% !important;
+    margin: 4px 0 0 0 !important;
+    padding: 3px 0 2px 0 !important;
+    font-size: 8px;
     color: #374151;
     font-style: italic;
     line-height: 1.4;
+    clear: both;
 }
 
 /* ============================================================
@@ -692,13 +719,11 @@ body {
 /* ============================================================
    PRINT STYLES
    ------------------------------------------------------------
-   KEY STRATEGY FOR THIS VERSION:
-   - The footer is taken OUT of the flex flow on print and
-     positioned absolutely at the bottom of .a4-report.
-   - .a4-report reserves bottom padding (28mm) so the absolutely
-     positioned footer sits inside the visible area, never clipped.
-   - Main content (header → signatures) sits above the footer's
-     reserved zone.
+   - bottom-block contains motto strip + footer, pinned to
+     bottom of the flex column via margin-top: auto.
+   - Every line inside .bottom-block has its own reserved row.
+   - Property notice has reduced margins on print so it moves
+     up slightly and doesn't sit too close to the paper edge.
    ============================================================ */
 
 @media print {
@@ -729,14 +754,15 @@ body {
     }
 
     /* Each report occupies exactly one A4 page.
-       Bottom padding (30mm) reserves a fixed slot for the footer. */
+       Bottom padding reduced (4mm) so the property notice sits
+       higher on the sheet. */
     .a4-report {
         width: 210mm !important;
         height: 297mm !important;
         min-height: 297mm !important;
         max-height: 297mm !important;
         margin: 0 !important;
-        padding: 6mm 7mm 30mm 7mm !important;   /* big bottom padding */
+        padding: 6mm 7mm 4mm 7mm !important;   /* reduced bottom: 4mm */
         border-radius: 0 !important;
         box-shadow: none !important;
         border: none !important;
@@ -744,7 +770,8 @@ body {
         page-break-inside: avoid;
         break-inside: avoid;
         overflow: hidden !important;
-        display: block !important;               /* stop using flex on print */
+        display: flex !important;
+        flex-direction: column !important;
         background: #fff !important;
         position: relative;
         isolation: isolate;
@@ -767,41 +794,6 @@ body {
         print-color-adjust: exact !important;
     }
 
-    /* ---- FOOTER — absolutely positioned at bottom of page ---- */
-    .footer {
-        position: absolute !important;
-        left: 7mm !important;
-        right: 7mm !important;
-        bottom: 6mm !important;
-        margin: 0 !important;
-        padding-top: 5px !important;
-        padding-bottom: 0 !important;
-        width: auto !important;
-        text-align: center !important;
-        font-size: 8px !important;
-        line-height: 1.35 !important;
-        border-top: 1.5px solid var(--border-light) !important;
-        background: transparent !important;
-        z-index: 2 !important;
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-    }
-
-    /* Property notice — always display on print */
-    .footer .property-notice {
-        display: block !important;
-        visibility: visible !important;
-        margin-top: 5px !important;
-        padding-top: 3px !important;
-        padding-bottom: 2px !important;
-        font-size: 8px !important;
-        line-height: 1.35 !important;
-        color: #374151 !important;
-        font-style: italic !important;
-        overflow: visible !important;
-        position: static !important;
-    }
-
     /* ---- HEADER ---- */
     .report-header {
         padding: 14px 14px 16px 14px !important;
@@ -813,7 +805,6 @@ body {
         display: none !important;
     }
 
-    /* Larger school logo on print */
     .school-logo {
         height: 70px !important;
         width: auto !important;
@@ -869,12 +860,12 @@ body {
     }
 
     .feedback-box {
-        min-height: 48px !important;
+        min-height: 42px !important;
     }
 
     /* ---- SIGNATURES: compressed ---- */
     .signature-row {
-        margin-top: 8px !important;
+        margin-top: 6px !important;
         margin-bottom: 4px !important;
         padding-top: 4px !important;
         gap: 12px !important;
@@ -889,6 +880,74 @@ body {
     .signature-line {
         height: 10px !important;
         border-bottom-width: 1.5px !important;
+    }
+
+    /* ---- BOTTOM BLOCK: motto + footer stacked ---- */
+    .bottom-block {
+        display: block !important;
+        width: 100% !important;
+        margin-top: auto !important;
+        margin-bottom: 0 !important;      /* no extra bottom margin */
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* Motto strip */
+    .motto-strip {
+        display: block !important;
+        width: 100% !important;
+        margin: 2px 0 0 0 !important;     /* tighter top margin */
+        padding: 2px 0 2px 0 !important;  /* tighter padding */
+        font-size: 8px !important;
+        letter-spacing: 0.8px !important;
+        line-height: 1.2 !important;
+        border-top: 1px solid var(--border-light) !important;
+        text-align: center !important;
+        clear: both !important;
+    }
+
+    /* Footer */
+    .footer {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 3px 0 0 0 !important;    /* reduced bottom padding */
+        text-align: center !important;
+        border-top: 1.5px solid var(--border-light) !important;
+        background: transparent !important;
+        font-size: 7.5px !important;
+        line-height: 1.35 !important;
+        position: static !important;
+        clear: both !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* Every footer line on its own row */
+    .footer > div {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 0 1px 0 !important;     /* tighter line spacing */
+        padding: 0 !important;
+        line-height: 1.35 !important;
+        font-size: 7.5px !important;
+    }
+
+    /* Property notice — moves up slightly */
+    .footer .property-notice {
+        display: block !important;
+        width: 100% !important;
+        visibility: visible !important;
+        margin: 2px 0 0 0 !important;     /* reduced top margin (was 3px) */
+        padding: 1px 0 0 0 !important;    /* reduced padding (was 2px 0 1px) */
+        font-size: 7.5px !important;
+        line-height: 1.35 !important;
+        color: #374151 !important;
+        font-style: italic !important;
+        overflow: visible !important;
+        position: static !important;
+        float: none !important;
+        clear: both !important;
     }
 
     /* Preserve all screen colors */
@@ -1203,14 +1262,25 @@ body {
     </div>
 
 
-    <!-- ================= FOOTER ================= -->
-    <div class="footer">
+    <!-- ================= BOTTOM BLOCK (motto + footer) ================= -->
+    <div class="bottom-block">
 
-        <div><strong>{{ school.motto }}</strong></div>
-        <div>{{ school.name }} • {{ report.exam_year }}</div>
-        <div>Powered by SmartHub School Management System</div>
-        <div class="property-notice">
-            This document is the property of {{ school.name }}. If found, please return it to the school administration office or the class teacher.
+        <!-- Motto strip — own row, above the footer -->
+        {% if school.motto %}
+        <div class="motto-strip">
+            {{ school.motto }}
+        </div>
+        {% endif %}
+
+        <!-- Footer — each line on its own row -->
+        <div class="footer">
+
+            <div>{{ school.name }} • {{ report.exam_year }}</div>
+            <div>Powered by SmartHub School Management System</div>
+            <div class="property-notice">
+                This document is the property of {{ school.name }}. If found, please return it to the school administration office or the class teacher.
+            </div>
+
         </div>
 
     </div>
